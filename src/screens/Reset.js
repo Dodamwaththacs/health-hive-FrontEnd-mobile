@@ -24,7 +24,7 @@ const Reset = () => {
         placeholder="Email/Phone No"
         keyboardType="email-address"
       />
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('OTPScreen')}>
         <Text style={styles.buttonText}>Send OTP</Text>
       </TouchableOpacity>
       <View style={styles.paginationContainer}>

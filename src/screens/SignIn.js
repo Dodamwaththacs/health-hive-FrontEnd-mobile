@@ -42,7 +42,7 @@ const App = () => {
         
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={null}>
+      <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('LoadingScreen')}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
 
