@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Image,Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image,Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -8,20 +8,42 @@ const App = () => {
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
+  const handleSignIn = async () => {
+    try {
+      const responce = await fetch('http://192.168.201.140:33000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+           email, 
+           password 
+          }),
+      });
+
+      const jsonResponse = await responce.json();
+      console.log(jsonResponse);
+
+      if (responce.status === 200) {
+        navigation.navigate('LoadingScreen');
+      } else{
+        Alert.alert('Login failed', jaonResponse.message || 'Please check your credentials and try again.');
+      }
+    }catch (error) {
+      Alert.alert('Login failed..', error.message || 'Something went wrong.');
+    }
+  };
+
 
   
 
 
   return (
-    <View style={styles.container}>
+<View style={styles.container}>
       <Text style={styles.title}>Welcome to HealthHive</Text>
-
       <View>
         <Image source={require('../assets/sign-bg.png')} style={styles.sign_bg} />
       </View>
-    
-
-
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -37,23 +59,14 @@ const App = () => {
           placeholder="Password"
           secureTextEntry
         />
-        
-
-        
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('LoadingScreen')}>
+      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={() =>  navigation.navigate('Reset')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Reset')}>
         <Text style={styles.forgotPassword}>Forget Password</Text>
       </TouchableOpacity>
-
-  
-      
     </View>
-    
   );
 };
 

@@ -8,9 +8,11 @@ import OTPScreen from './src/screens/OTPScreen';
 import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
 import LoadingScreen from './src/screens/LoadingScreen';
 const Stack = createNativeStackNavigator();
+import HealthHiveHeader from './src/components/HealthHiveHeader';
 
 function App() {
   return (
+    
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Splash">
         <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
@@ -18,12 +20,11 @@ function App() {
         <Stack.Screen name="Reset" component={Reset} options={{ headerShown: false }} />
         <Stack.Screen name="OTPScreen" component={OTPScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="LoadingScreen" component={LoadingScreen} options={{ headerShown: false }} />
-        
+        <Stack.Screen name="LoadingScreen" component={LoadingScreen} options={{ headerShown: false }} />  
       </Stack.Navigator>
     </NavigationContainer>
-    // <LoadingScreen />
-    
+
+    // <HealthHiveHeader />
   );
 }
 
