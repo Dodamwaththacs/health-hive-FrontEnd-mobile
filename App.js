@@ -7,8 +7,11 @@ import Reset from './src/screens/Reset';
 import OTPScreen from './src/screens/OTPScreen';
 import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
 import LoadingScreen from './src/screens/LoadingScreen';
+import Dashboard from './src/screens/Dashboard';
+import MainContainer from './src/MainContainer';
+
+
 const Stack = createNativeStackNavigator();
-import HealthHiveHeader from './src/components/HealthHiveHeader';
 
 function App() {
   return (
@@ -21,10 +24,14 @@ function App() {
         <Stack.Screen name="OTPScreen" component={OTPScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} options={{ headerShown: false }} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} options={{ headerShown: false }} />  
+        {/* <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} /> */}
+        <Stack.Screen name="MainContainer" component={MainContainer} options={{ headerShown: false }} />
       </Stack.Navigator>
+
     </NavigationContainer>
 
-    // <HealthHiveHeader />
+   
+  //  <MainContainer/>
   );
 }
 

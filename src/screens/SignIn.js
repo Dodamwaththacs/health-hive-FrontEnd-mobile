@@ -3,36 +3,45 @@ import { StyleSheet, Image,Text, View, TextInput, TouchableOpacity, Alert } from
 import { useNavigation } from '@react-navigation/native';
 
 
-const App = () => {
+const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
-  const handleSignIn = async () => {
-    try {
-      const responce = await fetch('http://192.168.201.140:33000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-           email, 
-           password 
-          }),
-      });
+  // const handleSignIn = async () => {
+  //   try {
+  //     const responce = await fetch('http://192.168.71.140:33000/api/auth/login', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //          email, 
+  //          password 
+  //         }),
+  //     });
 
-      const jsonResponse = await responce.json();
-      console.log(jsonResponse);
+  //     const jsonResponse = await responce.json();
+  //     console.log(jsonResponse);
 
-      if (responce.status === 200) {
-        navigation.navigate('LoadingScreen');
-      } else{
-        Alert.alert('Login failed', jaonResponse.message || 'Please check your credentials and try again.');
-      }
-    }catch (error) {
-      Alert.alert('Login failed..', error.message || 'Something went wrong.');
+  //     if (responce.status === 200) {
+  //       navigation.navigate('LoadingScreen');
+  //     } else{
+  //       Alert.alert('Login failed', jaonResponse.message || 'Please check your credentials and try again.');
+  //     }
+  //   }catch (error) {
+  //     Alert.alert('Login failed..', error.message || 'Something went wrong.');
+  //   }
+  // };
+  
+  const tempUser = (username,Password)=>{
+    const validUser = username === 'Admin' && password === 'Admin';
+    if(validUser){
+      navigation.navigate('MainContainer');
+    }else{
+      Alert.alert('Login failed', 'Please check your credentials and try again.');
     }
-  };
+  }
 
 
   
@@ -60,7 +69,7 @@ const App = () => {
           secureTextEntry
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+      <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('MainContainer')}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Reset')}>
@@ -138,4 +147,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default SignIn;
