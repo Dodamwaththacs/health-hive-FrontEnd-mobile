@@ -1,15 +1,19 @@
 import React from 'react';
+import { BottomTabBar, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from "@react-navigation/native";
+
 import { View ,Text} from 'react-native';
 import Header from '../components/Header'; // Make sure the path is correct
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import Sidebar from '../components/Sidebar';
+import Icon  from "react-native-vector-icons/FontAwesome";
 
-const Dashboard = () => {
-  return (
-    <View>
-      <Text>Dashboard</Text>  
-    </View>
+
+
+
+const Home = () => {
+  return(
+  <Text>Home!</Text>
   );
 };
 
-export default Dashboard;
+export default Home;

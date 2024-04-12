@@ -7,7 +7,7 @@ import Reset from './src/screens/Reset';
 import OTPScreen from './src/screens/OTPScreen';
 import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
 import LoadingScreen from './src/screens/LoadingScreen';
-import Dashboard from './src/screens/Dashboard';
+
 import MainContainer from './src/MainContainer';
 
 
@@ -31,7 +31,6 @@ function App() {
     </NavigationContainer>
 
    
-  //  <MainContainer/>
   );
 }
 
