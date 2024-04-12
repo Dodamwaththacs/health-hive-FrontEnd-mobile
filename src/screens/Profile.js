@@ -7,7 +7,7 @@ import Sidebar from '../components/Sidebar';
 const Profile = () => {
   return (
     <View>
-      <Text>Dashboard</Text>  
+      <Text>This is profile</Text>  
     </View>
   );
 };
