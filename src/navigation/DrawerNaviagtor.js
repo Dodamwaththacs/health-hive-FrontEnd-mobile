@@ -2,7 +2,6 @@ import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Image } from 'react-native';
 import Home from './HomeBottomNavigator';
-import Profile from '../screens/Profile';
 import Scan from '../screens/Scan';
 import QR_Code from '../screens/QR_Code';
 import Notification from '../screens/Notification';
