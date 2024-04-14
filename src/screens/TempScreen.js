@@ -1,15 +1,18 @@
 import React from 'react';
-import { View ,Text} from 'react-native';
-import Header from '../components/Header'; // Make sure the path is correct
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import Sidebar from '../components/Sidebar';
+import { View ,Text,StyleSheet} from 'react-native';
 
 const TempScreen = () => {
   return (
-    <View>
-      <Text>Dashboard</Text>  
+    <View style = {styles.TempScreen}>
+      <Text>TempScreen!</Text>  
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  TempScreen: {
+  textAlign: 'center',
+  },
+});
 
 export default TempScreen;

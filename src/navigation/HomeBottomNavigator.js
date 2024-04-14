@@ -1,8 +1,11 @@
 import React from "react";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Dashboard from "../screens/Home";
 import FontAwesome  from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import Dashboard from "../screens/Home/Dashboard";
+import Documents from "../screens/Home/Documents";
+import Uploads from "../screens/Home/Uploads";
+import Search from "../screens/Home/Search";
 
 import Profile from '../screens/Profile'; // Assuming Profile is also in a separate file
 
@@ -42,7 +45,7 @@ function HomeBottomNavigator () {
 
       <Tab.Screen 
         name="Documents" 
-        component={Profile} 
+        component={Documents} 
         options={{
           headerShown:false,
           tabBarLabel: 'Documents',
@@ -54,7 +57,7 @@ function HomeBottomNavigator () {
 
       <Tab.Screen 
         name="Uploads" 
-        component={Profile} 
+        component={Uploads} 
         options={{
           headerShown:false,
           tabBarLabel: 'Uploads',
@@ -66,10 +69,10 @@ function HomeBottomNavigator () {
 
       <Tab.Screen 
         name="Search" 
-        component={Profile} 
+        component={Search} 
         options={{
           headerShown:false,
-          tabBarLabel: 'Home',
+          tabBarLabel: 'Search',
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="search" color={color} size={size} />
           ),

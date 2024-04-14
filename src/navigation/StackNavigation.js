@@ -3,6 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Splash from '../screens/Splash';
 import SignIn from '../screens/SignIn';
 import Reset from '../screens/Reset';
+import OTPScreen from '../screens/OTPScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
+import LoadingScreen from '../screens/LoadingScreen';
+import TempScreen from '../screens/TempScreen';
+import DrawerNavigator from './DrawerNavigator';
 
 
 
@@ -15,7 +20,11 @@ function StackNavigation() {
         <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
         <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
         <Stack.Screen name="Reset" component={Reset} options={{ headerShown: false }} />
-        
+        <Stack.Screen name="OTPScreen" component={OTPScreen} options={{ headerShown:false}}/>
+        <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} options={{ headerShown:false}}/>
+        <Stack.Screen name="LoadingScreen" component={LoadingScreen} options={{ headerShown:false}}/>
+        <Stack.Screen name="TempScreen" component={TempScreen} options={{ headerShown:false}}/>
+        <Stack.Screen name='DrawerNavigator' component={DrawerNavigator} options={{ headerShown: false }} />
       </Stack.Navigator>
     
   );

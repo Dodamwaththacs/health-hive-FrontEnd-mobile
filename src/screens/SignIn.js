@@ -37,7 +37,7 @@ const SignIn = () => {
   const tempUser = (username,Password)=>{
     const validUser = username === 'Admin' && password === 'Admin';
     if(validUser){
-      navigation.navigate('MainContainer');
+      navigation.navigate('DrawerNavigator');
     }else{
       Alert.alert('Login failed', 'Please check your credentials and try again.');
     }
@@ -69,7 +69,7 @@ const SignIn = () => {
           secureTextEntry
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('MainContainer')}>
+      <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('DrawerNavigator')}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Reset')}>
