@@ -16,7 +16,7 @@ const UserProfileCard = ({ user }) => {
         </View>
       </View>
       <View>
-        <Text style={styles.texttHead}>Daily tips...</Text>
+        <Text style={styles.textHeader}>Daily tips...</Text>
       </View>
     </View>
   );
@@ -36,7 +36,7 @@ const GreetCard = () => {
 const ChartsCard = () => {
   return (
     <View>
-      <Text style={styles.texttHead}>Your weight...</Text>
+      <Text style={styles.textHeader}>Your weight...</Text>
       <LineChart
         data={{
           labels: ["January", "February", "March", "April", "May", "June"],
@@ -76,27 +76,42 @@ const ChartsCard = () => {
   );
 };
 
-const data = [
-  { id: '1', name: 'Item 1', date: '2022-01-01' },
-  { id: '2', name: 'Item 2', date: '2022-01-02' },
-  { id: '3', name: 'Item 3', date: '2022-01-03' },
-  // Add more items as needed
-];
 
 const ListCard = () => {
+
+  // Dummy data for documents
+  const documents = [
+    { id: 1, name: 'Document 1', uploadDate: '2024-04-14' },
+    { id: 2, name: 'Document 2', uploadDate: '2024-04-13' },
+    { id: 3, name: 'Document 3', uploadDate: '2024-04-12' },
+    { id: 4, name: 'Document 4', uploadDate: '2024-04-11' },
+    { id: 5, name: 'Document 5', uploadDate: '2024-04-10' },
+  ];
+
+  // Render item for FlatList
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text style={styles.title}>{item.name}</Text>
-      <Text style={styles.date}>{item.date}</Text>
+      <View style={styles.leftContainer}>
+        <Text style={styles.title}>{item.name}</Text>
+      </View>
+      <View style={styles.rightContainer}>
+        <Text style={styles.uploadDate}>Uploaded on: {item.uploadDate}</Text>
+      </View>
     </View>
   );
 
   return (
-    <FlatList
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={item => item.id}
-    />
+    <View>
+      <Text style={styles.textHeader}>Document List</Text>
+    <View style={styles.flcontainer}>
+      
+      <FlatList
+        data={documents}
+        renderItem={renderItem}
+        keyExtractor={item => item.id.toString()}
+      />
+    </View>
+    </View>
   );
 };
 
@@ -160,10 +175,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#888",
   },
-  texttHead: {
-    fontSize: 16,
-    fontWeight: "bold",
-    margin: 10,
+  textHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginLeft: 10,
   },
   text: {
     fontSize: 18,
@@ -171,18 +187,35 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  //flat list styles
+  flcontainer: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+
   item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#f9c2ff',
     padding: 20,
     marginVertical: 8,
-    marginHorizontal: 16,
+    borderRadius: 10,
+  },
+  leftContainer: {
+    flex: 1,
+  },
+  rightContainer: {
+    marginLeft: 20,
   },
   title: {
-    fontSize: 32,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  date: {
-    fontSize: 16,
+  uploadDate: {
+    fontSize: 14,
   },
+
 });
 
 export default Dashboard;

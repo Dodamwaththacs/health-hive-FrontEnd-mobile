@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-const Home = () => {
+const Scan = () => {
   return (
     <View>
       <Text>This is Scan!</Text>
@@ -9,4 +9,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Scan;
