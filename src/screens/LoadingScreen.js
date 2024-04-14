@@ -1,6 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, Image, Animated } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  Image,
+  Animated,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const LoadingScreen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity value
@@ -25,7 +32,7 @@ const LoadingScreen = () => {
 
     // Navigate to Dashboard screen after 3 seconds
     const timeout = setTimeout(() => {
-      navigation.navigate('TempScreen');
+      navigation.navigate("TempScreen");
     }, 3000);
 
     // Clear the timeout to avoid memory leaks
@@ -34,8 +41,8 @@ const LoadingScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.Image 
-        source={require('../assets/logo.png')} 
+      <Animated.Image
+        source={require("../assets/logo.png")}
         style={[styles.icon, { opacity: fadeAnim }]}
       />
       <Text style={styles.loadingText}>Logging In...</Text>
@@ -47,9 +54,9 @@ const LoadingScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5fcff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5fcff",
   },
   icon: {
     width: 100,
