@@ -1,13 +1,23 @@
-import React from 'react';
-import { View ,Text} from 'react-native';
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import QRCode from "react-native-qrcode-svg";
 
-
-const Home = () => {
-  return(
-  <View>
-    <Text>This is QR_Code!</Text>
-  </View>
+const QR_Code = () => {
+  const text = "https://www.google.com";
+  return (
+    <View style={styles.qrContainer}>
+      {/* Set the size of the QR code here */}
+      <QRCode value={text} size={300} />
+    </View>
   );
 };
+export default QR_Code;
 
-export default Home;
+const styles = StyleSheet.create({
+  qrContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5fcff",
+  },
+});
