@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
   //flat list styles
   flcontainer: {
     flex: 1,
+
     marginHorizontal: 10,
   },
 
