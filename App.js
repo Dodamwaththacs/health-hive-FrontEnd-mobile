@@ -2,15 +2,14 @@ import React from 'react';
 import StackNavigation from './src/navigation/StackNavigation';
 import { NavigationContainer } from '@react-navigation/native';
 import 'react-native-gesture-handler';
-import Scanner from './src/screens/ScanTemp';
-
+import Documents from './src/screens/Home/Documents';
 
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <StackNavigation />
-    </NavigationContainer>
-    //<Scanner />
+    // <NavigationContainer>
+    //   <StackNavigation />
+    // </NavigationContainer>
+    <Documents />
   );
 }
