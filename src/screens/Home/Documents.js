@@ -1,61 +1,195 @@
-import React, { useState } from "react";
-import { View, Text, Button, TextInput, StyleSheet } from "react-native";
-import * as FileSystem from 'expo-file-system';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  TextInput,
+  Button,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
+import * as FileSystem from "expo-file-system";
+import Icon from "react-native-vector-icons/FontAwesome";
+import AddButton from "react-native-vector-icons/AntDesign";
+import  FontAwesome5  from "react-native-vector-icons/FontAwesome5";
 
-function Documents() {
-  const [folderName, setFolderName] = useState('');
-  const [error, setError] = useState('');
+const baseDir = `${FileSystem.documentDirectory}AppStorage/`;
 
-  const createFolder = async () => {
-    const directoryUri = FileSystem.documentDirectory + folderName;
+const FolderCreator = () => {
+  const [folderName, setFolderName] = useState("");
+  const [directories, setDirectories] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
+  useEffect(() => {
+    createBaseDirectory();
+    updateDirectoryList();
+  }, []);
+
+  const createBaseDirectory = async () => {
     try {
-      await FileSystem.makeDirectoryAsync(directoryUri, { intermediates: true });
-      console.log('Folder created successfully!');
-      setError(''); // Clear error on success
-    } catch (e) {
-      console.error('Failed to create folder:', e);
-      setError('Failed to create folder'); // Display error in UI
+      const info = await FileSystem.getInfoAsync(baseDir);
+      if (!info.exists) {
+        await FileSystem.makeDirectoryAsync(baseDir, { intermediates: true });
+      }
+    } catch (error) {
+      console.error("Error creating base directory:", error);
     }
   };
 
-  return(
+  const handleCreateFolder = async () => {
+    if (await createDirectory(folderName)) {
+      updateDirectoryList();
+    }
+    setFolderName("");
+    setModalVisible(false); // Close the modal
+  };
+
+  const createDirectory = async (folderName) => {
+    const dirUri = `${baseDir}${folderName}`;
+    try {
+      const info = await FileSystem.getInfoAsync(dirUri);
+      if (!info.exists) {
+        await FileSystem.makeDirectoryAsync(dirUri, { intermediates: true });
+        return true;
+      } else {
+        console.log("Directory already exists!");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error creating directory:", error);
+      return false;
+    }
+  };
+
+  const listDirectories = async () => {
+    try {
+      const result = await FileSystem.readDirectoryAsync(baseDir);
+      return result;
+    } catch (error) {
+      console.error("Failed to read directory:", error);
+      return [];
+    }
+  };
+
+  const deleteDirectory = async (folderName) => {
+    const dirUri = `${baseDir}${folderName}`;
+    try {
+      const info = await FileSystem.getInfoAsync(dirUri);
+      if (info.exists) {
+        await FileSystem.deleteAsync(dirUri, { idempotent: true });
+      } else {
+        console.log("Directory does not exist!");
+      }
+    } catch (error) {
+      console.error("Error deleting directory:", error);
+    }
+  };
+
+  const updateDirectoryList = async () => {
+    const dirs = await listDirectories();
+    setDirectories(dirs);
+  };
+
+  return (
     <View style={styles.container}>
-      <Text>This is Documents!</Text>
-      <TextInput
-        placeholder="Enter folder name"
-        value={folderName}
-        onChangeText={setFolderName}
-        style={styles.textInput}
-      />
-      <Button
-        title="Create Folder"
-        onPress={createFolder}
-      />
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      <Icon name="folder" size={30} color="#000" />
+      <ScrollView style={styles.directoryList}>
+        {directories.map((dir, index) => (
+          <View key={index} style={styles.directoryItem}>
+            <Icon name="folder" size={40} color="#000" />
+            <Text style={styles.folderText}>{dir}</Text>
+            <TouchableOpacity onPress={() => deleteDirectory(dir)}>
+            <FontAwesome5 name="ellipsis-v" color={"black"} size={15} />
+            </TouchableOpacity>
+            
+          </View>
+        ))}
+      </ScrollView>
+      <TouchableOpacity
+        onPress={() => setModalVisible(true)}
+        style={styles.plusButton}
+      >
+        <AddButton  name="pluscircleo" color={"blue"} size={60} />
+      </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter folder name"
+              value={folderName}
+              onChangeText={setFolderName}
+            />
+            <Button title="Create Folder" onPress={handleCreateFolder} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    padding: 10,
+    paddingTop: 20,
   },
-  textInput: {
+  directoryList: {
+    width: "100%",
+    maxHeight: "90%",
+    flex: 1,
+  },
+  plusButton: {
+    position: "absolute",
+    bottom: 0,
+    right: 15,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  input: {
     height: 40,
-    borderColor: 'gray',
+    margin: 12,
     borderWidth: 1,
-    width: 200,
-    marginBottom: 10,
+    padding: 10,
+    width: "80%",
   },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
+  directoryItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
+    width: "100%", // Ensure full width is used
+  },
+  folderText: {
+    flex: 1, // Take up all available space
+    marginLeft: 20, // Space between the icon and the text
+    fontSize: 18,
   },
 });
 
-export default Documents;
+export default FolderCreator;
