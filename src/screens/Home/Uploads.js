@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, Button } from "react-native";
-import DocumentPicker from 'react-native-document-picker';
-import RNFS from 'react-native-fs';
+
 
 function Uploads () {
   // const uploadFile = async () => {

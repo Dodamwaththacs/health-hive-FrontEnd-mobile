@@ -6,8 +6,8 @@ import Reset from '../screens/Reset';
 import OTPScreen from '../screens/OTPScreen';
 import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import LoadingScreen from '../screens/LoadingScreen';
-import TempScreen from '../screens/TempScreen';
 import DrawerNavigator from './DrawerNavigator';
+import Dashboard from '../screens/Home/Dashboard';
 
 
 
@@ -23,7 +23,7 @@ function StackNavigation() {
         <Stack.Screen name="OTPScreen" component={OTPScreen} options={{ headerShown:false}}/>
         <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} options={{ headerShown:false}}/>
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} options={{ headerShown:false}}/>
-        <Stack.Screen name="TempScreen" component={TempScreen} options={{ headerShown:false}}/>
+        <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown:false}}/>
         <Stack.Screen name='DrawerNavigator' component={DrawerNavigator} options={{ headerShown: false }} />
       </Stack.Navigator>
     

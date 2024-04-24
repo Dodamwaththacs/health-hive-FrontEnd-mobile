@@ -8,7 +8,6 @@ const App = () => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        {/* You should replace require('./path-to-your-logo.png') with the actual path to your logo image */}
         <Image source={require('../assets/logo.png')} style={styles.logo} />
       </View>
       <Text style={styles.title}>HealthHive</Text>
@@ -28,38 +27,37 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff', // Change this to the background color of your screen
+    backgroundColor: '#fff', 
   },
   logoContainer: {
-    // If you have specific dimensions for your logo, set them here
- // Adjust as needed
+  
     marginBottom: 30, 
   },
   logo: {
-    width: 100, // Adjust as needed
-    height: 100, // Adjust as needed
-    resizeMode: 'contain', // or 'cover' depending on your preference
+    width: 100, 
+    height: 100, 
+    resizeMode: 'contain', 
   },
   title: {
-    fontSize: 24, // Adjust as needed
+    fontSize: 24, 
     fontWeight: 'bold',
-    color: '#000', // Change this to the color of your title text
-    marginBottom: 4, // Adjust as needed
+    color: '#000', 
+    marginBottom: 4, 
   },
   subtitle: {
-    fontSize: 18, // Adjust as needed
-    color: '#000', // Change this to the color of your subtitle text
-    marginBottom: 30, // Adjust as needed
+    fontSize: 18, 
+    color: '#000', 
+    marginBottom: 30, 
   },
   button: {
-    paddingHorizontal: 20, // Adjust as needed
-    paddingVertical: 10, // Adjust as needed
-    backgroundColor: '#0000ff', // Change this to the color of your button
-    borderRadius: 40, // Adjust as needed for rounded corners
+    paddingHorizontal: 20, 
+    paddingVertical: 10, 
+    backgroundColor: '#0000ff', 
+    borderRadius: 40, 
   },
   buttonText: {
-    fontSize: 20, // Adjust as needed
-    color: '#fff', // Change this to the color of your button text
+    fontSize: 20, 
+    color: '#fff', 
     
   },
 });

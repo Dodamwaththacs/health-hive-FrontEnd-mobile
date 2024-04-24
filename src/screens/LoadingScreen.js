@@ -32,7 +32,7 @@ const LoadingScreen = () => {
 
     // Navigate to Dashboard screen after 3 seconds
     const timeout = setTimeout(() => {
-      navigation.navigate("TempScreen");
+      navigation.navigate("DrawerNavigator");
     }, 3000);
 
     // Clear the timeout to avoid memory leaks
