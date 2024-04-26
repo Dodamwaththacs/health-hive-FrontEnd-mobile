@@ -1,105 +1,156 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import * as ImagePicker from 'expo-image-picker'; // Ensure you have expo-image-picker installed
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 const UserProfile = ({ route, navigation }) => {
-  const { user } = route.params;
+  // Assuming you will handle the state accordingly for each field
   const [profileData, setProfileData] = useState({
-    profilePic: user.profilePic || 'default_uri_if_needed',
-    weight: user.weight || '', // Provide a default value
-    contactNumber: user.contactNumber,
-    address: user.address,
+    profilePic: '../../assets/profilePic.jpg', // You need to replace this with your actual default image URI
+    firstName: '',
+    lastName: '',
+    NIC: '',
+    gender: '',
+    dateOfBirth: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    district: '',
+    weight: '',
+    height: '',
   });
 
   const handleSave = () => {
-    console.log('Profile data saved:', profileData);
-    navigation.goBack();
+    // Implement the save functionality here, such as sending the data to a backend service
+    Alert.alert('Profile Updated', 'Your profile details have been saved successfully.');
   };
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
-    if (!result.canceled && result.uri) {
+    if (!result.cancelled) {
       setProfileData({ ...profileData, profilePic: result.uri });
     }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <TouchableOpacity onPress={pickImage}>
         <Image source={{ uri: profileData.profilePic }} style={styles.profilePic} />
       </TouchableOpacity>
-      <Text style={styles.label}>Username (cannot be changed):</Text>
-      <Text style={styles.inputFixed}>{user.username}</Text>
-      <Text style={styles.label}>Name (cannot be changed):</Text>
-      <Text style={styles.inputFixed}>{user.name}</Text>
-      <Text style={styles.label}>Date of Birth (cannot be changed):</Text>
-      <Text style={styles.inputFixed}>{user.dob}</Text>
-      <Text style={styles.label}>Weight (kg):</Text>
       <TextInput
         style={styles.input}
-        value={profileData.weight.toString()} // Ensure toString is safe to call
+        onChangeText={(text) => setProfileData({ ...profileData, firstName: text })}
+        value={profileData.firstName}
+        placeholder="First Name"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setProfileData({ ...profileData, lastName: text })}
+        value={profileData.lastName}
+        placeholder="Last Name"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setProfileData({ ...profileData, NIC: text })}
+        value={profileData.NIC}
+        placeholder="NIC"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setProfileData({ ...profileData, gender: text })}
+        value={profileData.gender}
+        placeholder="Gender"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setProfileData({ ...profileData, dateOfBirth: text })}
+        value={profileData.dateOfBirth}
+        placeholder="Date of Birth"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setProfileData({ ...profileData, addressLine1: text })}
+        value={profileData.addressLine1}
+        placeholder="Address Line 1"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setProfileData({ ...profileData, addressLine2: text })}
+        value={profileData.addressLine2}
+        placeholder="Address Line 2"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setProfileData({ ...profileData, city: text })}
+        value={profileData.city}
+        placeholder="City"
+      />
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setProfileData({ ...profileData, district: text })}
+        value={profileData.district}
+        placeholder="District"
+      />
+      <TextInput
+        style={styles.input}
         onChangeText={(text) => setProfileData({ ...profileData, weight: text })}
+        value={profileData.weight}
+        placeholder="Weight"
         keyboardType="numeric"
       />
-      <Text style={styles.label}>Contact Number:</Text>
       <TextInput
         style={styles.input}
-        value={profileData.contactNumber}
-        onChangeText={(text) => setProfileData({ ...profileData, contactNumber: text })}
-        keyboardType="phone-pad"
+        onChangeText={(text) => setProfileData({ ...profileData, height: text })}
+        value={profileData.height}
+        placeholder="Height"
+        keyboardType="numeric"
       />
-      <Text style={styles.label}>Address:</Text>
-      <TextInput
-        style={styles.input}
-        value={profileData.address}
-        onChangeText={(text) => setProfileData({ ...profileData, address: text })}
-      />
-      <Button title="Save Changes" onPress={handleSave} />
-    </View>
+      <TouchableOpacity style={styles.button} onPress={handleSave}>
+        <Text style={styles.buttonText}>Save</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
   },
   profilePic: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 20,
-    borderColor: '#ccc',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    alignSelf: 'center',
+    marginVertical: 20,
     borderWidth: 1,
+    borderColor: 'black', // Change this as needed to match your UI design
   },
   input: {
-    width: '90%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 20,
+    backgroundColor: '#e9e9e9', // Color for the input field backgrounds
+    borderRadius: 5, // Rounded corners for input fields
+    padding: 15,
+    marginVertical: 10,
+    marginHorizontal: 20,
+    fontSize: 16, // Adjust the font size as necessary
   },
-  inputFixed: {
-    width: '90%',
-    padding: 10,
-    marginBottom: 20,
-    color: '#666',
-    backgroundColor: '#e9e9e9',
+  button: {
+    backgroundColor: '#007bff', // Button color
+    padding: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 10,
+    marginHorizontal: 20,
   },
-  label: {
-    alignSelf: 'flex-start',
-    marginLeft: '5%',
-    marginTop: 10,
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16, // Adjust the font size as necessary
   },
 });
 

@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, Dimensions, FlatList } from "react-native";
+import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
-const UserProfileCard = ({ user }) => {
+const UserProfileCard = ({ user, onPress }) => {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
       <Image
         source={require("../../assets/profilePic.jpg")}
         style={styles.photo}
@@ -13,7 +13,7 @@ const UserProfileCard = ({ user }) => {
         <Text style={styles.greeting}>Hello, </Text>
         <Text style={styles.name}>{user.name}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -66,7 +66,7 @@ const ChartsCard = () => {
   );
 };
 
-const ListCard = ({ documents }) => {
+const ListCard = ({ documents, navigation }) => {
   const renderItem = ({ item }) => (
     <View style={styles.item}>
       <Text style={styles.title}>{item.name}</Text>
@@ -78,7 +78,8 @@ const ListCard = ({ documents }) => {
     <FlatList
       ListHeaderComponent={
         <>
-          <UserProfileCard user={{ name: "chamika" }} />
+          <UserProfileCard user={{ name: "chamika" }} onPress={() => navigation.navigate('UserProfile', { user: { /* user data */ } })
+} />
           <GreetCard />
           <ChartsCard />
           <Text style={styles.textHeader}>Document List</Text>
@@ -92,7 +93,7 @@ const ListCard = ({ documents }) => {
   );
 };
 
-function Dashboard() {
+function Dashboard({ navigation }) {
   const documents = [
     { id: 1, name: "Document 1", uploadDate: "2024-04-14" },
     { id: 2, name: "Document 2", uploadDate: "2024-04-13" },
@@ -105,7 +106,7 @@ function Dashboard() {
   // Sort the documents by uploadDate in descending order and take the first 5
   const recentDocuments = documents.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)).slice(0, 5);
 
-  return <ListCard documents={recentDocuments} />;
+  return <ListCard documents={recentDocuments} navigation={navigation} />;
 }
 
 const styles = StyleSheet.create({

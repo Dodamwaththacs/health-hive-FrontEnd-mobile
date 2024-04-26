@@ -8,6 +8,7 @@ import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import LoadingScreen from '../screens/LoadingScreen';
 import DrawerNavigator from './DrawerNavigator';
 import Dashboard from '../screens/Home/Dashboard';
+import UserProfile from '../screens/Home/UserProfile';
 
 
 
@@ -24,6 +25,7 @@ function StackNavigation() {
         <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} options={{ headerShown:false}}/>
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} options={{ headerShown:false}}/>
         <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown:false}}/>
+        <Stack.Screen name="UserProfile" component={UserProfile} options={{ title: 'Edit Profile' }} />
         <Stack.Screen name='DrawerNavigator' component={DrawerNavigator} options={{ headerShown: false }} />
       </Stack.Navigator>
     

@@ -1,7 +1,7 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import Home from './screens/Home'; // Import Home from the new file
-import Profile from './screens/Profile'; // Assuming Profile is also in a separate file
+import Home from './screens/Home';
+import UserProfile from './screens/UserProfile'; 
 
 const Drawer = createDrawerNavigator();
 
@@ -9,7 +9,7 @@ function MainContainer() {
   return (
     <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen name="Home" component={Home}  />
-      <Drawer.Screen name="Profile" component={Profile}  />
+      <Drawer.Screen name="UserProfile" component={UserProfile}  />
     </Drawer.Navigator>
   );
 }

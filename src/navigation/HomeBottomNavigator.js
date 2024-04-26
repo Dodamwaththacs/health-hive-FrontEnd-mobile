@@ -7,7 +7,6 @@ import Documents from "../screens/Home/Documents";
 import Uploads from "../screens/Home/Uploads";
 import Search from "../screens/Home/Search";
 
-import Profile from '../screens/Profile'; // Assuming Profile is also in a separate file
 
 const Tab = createBottomTabNavigator();
 
