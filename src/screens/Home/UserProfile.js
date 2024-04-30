@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  ScrollView,
-  Alert,
-  Modal,
-  Button
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert, Modal, Button
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 
 const UserProfile = ({ route, navigation }) => {
   const [userData, setUserData] = useState({
-    name: 'Bhagya',
-    email: 'bhagya.@example.com',
+    fullName: 'Bhagya',
+    email: 'bhagya@example.com',
     dateOfBirth: '1990-01-01',
     gender: 'Female',
     nic: '123456789V',
     address: '1234 Main St',
     contactNumber: '555-1234',
+    emergencyContact: '555-5678',
+  });
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState({
+    address: userData.address,
+    contactNumber: userData.contactNumber,
+    emergencyContact: userData.emergencyContact,
   });
   const [profilePicUri, setProfilePicUri] = useState(null);
   const [imageActionModalVisible, setImageActionModalVisible] = useState(false);
@@ -68,6 +66,28 @@ const UserProfile = ({ route, navigation }) => {
     setImageActionModalVisible(true);
   };
 
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+  };
+
+  const handleSaveChanges = () => {
+    Alert.alert(
+      "Confirm Changes",
+      "Are you sure you want to save these changes?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Confirm",
+          onPress: () => {
+            setUserData({ ...userData, ...editData });
+            setEditMode(false);
+            Alert.alert('Changes Saved', 'Your contact information has been updated successfully.');
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Modal
@@ -95,7 +115,7 @@ const UserProfile = ({ route, navigation }) => {
       </Modal>
 
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => openImageActions()}>
+        <TouchableOpacity onPress={openImageActions}>
           <Image
             source={profilePicUri ? { uri: profilePicUri } : require('../../assets/profilePic.jpg')}
             style={styles.profilePic}
@@ -110,8 +130,17 @@ const UserProfile = ({ route, navigation }) => {
         <Text style={styles.infoText}>Date of Birth: {userData.dateOfBirth}</Text>
         <Text style={styles.infoText}>NIC: {userData.nic}</Text>
         <Text style={styles.infoText}>Gender: {userData.gender}</Text>
-        <Text style={styles.infoText}>Address: {userData.address}</Text>
-        <Text style={styles.infoText}>Contact: {userData.contactNumber}</Text>
+      </View>
+
+      <View style={styles.contactInfoContainer}>
+        <Text style={styles.sectionTitle}>Contact Information</Text>
+        <TouchableOpacity onPress={toggleEditMode} style={styles.editButton}>
+          <Ionicons name="pencil" size={24} color="black" />
+        </TouchableOpacity>
+        <TextInput style={styles.editableText} value={editData.address} editable={editMode} onChangeText={(text) => setEditData({ ...editData, address: text })} />
+        <TextInput style={styles.editableText} value={editData.contactNumber} editable={editMode} onChangeText={(text) => setEditData({ ...editData, contactNumber: text })} />
+        <TextInput style={styles.editableText} value={editData.emergencyContact} editable={editMode} onChangeText={(text) => setEditData({ ...editData, emergencyContact: text })} />
+        {editMode && <Button title="Save Changes" onPress={handleSaveChanges} />}
       </View>
     </ScrollView>
   );
@@ -183,6 +212,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#e9e9ef',
     padding: 10,
     borderRadius: 5,
+  },
+  contactInfoContainer: {
+    padding: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  editableText: {
+    fontSize: 16,
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+  },
+  editButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 10,
   }
 });
 
