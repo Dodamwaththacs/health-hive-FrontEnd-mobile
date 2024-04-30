@@ -78,7 +78,7 @@ const ListCard = ({ documents, navigation }) => {
     <FlatList
       ListHeaderComponent={
         <>
-          <UserProfileCard user={{ name: "chamika" }} onPress={() => navigation.navigate('UserProfile', { user: { /* user data */ } })
+          <UserProfileCard user={{ name: "Bhagya" }} onPress={() => navigation.navigate('UserProfile', { user: { /* user data */ } })
 } />
           <GreetCard />
           <ChartsCard />
