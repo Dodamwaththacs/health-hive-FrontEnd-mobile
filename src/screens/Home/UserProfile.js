@@ -4,20 +4,18 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios'; // Ensure axios is imported to make API calls
 
-
-
-  const UserProfile = ({ route, navigation }) => {
-    // Retrieve user data from navigation parameters
-    const { userData } = route.params;
+const UserProfile = ({ route, navigation }) => {
+  const { userData } = route.params;
   
-    const [user, setUser] = useState(userData);
-    const [editMode, setEditMode] = useState(false); 
-    const [editData, setEditData] = useState({
-      telephoneNumber: userData.telephoneNumber || '',
-      emergencyContactName: userData.emergencyContactName || '',
-      emergencyContactNumber: userData.emergencyContactNumber || '',
-    });
+  const [user, setUser] = useState(userData);
+  const [editMode, setEditMode] = useState(false); 
+  const [editData, setEditData] = useState({
+    telephoneNumber: userData.telephoneNumber || '',
+    emergencyContactName: userData.emergencyContactName || '',
+    emergencyContactNumber: userData.emergencyContactNumber || '',
+  });
   const [profilePicUri, setProfilePicUri] = useState(null);
   const [imageActionModalVisible, setImageActionModalVisible] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
@@ -67,7 +65,8 @@ import { Ionicons } from '@expo/vector-icons';
     setEditMode(!editMode);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
+    const updatedUser = { ...user, ...editData };
     Alert.alert(
       "Confirm Changes",
       "Are you sure you want to save these changes?",
@@ -75,10 +74,16 @@ import { Ionicons } from '@expo/vector-icons';
         { text: "Cancel", style: "cancel" },
         {
           text: "Confirm",
-          onPress: () => {
-            setUserData({ ...userData, ...editData });
-            setEditMode(false);
-            Alert.alert('Changes Saved', 'Your contact information has been updated successfully.');
+          onPress: async () => {
+            try {
+              const response = await axios.put(`http://192.168.101.43:33000/api/users/email/${user.id}`, updatedUser);
+              setUser(updatedUser);  // Update local state with the response data if necessary
+              setEditMode(false);
+              Alert.alert('Changes Saved', 'Your contact information has been updated successfully.');
+            } catch (error) {
+              console.error('Failed to update user data:', error);
+              Alert.alert('Error', 'Failed to update contact information.');
+            }
           },
         },
       ]
@@ -145,14 +150,14 @@ import { Ionicons } from '@expo/vector-icons';
         <TouchableOpacity onPress={openImageActions} style={styles.editIconContainer}>
           <Ionicons name="pencil" size={30} color="white" style={styles.editIcon} />
         </TouchableOpacity>
-        <Text style={styles.nameText}>{userData.fullName}</Text>
+        <Text style={styles.nameText}>{user.fullName}</Text>
       </View>
 
       <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>Email: {userData.email}</Text>
-        <Text style={styles.infoText}>Date of Birth: {userData.dateOfBirth}</Text>
-        <Text style={styles.infoText}>NIC: {userData.nic}</Text>
-        <Text style={styles.infoText}>Gender: {userData.gender}</Text>
+        <Text style={styles.infoText}>Email: {user.email}</Text>
+        <Text style={styles.infoText}>Date of Birth: {user.dateOfBirth}</Text>
+        <Text style={styles.infoText}>NIC: {user.nic}</Text>
+        <Text style={styles.infoText}>Gender: {user.gender}</Text>
       </View>
 
       <View style={styles.contactInfoContainer}>
@@ -185,7 +190,7 @@ import { Ionicons } from '@expo/vector-icons';
           </>
         ) : (
           <>
-            <Text style={styles.infoText}> Your Contact Number:{editData.telephoneNumber || 'Not Provided'}</Text>
+            <Text style={styles.infoText}>Your Contact Number: {editData.telephoneNumber || 'Not Provided'}</Text>
             <Text style={styles.infoText}>Emergency Contact Name: {editData.emergencyContactName || 'Not Provided'}</Text>
             <Text style={styles.infoText}>Emergency Contact: {editData.emergencyContactNumber || 'Not Provided'}</Text>
           </>
@@ -194,7 +199,6 @@ import { Ionicons } from '@expo/vector-icons';
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
