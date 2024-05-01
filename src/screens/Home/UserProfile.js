@@ -24,6 +24,7 @@ const UserProfile = ({ route, navigation }) => {
   });
   const [profilePicUri, setProfilePicUri] = useState(null);
   const [imageActionModalVisible, setImageActionModalVisible] = useState(false);
+  const [photoModalVisible, setPhotoModalVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -88,6 +89,14 @@ const UserProfile = ({ route, navigation }) => {
     );
   };
 
+  const openPhotoModal = () => {
+    setPhotoModalVisible(true);
+  };
+
+  const closePhotoModal = () => {
+    setPhotoModalVisible(false);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Modal
@@ -114,15 +123,33 @@ const UserProfile = ({ route, navigation }) => {
         </View>
       </Modal>
 
+      <Modal
+        visible={photoModalVisible}
+        transparent={true}
+        onRequestClose={closePhotoModal}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Image
+              source={profilePicUri ? { uri: profilePicUri } : require('../../assets/profilePic.jpg')}
+              style={styles.fullSizeProfilePic}
+            />
+            <Button title="Close" onPress={closePhotoModal} />
+          </View>
+        </View>
+      </Modal>
+
       <View style={styles.header}>
-        <TouchableOpacity onPress={openImageActions}>
+        <TouchableOpacity onPress={openPhotoModal}>
           <Image
             source={profilePicUri ? { uri: profilePicUri } : require('../../assets/profilePic.jpg')}
             style={styles.profilePic}
           />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={openImageActions} style={styles.editIconContainer}>
           <Ionicons name="pencil" size={30} color="white" style={styles.editIcon} />
         </TouchableOpacity>
-        <Text style={styles.nameText}>{userData.name}</Text>
+        <Text style={styles.nameText}>{userData.fullName}</Text>
       </View>
 
       <View style={styles.infoContainer}>
@@ -137,10 +164,35 @@ const UserProfile = ({ route, navigation }) => {
         <TouchableOpacity onPress={toggleEditMode} style={styles.editButton}>
           <Ionicons name="pencil" size={24} color="black" />
         </TouchableOpacity>
-        <TextInput style={styles.editableText} value={editData.address} editable={editMode} onChangeText={(text) => setEditData({ ...editData, address: text })} />
-        <TextInput style={styles.editableText} value={editData.contactNumber} editable={editMode} onChangeText={(text) => setEditData({ ...editData, contactNumber: text })} />
-        <TextInput style={styles.editableText} value={editData.emergencyContact} editable={editMode} onChangeText={(text) => setEditData({ ...editData, emergencyContact: text })} />
-        {editMode && <Button title="Save Changes" onPress={handleSaveChanges} />}
+        {editMode ? (
+          <>
+            <TextInput
+              style={styles.editableText}
+              value={editData.address}
+              onChangeText={(text) => setEditData({...editData, address: text})}
+              placeholder="Address..."
+            />
+            <TextInput
+              style={styles.editableText}
+              value={editData.contactNumber}
+              onChangeText={(text) => setEditData({...editData, contactNumber: text})}
+              placeholder="Contact Number..."
+            />
+            <TextInput
+              style={styles.editableText}
+              value={editData.emergencyContact}
+              onChangeText={(text) => setEditData({...editData, emergencyContact: text})}
+              placeholder="Emergency Contact Number..."
+            />
+            <Button title="Save Changes" onPress={handleSaveChanges} />
+          </>
+        ) : (
+          <>
+            <Text style={styles.infoText}>Address: {editData.address || 'Not Provided'}</Text>
+            <Text style={styles.infoText}>Contact Number: {editData.contactNumber || 'Not Provided'}</Text>
+            <Text style={styles.infoText}>Emergency Contact: {editData.emergencyContact || 'Not Provided'}</Text>
+          </>
+        )}
       </View>
     </ScrollView>
   );
@@ -160,14 +212,15 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
   },
-  editIcon: {
+  editIconContainer: {
     position: 'absolute',
-    right: 0,
-    bottom: 0,
+    right: 150,
+    bottom: 30,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 6,
     borderRadius: 15,
   },
+  editIcon: {},
   nameText: {
     fontSize: 18,
     marginTop: 10,
@@ -205,6 +258,8 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     padding: 20,
+  
+    
   },
   infoText: {
     fontSize: 16,
@@ -217,7 +272,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   editableText: {
@@ -229,10 +284,16 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     backgroundColor: '#fff',
   },
+  fullSizeProfilePic: {
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+  },
   editButton: {
-    alignSelf: 'flex-end',
-    marginBottom: 10,
-  }
+    position: 'absolute',
+    right: 20,
+    top: 20,
+  },
 });
 
 export default UserProfile;
