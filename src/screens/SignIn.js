@@ -39,6 +39,7 @@ const Signin = () => {
 
   //     if (response.status === 200) {
   //       console.log("Login successful..");
+  //       // After successful login, navigate to the next screen
   //       navigation.navigate("LoadingScreen");
   //     } else {
   //       console.log("Login failed..");
@@ -62,7 +63,7 @@ const Signin = () => {
           style={styles.input}
           onChangeText={setEmail}
           value={email}
-          placeholder="Email/Phone No"
+          placeholder="Email"
           keyboardType="email-address"
         />
         <View style={styles.input}>

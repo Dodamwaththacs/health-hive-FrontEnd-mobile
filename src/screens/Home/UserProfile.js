@@ -5,23 +5,19 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 
-const UserProfile = ({ route, navigation }) => {
-  const [userData, setUserData] = useState({
-    fullName: 'Bhagya',
-    email: 'bhagya@example.com',
-    dateOfBirth: '1990-01-01',
-    gender: 'Female',
-    nic: '123456789V',
-    address: '1234 Main St',
-    contactNumber: '555-1234',
-    emergencyContact: '555-5678',
-  });
-  const [editMode, setEditMode] = useState(false);
-  const [editData, setEditData] = useState({
-    address: userData.address,
-    contactNumber: userData.contactNumber,
-    emergencyContact: userData.emergencyContact,
-  });
+
+
+  const UserProfile = ({ route, navigation }) => {
+    // Retrieve user data from navigation parameters
+    const { userData } = route.params;
+  
+    const [user, setUser] = useState(userData);
+    const [editMode, setEditMode] = useState(false); 
+    const [editData, setEditData] = useState({
+      telephoneNumber: userData.telephoneNumber || '',
+      emergencyContactName: userData.emergencyContactName || '',
+      emergencyContactNumber: userData.emergencyContactNumber || '',
+    });
   const [profilePicUri, setProfilePicUri] = useState(null);
   const [imageActionModalVisible, setImageActionModalVisible] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
@@ -166,31 +162,32 @@ const UserProfile = ({ route, navigation }) => {
         </TouchableOpacity>
         {editMode ? (
           <>
-            <TextInput
+           <TextInput
               style={styles.editableText}
-              value={editData.address}
-              onChangeText={(text) => setEditData({...editData, address: text})}
-              placeholder="Address..."
+              value={editData.telephoneNumber}
+              onChangeText={(text) => setEditData({...editData, telephoneNumber: text})}
+              placeholder="Your Contact Number..."
             />
             <TextInput
               style={styles.editableText}
-              value={editData.contactNumber}
-              onChangeText={(text) => setEditData({...editData, contactNumber: text})}
-              placeholder="Contact Number..."
+              value={editData.emergencyContactName}
+              onChangeText={(text) => setEditData({...editData, emergencyContactName: text})}
+              placeholder="Emergency Contact Name..."
             />
+           
             <TextInput
               style={styles.editableText}
-              value={editData.emergencyContact}
-              onChangeText={(text) => setEditData({...editData, emergencyContact: text})}
+              value={editData.emergencyContactNumber}
+              onChangeText={(text) => setEditData({...editData, emergencyContactNumber: text})}
               placeholder="Emergency Contact Number..."
             />
             <Button title="Save Changes" onPress={handleSaveChanges} />
           </>
         ) : (
           <>
-            <Text style={styles.infoText}>Address: {editData.address || 'Not Provided'}</Text>
-            <Text style={styles.infoText}>Contact Number: {editData.contactNumber || 'Not Provided'}</Text>
-            <Text style={styles.infoText}>Emergency Contact: {editData.emergencyContact || 'Not Provided'}</Text>
+            <Text style={styles.infoText}> Your Contact Number:{editData.telephoneNumber || 'Not Provided'}</Text>
+            <Text style={styles.infoText}>Emergency Contact Name: {editData.emergencyContactName || 'Not Provided'}</Text>
+            <Text style={styles.infoText}>Emergency Contact: {editData.emergencyContactNumber || 'Not Provided'}</Text>
           </>
         )}
       </View>

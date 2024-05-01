@@ -2,13 +2,13 @@ import React from 'react';
 import StackNavigation from './src/navigation/StackNavigation';
 import { NavigationContainer } from '@react-navigation/native';
 import 'react-native-gesture-handler';
-import Uploads from './src/screens/Home/Uploads';
+import Dashboard from './src/screens/Home/Dashboard';
 
 export default function App() {
   return (
     <NavigationContainer>
       <StackNavigation />
     </NavigationContainer>
-    // <Uploads />
+    // <Dashboard/>
   );
 }
