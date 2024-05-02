@@ -16,7 +16,7 @@ const Drawer = createDrawerNavigator();
 
 function DrawerNaviagtor() {
   return (
-    <Drawer.Navigator initialRouteName="Home"
+    <Drawer.Navigator initialRouteName="Health Hive"
       screenOptions={{
         headerStyle: { 
           backgroundColor: '#1921E4',
@@ -43,7 +43,7 @@ function DrawerNaviagtor() {
 
       }}
     >
-      <Drawer.Screen name="Home" component={Home} />
+      <Drawer.Screen name="Health Hive" component={Home} />
       <Drawer.Screen name="Scan" component={Scan}  />
       <Drawer.Screen name="QR Code" component={QR_Code}  />
       <Drawer.Screen name="Notification" component={Notification}  />

@@ -38,7 +38,7 @@ const GreetCard = () => {
 const fetchDataByEmail = async () => {
   const email = "bmudunkotuwa@gmail.com"; 
   try {
-    const response = await axios.get(`http://192.168.101.43:33000/api/users/email/${email}`);
+    const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
     console.log('Data fetched successfully:', response.data);
     return response.data; // Return the fetched data
   } catch (error) {

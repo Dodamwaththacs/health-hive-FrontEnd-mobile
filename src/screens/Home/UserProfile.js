@@ -20,6 +20,16 @@ const UserProfile = ({ route, navigation }) => {
   const [imageActionModalVisible, setImageActionModalVisible] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
 
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`http://10.10.18.247:33000/api/users/${user.id}`);
+      console.log('Data fetched successfully:', response.data); // Update the user state with fetched data
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      Alert.alert('Error', 'Failed to fetch updated information.');
+    }
+  };
+
   useEffect(() => {
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -76,10 +86,13 @@ const UserProfile = ({ route, navigation }) => {
           text: "Confirm",
           onPress: async () => {
             try {
-              const response = await axios.put(`http://192.168.101.43:33000/api/users/email/${user.id}`, updatedUser);
+              const response = await axios.put(`http://10.10.18.247:33000/api/users/${user.id}`, updatedUser);
               setUser(updatedUser);  // Update local state with the response data if necessary
               setEditMode(false);
-              Alert.alert('Changes Saved', 'Your contact information has been updated successfully.');
+              Alert.alert('Changes Saved', 'Your contact information has been updated successfully.', [
+                { text: "OK", onPress: fetchUserData }  // Fetch latest data when user presses OK
+              ]);
+              
             } catch (error) {
               console.error('Failed to update user data:', error);
               Alert.alert('Error', 'Failed to update contact information.');
@@ -89,6 +102,7 @@ const UserProfile = ({ route, navigation }) => {
       ]
     );
   };
+
 
   const openPhotoModal = () => {
     setPhotoModalVisible(true);

@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import axios from 'axios';
 
 const Signin = () => {
   const [email, setEmail] = useState("");
@@ -17,42 +18,47 @@ const Signin = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigation = useNavigation();
 
-  // const handleSignIn = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       "http://192.168.101.43:33000/api/auth/login",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           email,
-  //           password,
-  //         }),
-  //       }
-  //     );
-  //     console.log("connection successful..");
-  //     const jsonResponse = await response.json();
-  //     console.log("jsonResponse..");
-  //     console.log(jsonResponse);
+  
 
-  //     if (response.status === 200) {
-  //       console.log("Login successful..");
-  //       // After successful login, navigate to the next screen
-  //       navigation.navigate("LoadingScreen");
-  //     } else {
-  //       console.log("Login failed..");
-  //       Alert.alert(
-  //         "Login failed",
-  //         jsonResponse.message || "Please check your credentials and try again."
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.log("this is catch block..");
-  //     Alert.alert("Login failed..", error.message || "Something went wrong.");
-  //   }
-  // };
+  const handleSignIn = async () => {
+    try {
+      const response = await axios.post(
+        "http://10.10.18.247:33000/api/auth/login",
+        {
+          email: email,  
+          password: password  
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      console.log("connection successful..");
+      console.log("jsonResponse..");
+      console.log(response.data);
+  
+      if (response.status === 200) {
+        console.log("Login successful..");
+        // After successful login, navigate to the next screen
+        navigation.navigate("LoadingScreen");
+      } else {
+        console.log("Login failed..");
+        Alert.alert(
+          "Login failed",
+          response.data.message || "Please check your credentials and try again."
+        );
+      }
+    } catch (error) {
+      console.log("this is catch block..");
+      // Axios wraps the error response in error.response (if available)
+      const errorMessage = error.response ? 
+        error.response.data.message : 
+        (error.message || "Something went wrong.");
+      Alert.alert("Login failed..", errorMessage);
+    }
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -85,7 +91,7 @@ const Signin = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("LoadingScreen")}>
+      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Reset")}>
