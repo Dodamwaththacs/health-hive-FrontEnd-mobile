@@ -1,14 +1,14 @@
 import React from 'react';
-import StackNavigation from './src/navigation/StackNavigation';
 import { NavigationContainer } from '@react-navigation/native';
-import 'react-native-gesture-handler';
-import Dashboard from './src/screens/Home/Dashboard';
+import { EmailProvider } from './src/EmailContext';
+import StackNavigation from './src/navigation/StackNavigation';
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <StackNavigation />
-    </NavigationContainer>
-    // <Dashboard/>
+    <EmailProvider>
+      <NavigationContainer>
+        <StackNavigation />
+      </NavigationContainer>
+    </EmailProvider>
   );
 }

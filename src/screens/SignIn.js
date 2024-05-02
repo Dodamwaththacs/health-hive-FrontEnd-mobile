@@ -11,12 +11,14 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from 'axios';
+import { useEmail } from "../EmailContext";
 
 const Signin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigation = useNavigation();
+  const { setEmail: setEmailContext } = useEmail();
 
   
 
@@ -40,6 +42,7 @@ const Signin = () => {
   
       if (response.status === 200) {
         console.log("Login successful..");
+        setEmailContext(email);
         // After successful login, navigate to the next screen
         navigation.navigate("LoadingScreen");
       } else {

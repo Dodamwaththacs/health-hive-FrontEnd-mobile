@@ -2,6 +2,9 @@ import React from "react";
 import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import axios from 'axios';
+import { useEmail } from "../../EmailContext";
+;
+
 
 const UserProfileCard = ({ user, onPress }) => {
   if (!user) {
@@ -35,8 +38,7 @@ const GreetCard = () => {
   );
 };
 
-const fetchDataByEmail = async () => {
-  const email = "bmudunkotuwa@gmail.com"; 
+const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
     console.log('Data fetched successfully:', response.data);
@@ -114,10 +116,11 @@ const ListCard = ({ documents, user, navigation }) => {
 
 const Dashboard = ({ navigation }) => {
   const [user, setUser] = React.useState(null);
+  const { email } = useEmail();
 
   React.useEffect(() => {
     const getUserData = async () => {
-      const userData = await fetchDataByEmail();
+      const userData = await fetchDataByEmail(email);
       if (userData) {
         setUser(userData);
       }

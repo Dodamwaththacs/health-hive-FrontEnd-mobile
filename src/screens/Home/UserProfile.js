@@ -5,9 +5,12 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'; // Ensure axios is imported to make API calls
+import { useEmail } from '../../EmailContext';
+
 
 const UserProfile = ({ route, navigation }) => {
-  const { userData } = route.params;
+    const { userData } = route.params;
+    const { email } = useEmail();
   
   const [user, setUser] = useState(userData);
   const [editMode, setEditMode] = useState(false); 
