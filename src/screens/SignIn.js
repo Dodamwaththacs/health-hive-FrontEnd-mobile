@@ -54,11 +54,13 @@ const Signin = () => {
       }
     } catch (error) {
       console.log("this is catch block..");
-      // Axios wraps the error response in error.response (if available)
-      const errorMessage = error.response ? 
-        error.response.data.message : 
-        (error.message || "Something went wrong.");
-      Alert.alert("Login failed..", errorMessage);
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Something went wrong.";
+        Alert.alert("Login failed..", errorMessage);
+      } else {
+        // Server is unreachable or backend issue
+        Alert.alert("Server Error", "Unable to connect to the server. Please try again later.");
+      }
     }
   };
   

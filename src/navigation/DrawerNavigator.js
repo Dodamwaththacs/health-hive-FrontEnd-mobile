@@ -36,6 +36,8 @@ function DrawerNaviagtor() {
               width: 50, 
               height: 50, 
               margin:15 ,
+              marginRight: 20,
+              marginBottom: 30,
             }}
             source={Logo}
           />

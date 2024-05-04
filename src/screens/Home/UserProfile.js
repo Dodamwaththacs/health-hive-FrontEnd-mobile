@@ -203,7 +203,7 @@ const UserProfile = ({ route, navigation }) => {
               onChangeText={(text) => setEditData({...editData, emergencyContactNumber: text})}
               placeholder="Emergency Contact Number..."
             />
-            <Button title="Save Changes" onPress={handleSaveChanges} />
+            <Button color="#1921E4" title="Save Changes" onPress={handleSaveChanges}  />
           </>
         ) : (
           <>

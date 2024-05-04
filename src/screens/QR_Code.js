@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 
 const QR_Code = () => {
-  const text = "https://www.google.com";
+  const text = "bhaya";
   return (
     <View style={styles.qrContainer}>
       {/* Set the size of the QR code here */}

@@ -18,7 +18,13 @@ function HomeBottomNavigator () {
         tabBarInactiveTintColor: 'gray',
         tabBar: '#fff',
         tabBarIconStyle: {
+          borderRadius: 2,
       
+        },
+        tabBarLabelStyle: {
+          fontSize: 12, 
+          fontWeight: 'bold',
+          marginBottom: 8, 
         },
         tabBarStyle: {
           backgroundColor: '#1921E4',
