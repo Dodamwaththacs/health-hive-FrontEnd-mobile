@@ -25,7 +25,7 @@ const Signin = () => {
   const handleSignIn = async () => {
     try {
       const response = await axios.post(
-        "http://10.10.18.247:33000/api/auth/login",
+        "http://192.168.1.7:33000/api/auth/login",
         {
           email: email,  
           password: password  
@@ -96,7 +96,7 @@ const Signin = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("LoadingScreen")}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Reset")}>

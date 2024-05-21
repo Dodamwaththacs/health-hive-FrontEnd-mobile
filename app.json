@@ -4,7 +4,6 @@
     "slug": "health-hive",
     "version": "1.0.0",
     "orientation": "portrait",
-    
     "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "contain",
@@ -19,9 +18,14 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.chamika_3131.healthhive"
     },
-    "web": {
+    "web": {},
+    "extra": {
+      "eas": {
+        "projectId": "bc6c731b-d387-40a6-8f5a-7ae57d354a40"
+      }
     }
   }
 }

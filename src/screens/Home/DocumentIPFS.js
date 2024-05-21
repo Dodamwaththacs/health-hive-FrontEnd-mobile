@@ -6,7 +6,7 @@ import axios from 'axios';
 export default function App() {
   const testConnection = async () => {
     try {
-      const response = await axios.get('http://192.168.254.140:33000/');
+      const response = await axios.get('http://192.168.1.7:33000/');
       Alert.alert('Connection Successful!');
       console.log(response.data);
     } catch (error) {
@@ -35,7 +35,7 @@ export default function App() {
         type: 'application/pdf', // Adjust the file type as needed
       });
   
-      const response = await axios.post('http://192.168.254.140:33000/file/upload', formData, {
+      const response = await axios.post('http://192.168.1.7:33000/file/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
