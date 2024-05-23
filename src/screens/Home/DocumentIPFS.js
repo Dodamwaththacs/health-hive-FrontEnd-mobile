@@ -32,7 +32,7 @@ export default function App() {
       formData.append('file', {
         uri: fileUri,
         name: 'file',
-        type: 'application/pdf', // Adjust the file type as needed
+        type: 'image/jpeg', // Adjust the file type as needed
       });
   
       const response = await axios.post('http://192.168.1.7:33000/file/upload', formData, {
@@ -46,6 +46,17 @@ export default function App() {
       console.error('Error uploading file:', error);
     }
   };
+
+  const ViewPhoto = ({ photo }) => {
+    return (
+      <View>
+        <Image
+          source={{ uri: photo.uri }}
+          style={{ width: 200, height: 200 }}
+        />
+      </View>
+    );
+  }
   
   // Usage
   

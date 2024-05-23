@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome  from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Dashboard from "../screens/Home/Dashboard";
-import Documents from "../screens/Home/Documents";
+import FolderNavigation from "../screens/Home/documents/FolderNavigation";
 import Uploads from "../screens/Home/Uploads";
 import Search from "../screens/Home/Search";
 
@@ -50,7 +50,7 @@ function HomeBottomNavigator () {
 
       <Tab.Screen 
         name="Documents" 
-        component={Documents} 
+        component={FolderNavigation} 
         options={{
           headerShown:false,
           tabBarLabel: 'Documents',

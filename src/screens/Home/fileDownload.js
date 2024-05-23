@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Button, Alert, Linking } from 'react-native';
 import * as FileSystem from 'expo-file-system';
-import { WebView } from 'react-native-webview';
 
 
 
@@ -26,6 +25,14 @@ const FileDownloader = () => {
         setFileUri(fileUri);
         console.log('File downloaded successfully!', fileUri);
         Alert.alert('Success', 'File downloaded successfully!');
+
+        // Open the file with the default PDF viewer
+        const canOpen = await Linking.canOpenURL(fileUri);
+        if (canOpen) {
+          await Linking.openURL(fileUri);
+        } else {
+          Alert.alert('Error', 'Unable to open file');
+        }
       } else {
         Alert.alert('Error', 'Failed to download file');
       }
@@ -57,10 +64,7 @@ const FileDownloader = () => {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Button title="Download File" onPress={() => downloadFile('QmbdmT8JfnFmj5LCoHo6dfoVGThfAdXUWzkpxwq45HJKbx')} />
-      <WebView 
-      source={{ uri: "file:///data/user/0/host.exp.exponent/files/QmbdmT8JfnFmj5LCoHo6dfoVGThfAdXUWzkpxwq45HJKbx"}}
-      style={{ flex: 1, margin: 20}}
-      />
+      
     </View>
   );
 };

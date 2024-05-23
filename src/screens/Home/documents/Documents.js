@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  TextInput,
-  Button,
-  Text,
-  ScrollView,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
+import {View,TextInput,Button,Text,ScrollView,StyleSheet,Modal,TouchableOpacity,
 } from "react-native";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AddButton from "react-native-vector-icons/AntDesign";
-import  FontAwesome5  from "react-native-vector-icons/FontAwesome5";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useNavigation } from "@react-navigation/native";
 
 const baseDir = `${FileSystem.documentDirectory}AppStorage/`;
 
 const FolderCreator = () => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [directories, setDirectories] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     createBaseDirectory();
     updateDirectoryList();
   }, []);
+
+  const handlefolderName = (dir) => {
+    console.log(dir);
+  };
+
+  const handlePress = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
   const createBaseDirectory = async () => {
     try {
@@ -47,6 +50,7 @@ const FolderCreator = () => {
 
   const createDirectory = async (folderName) => {
     const dirUri = `${baseDir}${folderName}`;
+    console.log(dirUri);
     try {
       const info = await FileSystem.getInfoAsync(dirUri);
       if (!info.exists) {
@@ -84,6 +88,30 @@ const FolderCreator = () => {
     } catch (error) {
       console.error("Error deleting directory:", error);
     }
+    setDropdownOpen(false);
+    updateDirectoryList();
+  };
+
+  const renameDirectory = async (oldFolderName, newFolderName) => {
+    const oldDirUri = `${baseDir}${oldFolderName}`;
+    const newDirUri = `${baseDir}${newFolderName}`;
+
+    try {
+      const info = await FileSystem.getInfoAsync(oldDirUri);
+      if (info.exists) {
+        await FileSystem.moveAsync({
+          from: oldDirUri,
+          to: newDirUri,
+        });
+        console.log(
+          `Directory renamed from ${oldFolderName} to ${newFolderName}`
+        );
+      } else {
+        console.log("Directory does not exist!");
+      }
+    } catch (error) {
+      console.error("Error renaming directory:", error);
+    }
   };
 
   const updateDirectoryList = async () => {
@@ -93,24 +121,47 @@ const FolderCreator = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={handlePress} style={styles.editButton}>
+        <Icon name="ellipsis-v" size={40} color="#000" />
+      </TouchableOpacity>
+
       <ScrollView style={styles.directoryList}>
         {directories.map((dir, index) => (
           <View key={index} style={styles.directoryItem}>
-            <Icon name="folder" size={40} color="#000" />
-            <Text style={styles.folderText}>{dir}</Text>
-            <TouchableOpacity onPress={() => deleteDirectory(dir)}>
-            <FontAwesome5 name="ellipsis-v" color={"black"} size={15} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate("file", { folderId: dir})}>
+              <Icon name="folder" size={40} color="#000" />
             </TouchableOpacity>
-            
+            <Text style={styles.folderText}>{dir}</Text>
+
+            {dropdownOpen && (
+              <View style={styles.popButtons}>
+                <TouchableOpacity onPress={() => deleteDirectory(dir)}>
+                  <FontAwesome5
+                    style={styles.popButtonIcon}
+                    name="trash"
+                    size={20}
+                    color="red"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => renameDirectory(dir, "newName")}
+                >
+                  <FontAwesome5 name="edit" size={20} color="blue" />
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         ))}
       </ScrollView>
+
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={styles.plusButton}
       >
-        <AddButton  name="pluscircleo" color={"blue"} size={60} />
+        <AddButton name="pluscircleo" color={"blue"} size={60} />
       </TouchableOpacity>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -136,9 +187,20 @@ const FolderCreator = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     padding: 10,
-    paddingTop: 20,
+    padding: 20,
+    marginTop: 40, // need to remove
+    marginRight: 20, // need to remove
+  },
+  editButton: {
+    alignSelf: "flex-end",
+    position: "absolute",
+  },
+  popButtons: {
+    flexDirection: "row",
+  },
+  popButtonIcon: {
+    marginRight: 8,
   },
   directoryList: {
     width: "100%",
