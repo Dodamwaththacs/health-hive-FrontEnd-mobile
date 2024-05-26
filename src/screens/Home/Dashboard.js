@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity }
 import { LineChart } from "react-native-chart-kit";
 import axios from 'axios';
 import { useEmail } from "../../EmailContext";
-;
+
 
 
 const UserProfileCard = ({ user, onPress }) => {
@@ -24,7 +24,9 @@ const UserProfileCard = ({ user, onPress }) => {
         <Text style={styles.greeting}>Hello, </Text>
         <Text style={styles.name}>{user.fullName}</Text>
       </View>
+
     </TouchableOpacity>
+    
   );
 };
 
@@ -141,7 +143,11 @@ const Dashboard = ({ navigation }) => {
 
   const recentDocuments = documents.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)).slice(0, 5);
 
-  return <ListCard documents={recentDocuments} user={user} navigation={navigation} />;
+  return (
+    <View style={{ flex: 1 }}>
+      <ListCard documents={recentDocuments} user={user} navigation={navigation} />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({

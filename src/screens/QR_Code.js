@@ -1,23 +1,38 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import QRCode from "react-native-qrcode-svg";
+import { View, Text, StyleSheet } from "react-native";
+import QRCode from 'react-native-qrcode-svg';
 
-const QR_Code = () => {
-  const text = "bhaya";
+const QR_Code = ({ route }) => {
+  const { userId } = route.params;
+  console.log('userId:', userId);
+
   return (
-    <View style={styles.qrContainer}>
-      {/* Set the size of the QR code here */}
-      <QRCode value={text} size={300} />
+    <View style={styles.container}>
+      <Text style={styles.textHeader}>Your QR Code</Text>
+      {userId && (
+        <QRCode
+          value={userId.toString()}
+          size={200}
+          color="black"
+          backgroundColor="white"
+        />
+      )}
     </View>
   );
 };
-export default QR_Code;
 
 const styles = StyleSheet.create({
-  qrContainer: {
+  container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5fcff",
+    backgroundColor: "#f5fcff"
   },
+  textHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20
+  }
 });
+
+export default QR_Code;
