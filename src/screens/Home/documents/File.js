@@ -1,56 +1,112 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
-import * as FileSystem from 'expo-file-system';
-import * as SQLite from 'expo-sqlite';
-
+import React, { useEffect, useState } from "react";
+import {View,Text, StyleSheet,Button,Image,TextInput,TouchableOpacity,} from "react-native";
+import * as SQLite from "expo-sqlite";
+import * as DocumentPicker from "expo-document-picker";
+import axios from 'axios';
 
 
 const FileScreen = ({ route }) => {
+  const [fileUri, setFileUri] = useState(null);
   const { folderId } = route.params;
-  const baseDir = `${FileSystem.documentDirectory}AppStorage/`;
-  
-  const createDatabase =async () =>  {
-    const db = await SQLite.openDatabaseAsync('databaseName');
-    console.log('Database created:', db);
-    await db.execAsync(`
-PRAGMA journal_mode = WAL;
-CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL, intValue INTEGER);
-INSERT INTO test (value, intValue) VALUES ('test1', 123);
-INSERT INTO test (value, intValue) VALUES ('test2', 456);
-INSERT INTO test (value, intValue) VALUES ('test3', 789);
-`);
+  const [Description, setDescription] = useState("");
+  const [FileName, setFileName] = useState("");
 
-const firstRow = await db.getFirstAsync('SELECT * FROM test WHERE id = 3;');
-console.log(firstRow.id, firstRow.value, firstRow.intValue);
-console.log(firstRow.id)
+  const pickFile = async () => {
+    let result = await DocumentPicker.getDocumentAsync({});
 
-  // Close the database connection (optional)
-  db.closeAsync();
-    
-  }
+    const fileUri = result.assets[0].uri;
+    const fileType = result.assets[0].mimeType;
+    console.log("File type:", fileType);
+    if (fileType.startsWith("image/")) {
+      setFileUri(fileUri);
+      console.log("Image file selected:", fileUri);
+    } else {
+      // Handle non-image files here
+      console.log("Non-image file selected:", fileType);
+    }
+    console.log(result);
+  };
 
-  // useEffect(() => {
-  //   db.transaction(tx => {
-  //     console.log('Creating table...');
-  //     tx.executeSql(
-  //       'CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY NOT NULL, done INTEGER, value TEXT);',
-  //       [],
-  //       () => { console.log('Table created successfully') },
-  //       (_, error) => { console.log('Error creating table:', error) }
-  //     );
-  //   });
-  // }, []);
 
-  const dir = (folderId) => {
-    console.log(`Directory: ${baseDir}${folderId}`);
+  const databaseData = async () => {
+    const db = await SQLite.openDatabaseAsync("databaseName");
+    const firstRow = await db.getFirstAsync(`SELECT * FROM ${folderId} `);
+    console.log(firstRow.hash);
+  };
+
+  const databaseHandling = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    await db.execAsync(
+      `CREATE TABLE IF NOT EXISTS fileStorage (
+      id INTEGER PRIMARY KEY NOT NULL,
+      fileName TEXT NOT NULL,
+      folderName TEXT NOT NULL,
+      description TEXT NOT NULL,
+      hash TEXT NOT NULL);`
+    );
+
+    db.closeAsync();
+  };
+
+  const fileUpload = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('file', {
+        uri: fileUri,
+        name: 'file',
+        type: 'image/jpeg', // Adjust the file type as needed
+      });
+      console.log("File log: ", fileUri);
+      const response = await axios.post('http://192.168.225.140:33000/file/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const hash = response.data;
+      console.log('File uploaded successfully:', response.data);
+
+      const db = await SQLite.openDatabaseAsync("HealthHive");
+      await db.execAsync(
+        `INSERT INTO fileStorage (fileName, folderName, description, hash) VALUES ('${fileUri}', '${folderId}', '${Description}', '${hash}');`
+      );
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
   }
 
   return (
     <View style={styles.container}>
       <View>
         <Text style={styles.head}>{folderId}</Text>
-        <Button onPress={() => dir(folderId)} title="Dir" />
+        {/* <Button onPress={() => databaseHandling()} title="Database Handling" />
         <Button onPress={() => createDatabase()} title="Create Database" />
+        <Button onPress={() => databaseData()} title="Database Data" /> */}
+
+        {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
+        {fileUri && (
+          <View style = {styles.container_2}>
+            <Image source={{ uri: fileUri }} style={{ width: "65%", height: "65%" }} />
+            <TextInput
+              style={styles.Inputs}
+              onChangeText={setFileName}
+              value={FileName}
+              placeholder="File Name"
+            />
+            <TextInput
+              style={styles.Inputs}
+              onChangeText={setDescription}
+              value={Description}
+              placeholder="Description"
+            />
+
+            <TouchableOpacity style={styles.button} onPress={fileUpload}>
+              <Text style={styles.buttonText}>Upload</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <Button onPress={databaseHandling} title="Create DB" />
+        <Button onPress={databaseData} title="Drop DB" />
       </View>
     </View>
   );
@@ -63,9 +119,33 @@ const styles = StyleSheet.create({
   },
   head: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
+  container_2: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  Inputs: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingLeft: 20,
+    width: "100%",
+  },
+  button: {
+    alignItems: "center",
+    backgroundColor: "#0000ff",
+    padding: 10,
+    borderRadius: 20,
+    width: "50%",
+  },
+  buttonText: {
+    fontSize: 20,
+    color: "#fff",
+  },
+
 });
 
 export default FileScreen;
