@@ -129,7 +129,7 @@ const FolderCreator = () => {
         {directories.map((dir, index) => (
           <View key={index} style={styles.directoryItem}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("file", { folderId: dir})}>
+              onPress={() => navigation.navigate("file", { folderName: dir})}>
               <Icon name="folder" size={40} color="#000" />
             </TouchableOpacity>
             <Text style={styles.folderText}>{dir}</Text>
@@ -162,12 +162,7 @@ const FolderCreator = () => {
         <AddButton name="pluscircleo" color={"blue"} size={60} />
       </TouchableOpacity>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
+      <Modal animationType="slide" transparent={true} visible={modalVisible}onRequestClose={() => setModalVisible(false)}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <TextInput
@@ -180,6 +175,7 @@ const FolderCreator = () => {
           </View>
         </View>
       </Modal>
+
     </View>
   );
 };

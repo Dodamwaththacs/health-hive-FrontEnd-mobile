@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {View,Text, StyleSheet,Button,Image,TextInput,TouchableOpacity,} from "react-native";
+import {View,Text, StyleSheet,Button,Image,TextInput,TouchableOpacity,Alert} from "react-native";
 import * as SQLite from "expo-sqlite";
 import * as DocumentPicker from "expo-document-picker";
 import axios from 'axios';
@@ -7,9 +7,12 @@ import axios from 'axios';
 
 const FileScreen = ({ route }) => {
   const [fileUri, setFileUri] = useState(null);
-  const { folderId } = route.params;
+
+  const { folderName } = route.params;
   const [Description, setDescription] = useState("");
   const [FileName, setFileName] = useState("");
+
+  
 
   const pickFile = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
@@ -29,9 +32,10 @@ const FileScreen = ({ route }) => {
 
 
   const databaseData = async () => {
-    const db = await SQLite.openDatabaseAsync("databaseName");
-    const firstRow = await db.getFirstAsync(`SELECT * FROM ${folderId} `);
-    console.log(firstRow.hash);
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const firstRow = await db.getFirstAsync(`SELECT * FROM fileStorage WHERE id = 14;`);
+    console.log(firstRow.fileName);
+    db.closeAsync();
   };
 
   const databaseHandling = async () => {
@@ -44,9 +48,17 @@ const FileScreen = ({ route }) => {
       description TEXT NOT NULL,
       hash TEXT NOT NULL);`
     );
-
     db.closeAsync();
   };
+ 
+  const tempDataEntry = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const insertResponce = await db.execAsync(
+      `INSERT INTO fileStorage (fileName, folderName, description, hash) VALUES ('zxczxczx', 'zxczxczx', 'zcxzczxc', 'zxczcxzczx');`
+    );
+    console.log('Data inserted successfully:', insertResponce);
+    db.closeAsync();
+  }
 
   const fileUpload = async () => {
     try {
@@ -57,7 +69,7 @@ const FileScreen = ({ route }) => {
         type: 'image/jpeg', // Adjust the file type as needed
       });
       console.log("File log: ", fileUri);
-      const response = await axios.post('http://192.168.225.140:33000/file/upload', formData, {
+      const response = await axios.post('http://192.168.51.140:33000/file/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -67,25 +79,36 @@ const FileScreen = ({ route }) => {
 
       const db = await SQLite.openDatabaseAsync("HealthHive");
       await db.execAsync(
-        `INSERT INTO fileStorage (fileName, folderName, description, hash) VALUES ('${fileUri}', '${folderId}', '${Description}', '${hash}');`
+        `INSERT INTO fileStorage (fileName, folderName, description, hash) VALUES ('${FileName}', '${folderName}', '${Description}', '${hash}');`
       );
+      db.closeAsync();
+      Alert.alert('File uploaded successfully!');
+      setFileUri(null);
     } catch (error) {
       console.error('Error uploading file:', error);
     }
   }
 
+  const testConnection = async () => {
+    try {
+      const response = await axios.get('http://192.168.51.140:33000/');
+      Alert.alert('Connection Successful!');
+      console.log(response.data);
+    } catch (error) {
+      Alert.alert('Connection Failed!');
+      console.error(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.head}>{folderId}</Text>
-        {/* <Button onPress={() => databaseHandling()} title="Database Handling" />
-        <Button onPress={() => createDatabase()} title="Create Database" />
-        <Button onPress={() => databaseData()} title="Database Data" /> */}
+        <Text style={styles.head}>{folderName}</Text>
 
         {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
         {fileUri && (
-          <View style = {styles.container_2}>
-            <Image source={{ uri: fileUri }} style={{ width: "65%", height: "65%" }} />
+          <View style={styles.container_2}>
+            <Image source={{ uri: fileUri }} style={{ width: "50%", height: "50%" }} />
             <TextInput
               style={styles.Inputs}
               onChangeText={setFileName}
@@ -104,11 +127,14 @@ const FileScreen = ({ route }) => {
             </TouchableOpacity>
           </View>
         )}
-
+        
         <Button onPress={databaseHandling} title="Create DB" />
-        <Button onPress={databaseData} title="Drop DB" />
+        <Button onPress={databaseData} title="Data DB" />
+        <Button onPress={tempDataEntry} title="Insert Data" />
+        <Button onPress={testConnection} title="Test Connection" />
       </View>
     </View>
+
   );
 };
 
