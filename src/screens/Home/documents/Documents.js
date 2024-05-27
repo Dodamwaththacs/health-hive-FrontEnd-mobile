@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {View,TextInput,Button,Text,ScrollView,StyleSheet,Modal,TouchableOpacity,
-} from "react-native";
+import {View,TextInput,Button,Text,ScrollView,StyleSheet,Modal,TouchableOpacity,} from "react-native";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AddButton from "react-native-vector-icons/AntDesign";

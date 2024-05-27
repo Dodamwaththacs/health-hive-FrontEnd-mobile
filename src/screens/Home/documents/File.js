@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {View,Text, StyleSheet,Button,Image,TextInput,TouchableOpacity,Alert} from "react-native";
+import {View,Text, StyleSheet,Button,Image,TextInput,TouchableOpacity,Alert, Modal} from "react-native";
 import * as SQLite from "expo-sqlite";
 import * as DocumentPicker from "expo-document-picker";
 import axios from 'axios';
@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const FileScreen = ({ route }) => {
   const [fileUri, setFileUri] = useState(null);
-
+  const [modalVisible, setModalVisible] = useState(false);
   const { folderName } = route.params;
   const [Description, setDescription] = useState("");
   const [FileName, setFileName] = useState("");
@@ -23,6 +23,7 @@ const FileScreen = ({ route }) => {
     if (fileType.startsWith("image/")) {
       setFileUri(fileUri);
       console.log("Image file selected:", fileUri);
+      setModalVisible(true);
     } else {
       // Handle non-image files here
       console.log("Non-image file selected:", fileType);
@@ -33,8 +34,8 @@ const FileScreen = ({ route }) => {
 
   const databaseData = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
-    const firstRow = await db.getFirstAsync(`SELECT * FROM fileStorage WHERE id = 14;`);
-    console.log(firstRow.fileName);
+    const firstRow = await db.getAllAsync(`SELECT * FROM fileStorage WHERE folderName = "${folderName}" ;`);
+    console.log(firstRow);
     db.closeAsync();
   };
 
@@ -82,8 +83,12 @@ const FileScreen = ({ route }) => {
         `INSERT INTO fileStorage (fileName, folderName, description, hash) VALUES ('${FileName}', '${folderName}', '${Description}', '${hash}');`
       );
       db.closeAsync();
+      setModalVisible(false);
       Alert.alert('File uploaded successfully!');
       setFileUri(null);
+      setFileName('');
+      setDescription('');
+
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -106,6 +111,8 @@ const FileScreen = ({ route }) => {
         <Text style={styles.head}>{folderName}</Text>
 
         {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
+        <Modal animationType="slide" visible={modalVisible} >
+
         {fileUri && (
           <View style={styles.container_2}>
             <Image source={{ uri: fileUri }} style={{ width: "50%", height: "50%" }} />
@@ -127,6 +134,7 @@ const FileScreen = ({ route }) => {
             </TouchableOpacity>
           </View>
         )}
+        </Modal>
         
         <Button onPress={databaseHandling} title="Create DB" />
         <Button onPress={databaseData} title="Data DB" />
