@@ -1,13 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {View,Text,StyleSheet,Button,Image,TextInput,TouchableOpacity,Alert,Modal,FlatList} from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Modal,
+  FlatList,
+} from "react-native";
 import * as SQLite from "expo-sqlite";
 import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
-import { renderItem } from './FileCore'; // replace with the path to renderItem.js
-
+import Icon from "react-native-vector-icons/Ionicons";
 
 const FileScreen = ({ route }) => {
   const [fileUri, setFileUri] = useState(null);
+  const [fileDownloadUri, setFileDownloadUri] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [filemodalVisible, setFileModalVisible] = useState(false);
   const { folderName } = route.params;
@@ -15,8 +26,6 @@ const FileScreen = ({ route }) => {
   const [FileName, setFileName] = useState("");
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState(data);
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,10 +48,9 @@ const FileScreen = ({ route }) => {
     setFilteredData(filtered);
   };
 
-  const dropDatabase = async () => {
-    const db = await SQLite.openDatabaseAsync("HealthHive");
-    await db.execAsync(`DROP TABLE fileStorage;`);
-    db.closeAsync();
+  const fileOpen = (hash) => {
+    setFileDownloadUri("http://192.168.226.140:33000/file/" + hash);
+    setFileModalVisible(true);
   };
 
   const pickFile = async () => {
@@ -62,15 +70,19 @@ const FileScreen = ({ route }) => {
     console.log(result);
   };
 
-  // const renderItem = ({ item }) => (
-  //   <View style={styles.itemContainer}>
-  //     <Text style={styles.fileName}>{item.fileName}</Text>
-  //     <Text style={styles.description}>{item.description}</Text>
-     
-  //   </View>
-  // );
-
-
+  const renderItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+      <View style={styles.icon}>
+        <TouchableOpacity onPress={() => fileOpen(item.hash)}>
+          <Icon name="document-outline" size={50} color="#000" />
+        </TouchableOpacity>
+      </View>
+      <View>
+        <Text style={styles.fileName}>{item.fileName}</Text>
+        <Text style={styles.description}>{item.description}</Text>
+      </View>
+    </View>
+  );
 
   const databaseData = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
@@ -78,30 +90,6 @@ const FileScreen = ({ route }) => {
       `SELECT * FROM fileStorage WHERE folderName = "${folderName}" ;`
     );
     console.log(firstRow);
-    db.closeAsync();
-  };
-
-  const databaseHandling = async () => {
-    const db = await SQLite.openDatabaseAsync("HealthHive");
-    await db.execAsync(
-      `CREATE TABLE IF NOT EXISTS fileStorage (
-      id INTEGER PRIMARY KEY NOT NULL,
-      fileName TEXT NOT NULL,
-      folderName TEXT NOT NULL,
-      description TEXT NOT NULL,
-      hash TEXT NOT NULL
-      createdAt DATE DEFAULT CURRENT_DATE
-    );`
-    );
-    db.closeAsync();
-  };
-
-  const tempDataEntry = async () => {
-    const db = await SQLite.openDatabaseAsync("HealthHive");
-    const insertResponce = await db.execAsync(
-      `INSERT INTO fileStorage (fileName, folderName, description, hash) VALUES ('zxczxczx', 'zxczxczx', 'zcxzczxc', 'zxczcxzczx');`
-    );
-    console.log("Data inserted successfully:", insertResponce);
     db.closeAsync();
   };
 
@@ -159,7 +147,11 @@ const FileScreen = ({ route }) => {
 
         {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
 
-        <FlatList data={data} renderItem={renderItem} keyExtractor={(item) => item.id.toString()}/>
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+        />
 
         <Modal animationType="slide" visible={modalVisible}>
           {fileUri && (
@@ -186,6 +178,14 @@ const FileScreen = ({ route }) => {
               </TouchableOpacity>
             </View>
           )}
+        </Modal>
+        <Modal animationType="slide" visible={filemodalVisible}>
+          <Text>File Modal</Text>
+          <Image
+            source={{ uri: fileDownloadUri }}
+            style={{ width: "50%", height: "50%" }}
+          />
+          <Button onPress={() => setFileModalVisible(false)} title="Close" />
         </Modal>
 
         {/* <Button onPress={databaseHandling} title="Create DB" /> */}
@@ -231,10 +231,28 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#fff",
   },
-
-  
-
-
+  itemContainer: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    flexDirection: "row",
+  },
+  icon: {
+    marginRight: 10,
+  },
+  fileName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  description: {
+    fontSize: 14,
+  },
+  folderName: {
+    fontSize: 14,
+  },
+  hash: {
+    fontSize: 12,
+  },
 });
 
 export default FileScreen;

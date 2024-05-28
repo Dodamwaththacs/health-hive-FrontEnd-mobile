@@ -6,7 +6,7 @@ import AddButton from "react-native-vector-icons/AntDesign";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
 
-const baseDir = `${FileSystem.documentDirectory}AppStorage/`;
+const baseDir = `${FileSystem.documentDirectory}HealthHive/`;
 
 const FolderCreator = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -14,15 +14,14 @@ const FolderCreator = () => {
   const [directories, setDirectories] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
+  const labFolder = baseDir + "LabReports/";
 
   useEffect(() => {
     createBaseDirectory();
     updateDirectoryList();
   }, []);
 
-  const handlefolderName = (dir) => {
-    console.log(dir);
-  };
+
 
   const handlePress = () => {
     setDropdownOpen(!dropdownOpen);
@@ -33,6 +32,7 @@ const FolderCreator = () => {
       const info = await FileSystem.getInfoAsync(baseDir);
       if (!info.exists) {
         await FileSystem.makeDirectoryAsync(baseDir, { intermediates: true });
+        createDirectory("LabReports");
       }
     } catch (error) {
       console.error("Error creating base directory:", error);
@@ -46,6 +46,16 @@ const FolderCreator = () => {
     setFolderName("");
     setModalVisible(false); // Close the modal
   };
+
+  const handleNavigation = (name) => {
+    if (name == "LabReports"){
+      navigation.navigate("LabFolder", { folderName: name});
+    }
+    else{
+     navigation.navigate("file", { folderName: name});  
+    }  
+  };
+
 
   const createDirectory = async (folderName) => {
     const dirUri = `${baseDir}${folderName}`;
@@ -128,7 +138,7 @@ const FolderCreator = () => {
         {directories.map((dir, index) => (
           <View key={index} style={styles.directoryItem}>
             <TouchableOpacity
-              onPress={() => navigation.navigate("file", { folderName: dir})}>
+              onPress={() => handleNavigation(dir)}>
               <Icon name="folder" size={40} color="#000" />
             </TouchableOpacity>
             <Text style={styles.folderText}>{dir}</Text>
