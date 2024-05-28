@@ -8,11 +8,11 @@ const QR_Code = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.textHeader}>Your QR Code</Text>
+      <Text style={styles.textHeader}>SCAN NOW!!!</Text>
       {userId && (
         <QRCode
           value={userId.toString()}
-          size={200}
+          size={300}
           color="black"
           backgroundColor="white"
         />
@@ -29,9 +29,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5fcff"
   },
   textHeader: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: "bold",
-    marginBottom: 20
+    marginBottom: 50
   }
 });
 

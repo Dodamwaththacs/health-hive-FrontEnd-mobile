@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, Alert } from 'react-native';
+import { Text, View, StyleSheet, Button, Alert, TextInput, Modal } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import axios from 'axios';
 import { useEmail } from "../EmailContext";
@@ -10,6 +10,9 @@ const Scan = () => {
   const [isScannerActive, setIsScannerActive] = useState(false);
   const [scanType, setScanType] = useState(null);
   const [user, setUser] = useState(null);
+  const [description, setDescription] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [scannedUserId, setScannedUserId] = useState(null);
   const { email } = useEmail();
 
   // Function to request camera permission
@@ -35,88 +38,75 @@ const Scan = () => {
   };
 
   // Handle the barcode scanned event
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     console.log(`Scanned: type=${type}, data=${data}`);
     setScanned(true);
 
-    if (scanType === 'labRequest' && !isValidLabQR(data)) {
-      Alert.alert("Invalid QR", "This is not a valid QR code for a lab request.");
+    const scannedUserId = data.replace('USER_', '');
+    setScannedUserId(scannedUserId);
+    
+    try {
+      const response = await axios.get(`http://192.168.8.106:33000/api/users/${scannedUserId}`);
+      const scannedUser = response.data;
+      
+      if (!scannedUser) {
+        Alert.alert("Invalid QR", "This QR code does not belong to a valid user.");
+        resetScanner();
+        return;
+      }
+
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error('Error validating user ID:', error.message);
+      Alert.alert("Invalid QR", "This QR code does not belong to a valid user.");
       resetScanner();
-      return;
-    } else if (scanType === 'healthReport' && !isValidHealthQR(data)) {
-      Alert.alert("Invalid QR", "This is not a valid QR code for health report sharing.");
-      resetScanner();
-      return;
     }
-
-    if (scanType === 'labRequest') {
-      handleLabRequest(data);
-    } else if (scanType === 'healthReport') {
-      handleHealthReport(data);
-    }
-  };
-
-  // Validate QR code data for lab request
-  const isValidLabQR = (data) => {
-    // Add specific validation logic for lab request QR codes here
-    return data.startsWith('LAB_'); // Example: valid QR codes start with 'LAB_'
-  };
-
-  // Validate QR code data for health report sharing
-  const isValidHealthQR = (data) => {
-    // Add specific validation logic for health report QR codes here
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data); // Simple email validation regex
   };
 
   // Handle lab request
-  const handleLabRequest = (data) => {
-    Alert.prompt(
-      "Lab Request",
-      "Enter description:",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-          onPress: () => resetScanner()
-        },
-        {
-          text: "Submit",
-          onPress: async (description) => {
-            const labId = data; // Extract lab ID from data
-            try {
-              const response = await axios.post('http://192.168.8.106:33000/api/labRequests', {
-                userId: user.id,
-                labId,
-                description
-              });
-              Alert.alert("Lab Request", "Your lab request has been submitted.");
-              resetScanner();
-            } catch (error) {
-              console.error('Error submitting lab request:', error.message);
-              Alert.alert("Error", "Failed to submit lab request.");
-              resetScanner();
-            }
-          }
-        }
-      ],
-      "plain-text"
-    );
+  const handleLabRequest = async () => {
+    try {
+      const response = await axios.post('http://192.168.8.106:33000/api/labRequests', {
+        user: user.id,
+        lab: scannedUserId,
+        description: description,
+        customerName: user.fullName 
+      });
+      Alert.alert("Lab Request", "Your lab request has been submitted.");
+      resetScanner();
+    } catch (error) {
+      console.error('Error submitting lab request:', error.message);
+      Alert.alert("Error", "Failed to submit lab request.");
+      resetScanner();
+    }
   };
 
   // Handle health report sharing
-  const handleHealthReport = async (data) => {
-    const profileOwnerId = data; // Extract profile owner ID from data
+  const handleHealthReport = async () => {
     try {
       const response = await axios.post('http://192.168.8.106:33000/api/labReportShares', {
-        viewerId: user.id,
-        profileOwnerId
+        doctor: scannedUserId,
+        patient: user.id,
+        description: description,
+        patientName: user.fullName 
       });
       Alert.alert("Health Report Sharing", "Health report shared successfully.");
       resetScanner();
     } catch (error) {
       console.error('Error sharing health report:', error.message);
+      console.error('Error response:', error.response.data);
       Alert.alert("Error", "Failed to share health records.");
       resetScanner();
+    }
+  };
+
+  // Handle modal submit
+  const handleSubmit = () => {
+    setIsModalVisible(false);
+    if (scanType === 'labRequest') {
+      handleLabRequest();
+    } else if (scanType === 'healthReport') {
+      handleHealthReport();
     }
   };
 
@@ -125,6 +115,8 @@ const Scan = () => {
     setScanned(false);
     setIsScannerActive(false);
     setScanType(null);
+    setDescription('');
+    setScannedUserId(null);
   };
 
   // Screen for requesting permission
@@ -166,11 +158,34 @@ const Scan = () => {
           />
         </>
       )}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Enter description:</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setDescription}
+              value={description}
+            />
+            <Button
+              title="Submit"
+              onPress={handleSubmit}
+            />
+            <Button
+              title="Cancel"
+              onPress={() => setIsModalVisible(false)}
+              color="tomato"
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
-
-export default Scan;
 
 const styles = StyleSheet.create({
   container: {
@@ -185,8 +200,31 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     backgroundColor: 'transparent',
   },
-  maintext: {
-    fontSize: 16,
-    margin: 20,
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalView: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    marginBottom: 10,
   }
 });
+
+export default Scan;
