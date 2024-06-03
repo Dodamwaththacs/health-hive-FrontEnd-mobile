@@ -31,7 +31,7 @@ export default function App() {
   return (
     <EmailProvider>
       <NavigationContainer>
-        {/* <StackNav5igation /> */}
+        {/* <StackNavigation /> */}
         <FolderNavigation />
       </NavigationContainer>
     </EmailProvider>

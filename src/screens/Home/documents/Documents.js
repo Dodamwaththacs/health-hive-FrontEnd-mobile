@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import {View,TextInput,Button,Text,ScrollView,StyleSheet,Modal,TouchableOpacity,} from "react-native";
+import {
+  View,
+  TextInput,
+  Button,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AddButton from "react-native-vector-icons/AntDesign";
@@ -20,8 +29,6 @@ const FolderCreator = () => {
     createBaseDirectory();
     updateDirectoryList();
   }, []);
-
-
 
   const handlePress = () => {
     setDropdownOpen(!dropdownOpen);
@@ -44,18 +51,16 @@ const FolderCreator = () => {
       updateDirectoryList();
     }
     setFolderName("");
-    setModalVisible(false); // Close the modal
+    setModalVisible(false);
   };
 
   const handleNavigation = (name) => {
-    if (name == "LabReports"){
-      navigation.navigate("LabFolder", { folderName: name});
+    if (name == "LabReports") {
+      navigation.navigate("LabFolder", { folderName: name });
+    } else {
+      navigation.navigate("file", { folderName: name });
     }
-    else{
-     navigation.navigate("file", { folderName: name});  
-    }  
   };
-
 
   const createDirectory = async (folderName) => {
     const dirUri = `${baseDir}${folderName}`;
@@ -137,8 +142,7 @@ const FolderCreator = () => {
       <ScrollView style={styles.directoryList}>
         {directories.map((dir, index) => (
           <View key={index} style={styles.directoryItem}>
-            <TouchableOpacity
-              onPress={() => handleNavigation(dir)}>
+            <TouchableOpacity onPress={() => handleNavigation(dir)}>
               <Icon name="folder" size={40} color="#000" />
             </TouchableOpacity>
             <Text style={styles.folderText}>{dir}</Text>
@@ -171,7 +175,12 @@ const FolderCreator = () => {
         <AddButton name="pluscircleo" color={"blue"} size={60} />
       </TouchableOpacity>
 
-      <Modal animationType="slide" transparent={true} visible={modalVisible}onRequestClose={() => setModalVisible(false)}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <TextInput
@@ -184,7 +193,6 @@ const FolderCreator = () => {
           </View>
         </View>
       </Modal>
-
     </View>
   );
 };

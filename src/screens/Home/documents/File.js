@@ -49,7 +49,7 @@ const FileScreen = ({ route }) => {
   };
 
   const fileOpen = (hash) => {
-    setFileDownloadUri("http://192.168.226.140:33000/file/" + hash);
+    setFileDownloadUri("http://10.10.7.114:33000/file/" + hash);
     setFileModalVisible(true);
   };
 
@@ -103,7 +103,7 @@ const FileScreen = ({ route }) => {
       });
       console.log("File log: ", fileUri);
       const response = await axios.post(
-        "http://192.168.226.140:33000/file/upload",
+        "http://10.10.7.114:33000/file/upload",
         formData,
         {
           headers: {
@@ -131,7 +131,7 @@ const FileScreen = ({ route }) => {
 
   const testConnection = async () => {
     try {
-      const response = await axios.get("http://192.168.48.140:33000/");
+      const response = await axios.get("http://192.168.143.140:33000/");
       Alert.alert("Connection Successful!");
       console.log(response.data);
     } catch (error) {
@@ -139,6 +139,13 @@ const FileScreen = ({ route }) => {
       console.error(error);
     }
   };
+
+  const dropDatabase = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    await db.execAsync(`DROP TABLE fileStorage;`);
+    db.closeAsync();
+    console.log("Database dropped successfully!");
+  }
 
   return (
     <View style={styles.container}>
@@ -180,17 +187,16 @@ const FileScreen = ({ route }) => {
           )}
         </Modal>
         <Modal animationType="slide" visible={filemodalVisible}>
-          <Text>File Modal</Text>
           <Image
             source={{ uri: fileDownloadUri }}
             style={{ width: "50%", height: "50%" }}
           />
-          <Button onPress={() => setFileModalVisible(false)} title="Close" />
+          <Button onPress={() => setFileModalVisible(false)} title="Done" />
         </Modal>
 
         {/* <Button onPress={databaseHandling} title="Create DB" /> */}
         <Button onPress={databaseData} title="Data DB" />
-        {/* <Button onPress={dropDatabase} title="Drop DB" /> */}
+        <Button onPress={dropDatabase} title="Drop DB" />
         {/* <Button onPress={tempDataEntry} title="Insert Data" /> */}
         {/* <Button onPress={testConnection} title="Test Connection" /> */}
       </View>
