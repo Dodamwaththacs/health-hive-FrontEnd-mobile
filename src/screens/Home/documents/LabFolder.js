@@ -9,6 +9,7 @@ import {
   Modal,
   Image,
 } from "react-native";
+import Checkbox from "expo-checkbox";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
@@ -28,8 +29,7 @@ const LabFolder = ({ route }) => {
         const originData = response.data;
 
         const db = await SQLite.openDatabaseAsync("HealthHive");
-        console.log("\n This is data insert funtion\n");
-        console.log(originData.length);
+
         for (let i = 0; i < originData.length; i++) {
           console.log(originData[i]);
           try {
@@ -88,7 +88,7 @@ const LabFolder = ({ route }) => {
         `SELECT * FROM fileStorage WHERE folderName = "${folderName}"  ;`
       );
       setData(response);
-      console.log("full loacal responce :", response);
+      // console.log("full loacal responce :", response);
       await db.closeAsync();
     };
 
@@ -109,23 +109,14 @@ const LabFolder = ({ route }) => {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <View style={styles.icon}>
-        <TouchableOpacity onPress={() => fileOpen(item.hash)}>
-          <Icon name="document-outline" size={50} color="#000" />
-        </TouchableOpacity>
-      </View>
-      <View>
-        <Text style={styles.fileName}>{item.fileName}</Text>
-      </View>
-      <Modal animationType="slide" visible={filemodalVisible}>
-        <Image
-          source={{ uri: fileDownloadUri }}
-          style={{ width: "50%", height: "50%" }}
-        />
-        <Button onPress={() => setFileModalVisible(false)} title="Done" />
-      </Modal>
-    </View>
+    <ItemComponent
+      item={item}
+      fileOpen={fileOpen}
+      filemodalVisible={filemodalVisible}
+      setFileModalVisible={setFileModalVisible}
+      fileDownloadUri={fileDownloadUri}
+      setFileDownloadUri={setFileDownloadUri}
+    />
   );
 
   return (
@@ -141,6 +132,47 @@ const LabFolder = ({ route }) => {
       />
       <Button title="Delete" onPress={deleteTupple} />
       <Button title="Move file" onPress={{}} />
+    </View>
+  );
+};
+
+const ItemComponent = ({
+  item,
+  fileOpen,
+  filemodalVisible,
+  setFileModalVisible,
+  fileDownloadUri,
+  setFileDownloadUri,
+}) => {
+  const [isSelected, setSelection] = useState(false);
+
+  useEffect(() => {
+    if (isSelected) {
+      console.log("Item is selected", item.id);
+    }
+  }, [isSelected]);
+
+  return (
+    <View style={styles.itemContainer}>
+      <View style={styles.icon}>
+        <TouchableOpacity onPress={() => fileOpen(item.hash)}>
+          <Icon name="document-outline" size={50} color="#000" />
+        </TouchableOpacity>
+      </View>
+      <View>
+        <Text style={styles.fileName}>{item.fileName}</Text>
+      </View>
+
+      <View>
+        <Checkbox value={isSelected} onValueChange={setSelection} />
+      </View>
+      <Modal animationType="slide" visible={filemodalVisible}>
+        <Image
+          source={{ uri: fileDownloadUri }}
+          style={{ width: "50%", height: "50%" }}
+        />
+        <Button onPress={() => setFileModalVisible(false)} title="Done" />
+      </Modal>
     </View>
   );
 };
