@@ -124,6 +124,17 @@ const FileScreen = ({ route }) => {
       setFileUri(null);
       setFileName("");
       setDescription("");
+
+      const fetchData = async () => {
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        const response = await db.getAllAsync(
+          `SELECT * FROM fileStorage WHERE folderName = "${folderName}" ;`
+        );
+        console.log(response);
+        setData(response);
+        db.closeAsync();
+      };
+      await fetchData();
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -145,7 +156,7 @@ const FileScreen = ({ route }) => {
     await db.execAsync(`DROP TABLE fileStorage;`);
     db.closeAsync();
     console.log("Database dropped successfully!");
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -195,8 +206,8 @@ const FileScreen = ({ route }) => {
         </Modal>
 
         {/* <Button onPress={databaseHandling} title="Create DB" /> */}
-        <Button onPress={databaseData} title="Data DB" />
-        <Button onPress={dropDatabase} title="Drop DB" />
+        {/* <Button onPress={databaseData} title="Data DB" /> */}
+        {/* <Button onPress={dropDatabase} title="Drop DB" /> */}
         {/* <Button onPress={tempDataEntry} title="Insert Data" /> */}
         {/* <Button onPress={testConnection} title="Test Connection" /> */}
       </View>

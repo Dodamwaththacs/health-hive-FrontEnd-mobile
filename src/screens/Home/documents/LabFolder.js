@@ -17,8 +17,12 @@ import * as SQLite from "expo-sqlite";
 const LabFolder = ({ route }) => {
   const { folderName } = route.params;
   const [data, setData] = useState([]);
+  const [folderData, setFolderData] = useState([]);
   const [filemodalVisible, setFileModalVisible] = useState(false);
+  const [folderModalVisible, setFolderModalVisible] = useState(false);
   const [fileDownloadUri, setFileDownloadUri] = useState(null);
+  const [showCheckboxes, setShowCheckboxes] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
 
   useEffect(() => {
     const fetchDataFromOringin = async () => {
@@ -88,7 +92,6 @@ const LabFolder = ({ route }) => {
         `SELECT * FROM fileStorage WHERE folderName = "${folderName}"  ;`
       );
       setData(response);
-      // console.log("full loacal responce :", response);
       await db.closeAsync();
     };
 
@@ -101,11 +104,40 @@ const LabFolder = ({ route }) => {
     setFileModalVisible(true);
   };
 
-  const deleteTupple = async () => {
-    const response = await axios.delete(
-      "http://10.10.7.114:33000/api/files/10"
+  const handleMove = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(
+      `SELECT DISTINCT folderName
+      FROM fileStorage
+      WHERE folderName <> 'LabReports'
+      ORDER BY folderName ASC;`
     );
-    console.log("files :", response);
+    await db.closeAsync();
+    setFolderData(response);
+    console.log("folder data :", response);
+    setFolderModalVisible(true);
+
+    console.log("inseted data responce :", response);
+    setShowCheckboxes(false);
+  };
+
+  const alterTable = async (moveFolderName) => {
+    console.log("moveFolderName :", moveFolderName);
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    try {
+      for (let i = 0; i < selectedItems.length; i++) {
+        await db.runAsync(
+          `UPDATE fileStorage SET folderName = "${moveFolderName}" WHERE id = ${selectedItems[i]} ;`
+        );
+      }
+      alert("Files moved successfully!");
+    } catch (error) {
+      console.error("Error data update : ", error);
+    } finally {
+      await db.closeAsync();
+      setSelectedItems([]);
+      setFolderModalVisible(false);
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -116,7 +148,21 @@ const LabFolder = ({ route }) => {
       setFileModalVisible={setFileModalVisible}
       fileDownloadUri={fileDownloadUri}
       setFileDownloadUri={setFileDownloadUri}
+      showCheckboxes={showCheckboxes}
+      selectedItems={selectedItems}
+      setSelectedItems={setSelectedItems}
     />
+  );
+
+  const renderFolderItem = ({ item }) => (
+    <View style={styles.item}>
+      <TouchableOpacity
+        style={styles.touchable}
+        onPress={() => alterTable(item.folderName)}
+      >
+        <Text style={styles.title}>{item.folderName}</Text>
+      </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -130,8 +176,40 @@ const LabFolder = ({ route }) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />
-      <Button title="Delete" onPress={deleteTupple} />
-      <Button title="Move file" onPress={{}} />
+      {!showCheckboxes && (
+        <Button
+          title="Move file"
+          onPress={() => setShowCheckboxes(!showCheckboxes)}
+        />
+      )}
+      {selectedItems.length > 0 && showCheckboxes && (
+        <Button title="done" onPress={handleMove} />
+      )}
+
+      <Modal animationType="slide" visible={folderModalVisible} transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.moveFolderHeader}>
+              <Text>Select folder you want to move</Text>
+              <TouchableOpacity>
+                <Icon
+                  name="close"
+                  size={30}
+                  color={"blue"}
+                  onPress={() =>
+                    setFolderModalVisible(false) && setSelectedItems(null)
+                  }
+                />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={folderData}
+              renderItem={renderFolderItem}
+              keyExtractor={(item) => item.folderName}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -143,12 +221,17 @@ const ItemComponent = ({
   setFileModalVisible,
   fileDownloadUri,
   setFileDownloadUri,
+  showCheckboxes,
+  selectedItems,
+  setSelectedItems,
 }) => {
   const [isSelected, setSelection] = useState(false);
 
   useEffect(() => {
     if (isSelected) {
-      console.log("Item is selected", item.id);
+      setSelectedItems((prevItems) => [...prevItems, item.id]);
+    } else {
+      setSelectedItems((prevItems) => prevItems.filter((id) => id !== item.id));
     }
   }, [isSelected]);
 
@@ -163,9 +246,11 @@ const ItemComponent = ({
         <Text style={styles.fileName}>{item.fileName}</Text>
       </View>
 
-      <View>
-        <Checkbox value={isSelected} onValueChange={setSelection} />
-      </View>
+      {showCheckboxes && (
+        <View>
+          <Checkbox value={isSelected} onValueChange={setSelection} />
+        </View>
+      )}
       <Modal animationType="slide" visible={filemodalVisible}>
         <Image
           source={{ uri: fileDownloadUri }}
@@ -203,6 +288,43 @@ const styles = StyleSheet.create({
   head2: {
     fontSize: 18,
     marginBottom: 10,
+  },
+
+  moveFolderHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    // other styles...
+  },
+  item: {
+    marginTop: 10,
+    backgroundColor: "#f9f9f9",
+    padding: 5,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    elevation: 4, // Add some elevation for a subtle shadow effect
+  },
+  touchable: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    height: "30%", // Adjust the height as per your requirement
   },
 });
 
