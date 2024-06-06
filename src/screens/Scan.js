@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, Alert, TextInput, Modal } from 'react-native';
+import { Text, View, StyleSheet, Button, Alert, TextInput, Modal, TouchableOpacity, Image } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import axios from 'axios';
 import { useEmail } from "../EmailContext";
@@ -15,29 +15,25 @@ const Scan = () => {
   const [scannedUserId, setScannedUserId] = useState(null);
   const { email } = useEmail();
 
-  // Function to request camera permission
   const getCameraPermission = async () => {
     const { status } = await BarCodeScanner.requestPermissionsAsync();
     setHasPermission(status === 'granted');
   };
 
-  // Request camera permission on component mount
   useEffect(() => {
     getCameraPermission();
     fetchUserData();
   }, []);
 
-  // Fetch user data by email
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`http://192.168.8.106:33000/api/users/email/${email}`);
+      const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
       setUser(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error.message);
     }
   };
 
-  // Handle the barcode scanned event
   const handleBarCodeScanned = async ({ type, data }) => {
     console.log(`Scanned: type=${type}, data=${data}`);
     setScanned(true);
@@ -46,7 +42,7 @@ const Scan = () => {
     setScannedUserId(scannedUserId);
     
     try {
-      const response = await axios.get(`http://192.168.8.106:33000/api/users/${scannedUserId}`);
+      const response = await axios.get(`http://10.10.18.247:33000/api/users/${scannedUserId}`);
       const scannedUser = response.data;
       
       if (!scannedUser) {
@@ -63,10 +59,9 @@ const Scan = () => {
     }
   };
 
-  // Handle lab request
   const handleLabRequest = async () => {
     try {
-      const response = await axios.post('http://192.168.8.106:33000/api/labRequests', {
+      const response = await axios.post('http://10.10.18.247:33000/api/labRequests', {
         user: user.id,
         lab: scannedUserId,
         description: description,
@@ -81,10 +76,9 @@ const Scan = () => {
     }
   };
 
-  // Handle health report sharing
   const handleHealthReport = async () => {
     try {
-      const response = await axios.post('http://192.168.8.106:33000/api/labReportShares', {
+      const response = await axios.post('http://10.10.18.247:33000/api/labReportShares', {
         doctor: scannedUserId,
         patient: user.id,
         description: description,
@@ -100,7 +94,6 @@ const Scan = () => {
     }
   };
 
-  // Handle modal submit
   const handleSubmit = () => {
     setIsModalVisible(false);
     if (scanType === 'labRequest') {
@@ -110,7 +103,6 @@ const Scan = () => {
     }
   };
 
-  // Reset scanner state
   const resetScanner = () => {
     setScanned(false);
     setIsScannerActive(false);
@@ -119,7 +111,6 @@ const Scan = () => {
     setScannedUserId(null);
   };
 
-  // Screen for requesting permission
   if (!hasPermission) {
     return (
       <View style={styles.container}>
@@ -129,34 +120,48 @@ const Scan = () => {
     );
   }
 
-  // Main screen when permission is granted
   return (
     <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.guidText}>To connect with the lab, scan using "Lab Request". {"\n"}
+        To share your health report with another user, scan using "Share Health Report".</Text>
+        <Image
+          source={require('../assets/scan.png')}
+          style={styles.image}
+        />
+      </View>
       {isScannerActive ? (
-        <>
+        <View style={styles.scannerContainer}>
           <BarCodeScanner
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={styles.barcodebox}
+            style={StyleSheet.absoluteFillObject}
           />
           <Button
             title="Cancel"
             onPress={resetScanner}
-            color="tomato"
+            color="#1921E4"
+            style={styles.cancelButton}
           />
-        </>
+        </View>
       ) : (
-        <>
-          <Button
-            title="Request Lab"
-            onPress={() => { setScanType('labRequest'); setScanned(false); setIsScannerActive(true); }}
-            color="green"
-          />
-          <Button
-            title="Share Health Report"
-            onPress={() => { setScanType('healthReport'); setScanned(false); setIsScannerActive(true); }}
-            color="purple"
-          />
-        </>
+        <View style={styles.buttonContainer}>
+          <View style={styles.button}>
+              <View style={styles.imageContainer}>
+                <Image source={require('../assets/labrequests.png')} style={styles.buttonImage} />
+              </View>
+              <TouchableOpacity onPress={() => { setScanType('labRequest'); setScanned(false); setIsScannerActive(true); }}>
+                <Text style={styles.buttonText}>Lab Request</Text>
+              </TouchableOpacity>
+          </View>
+          <View style={styles.button}>
+              <View style={styles.imageContainer}>
+                <Image source={require('../assets/sharereports.png')} style={styles.buttonImage} />
+              </View>
+              <TouchableOpacity onPress={() => { setScanType('healthReport'); setScanned(false); setIsScannerActive(true); }}>
+                <Text style={styles.buttonText}>Share Health Report</Text>
+              </TouchableOpacity>
+          </View>
+        </View>
       )}
       <Modal
         visible={isModalVisible}
@@ -178,7 +183,7 @@ const Scan = () => {
             <Button
               title="Cancel"
               onPress={() => setIsModalVisible(false)}
-              color="tomato"
+              color="#1921E4"
             />
           </View>
         </View>
@@ -193,12 +198,92 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "90%",
+    height: 150,
+    alignItems: "center",
+    marginBottom: 20,
+    marginTop: -140,
+    padding: 10,
+    margin: 10,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  image: {
+    width: 106,
+    height: 106,
+  },
+  guidText: {
+    fontSize: 16,
+    color: "#333",
+    textAlign: "left",
+    flex: 1,
+    marginRight: 2,
+    marginLeft: 10,
+  },
+  scannerContainer: {
+    flex: 1,
+    width: '90%',
+    height: '90%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    backgroundColor: '#fff',
+  },
   barcodebox: {
-    height: 520,
-    width: 280,
-    overflow: 'hidden',
-    borderRadius: 60,
-    backgroundColor: 'transparent',
+    height: '90%',
+    width: '90%',
+    backgroundColor:'#fff'
+  },
+  cancelButton: {
+    position: 'absolute',
+    bottom: 20,
+    borderRadius: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '93%',
+    marginTop: 100,
+  },
+  button: {
+    width: 180,
+    height: 180,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 5,
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    marginTop: 20,
+    elevation: 5,
+  },
+  imageContainer: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  buttonImage: {
+    width: 60,
+    height: 60,
+  },
+  buttonText: {
+    color: 'black',
+    fontSize: 16,
   },
   modalContainer: {
     flex: 1,

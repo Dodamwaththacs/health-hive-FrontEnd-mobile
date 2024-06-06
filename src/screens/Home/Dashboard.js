@@ -42,7 +42,7 @@ const GreetCard = () => {
 
 const fetchDataByEmail = async (email) => {
   try {
-    const response = await axios.get(`http://192.168.8.106:33000/api/users/email/${email}`);
+    const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
     console.log('Data fetched successfully:', response.data);
     return response.data; // Return the fetched data
   } catch (error) {
@@ -64,9 +64,9 @@ const ChartsCard = () => {
         yAxisLabel="kg"
         yAxisInterval={5}
         chartConfig={{
-          backgroundColor: "#e26a00",
-          backgroundGradientFrom: "#fb8c00",
-          backgroundGradientTo: "#ffa726",
+          backgroundColor: "#ffd600",
+          backgroundGradientFrom: "#ff6d00",
+          backgroundGradientTo: "#ffab00",
           decimalPlaces: 0,
           color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
           labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
@@ -199,14 +199,14 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 18,
-    color: "#888",
+    color: "gray",
     textAlign: "center",
   },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#f9c2ff",
+    backgroundColor: "#bbdefb",
     padding: 20,
     marginVertical: 8,
     borderRadius: 10,
@@ -214,9 +214,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
+    color:'black',
   },
   uploadDate: {
     fontSize: 14,
+    color:'black',
   },
   listContainer: {
     paddingBottom: 20,

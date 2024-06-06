@@ -22,7 +22,7 @@ function DrawerNaviagtor() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://192.168.8.106:33000/api/users/email/${email}`);
+        const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
         setUser(response.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -41,7 +41,8 @@ function DrawerNaviagtor() {
       screenOptions={{
         headerStyle: { 
           backgroundColor: '#1921E4',
-          borderRadius: 20,
+          borderBottomEndRadius: 20,
+          borderBottomStartRadius: 20,
           elevation: 20,
           shadowColor: 'black',
           height: 100,
@@ -70,7 +71,7 @@ function DrawerNaviagtor() {
       <Drawer.Screen name="Health Hive" component={Home} />
       <Drawer.Screen name="Scan" component={Scan} />
       {/* <Drawer.Screen name="Temp" component={Scanner} /> */}
-      <Drawer.Screen name="QR_Code" component={QR_Code} initialParams={{ userId: user.id }} />
+      <Drawer.Screen name="My QR" component={QR_Code} initialParams={{ userId: user.id }} />
       <Drawer.Screen name="Notification" component={Notification} />
       <Drawer.Screen name="Setting" component={Setting} />
       <Drawer.Screen name="Help" component={Help} />

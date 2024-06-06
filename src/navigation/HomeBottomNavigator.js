@@ -14,11 +14,11 @@ function HomeBottomNavigator () {
   return(
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: 'white',
-        tabBarInactiveTintColor: 'gray',
-        tabBar: '#fff',
+        tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#9e9e9e',
+        tabBar: '#1921E4',
         tabBarIconStyle: {
-          borderRadius: 2,
+          borderRadius: 20,
       
         },
         tabBarLabelStyle: {
@@ -29,8 +29,9 @@ function HomeBottomNavigator () {
         tabBarStyle: {
           backgroundColor: '#1921E4',
           height: 70,
-          margin: 5,
-          borderRadius: 10,
+          borderTopStartRadius: 20,
+          borderTopEndRadius: 20,
+          
         }
       }} 
      >
