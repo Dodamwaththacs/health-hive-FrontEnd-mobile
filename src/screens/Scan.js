@@ -103,6 +103,11 @@ const Scan = () => {
     }
   };
 
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    resetScanner();
+  };
+
   const resetScanner = () => {
     setScanned(false);
     setIsScannerActive(false);
@@ -165,6 +170,8 @@ const Scan = () => {
         visible={isModalVisible}
         transparent={true}
         animationType="slide"
+        statusBarTranslucent={true} // Ensure modal covers the status bar
+        onRequestClose={handleCancel} // Handle the back button on Android
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
@@ -178,7 +185,7 @@ const Scan = () => {
               <TouchableOpacity style={styles.modalButton} onPress={handleSubmit}>
                 <Text style={styles.modalButtonText}>Submit</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleCancel}>
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -268,7 +275,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   button: {
-    
     height: 100,
     backgroundColor: '#ADD8E6',
     borderRadius: 10,
@@ -308,15 +314,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   modalContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    width: '100%',
-    height: '100%',
-    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   modalView: {
-    width: 350,
+    width: '80%',
     padding: 20,
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -339,7 +343,7 @@ const styles = StyleSheet.create({
   horizontalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '90%',
+    width: '100%',
   },
   modalButton: {
     backgroundColor: '#ADD8E6',
@@ -348,6 +352,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 5,
     width: '45%', // Adjust width to maintain horizontal alignment
+    height: 40,  // Adjust the height to fit the button size
   },
   modalButtonText: {
     color: 'gray',
