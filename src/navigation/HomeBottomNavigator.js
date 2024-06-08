@@ -1,17 +1,16 @@
 import React from "react";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import FontAwesome  from "react-native-vector-icons/FontAwesome";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Dashboard from "../screens/Home/Dashboard";
-import Documents from "../screens/Home/Documents";
+import FolderNavigation from "../screens/Home/documents/FolderNavigation";
 import Uploads from "../screens/Home/Uploads";
 import Search from "../screens/Home/Search";
 
-
 const Tab = createBottomTabNavigator();
 
-function HomeBottomNavigator () {
-  return(
+function HomeBottomNavigator() {
+  return (
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: '#fff',
@@ -20,14 +19,15 @@ function HomeBottomNavigator () {
         tabBarIconStyle: {
           borderRadius: 20,
       
+
         },
         tabBarLabelStyle: {
-          fontSize: 12, 
-          fontWeight: 'bold',
-          marginBottom: 8, 
+          fontSize: 12,
+          fontWeight: "bold",
+          marginBottom: 8,
         },
         tabBarStyle: {
-          backgroundColor: '#1921E4',
+          backgroundColor: "#1921E4",
           height: 70,
           borderTopStartRadius: 20,
           borderTopEndRadius: 20,
@@ -40,28 +40,29 @@ function HomeBottomNavigator () {
       <Tab.Screen 
         name="Dashboard" 
         component={Dashboard} 
+
         options={{
-          headerShown:false,
-          tabBarLabel: 'Home',
+          headerShown: false,
+          tabBarLabel: "Home",
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="home" color={color} size={size} />
           ),
-        }} 
+        }}
       />
 
-      <Tab.Screen 
-        name="Documents" 
-        component={Documents} 
+      <Tab.Screen
+        name="Documents"
+        component={FolderNavigation}
         options={{
-          headerShown:false,
-          tabBarLabel: 'Documents',
+          headerShown: false,
+          tabBarLabel: "Documents",
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="copy1" color={color} size={size} />
           ),
         }}
       />
 
-      <Tab.Screen 
+      {/* <Tab.Screen 
         name="Uploads" 
         component={Uploads} 
         options={{
@@ -71,20 +72,19 @@ function HomeBottomNavigator () {
             <FontAwesome name="upload" color={color} size={size} />
           ),
         }}  
-      />
+      /> */}
 
-      <Tab.Screen 
-        name="Search" 
-        component={Search} 
+      <Tab.Screen
+        name="Search"
+        component={Search}
         options={{
-          headerShown:false,
-          tabBarLabel: 'Search',
+          headerShown: false,
+          tabBarLabel: "Search",
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="search" color={color} size={size} />
           ),
-        }} 
+        }}
       />
-
     </Tab.Navigator>
   );
 }
