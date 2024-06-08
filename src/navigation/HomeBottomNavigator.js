@@ -13,11 +13,13 @@ function HomeBottomNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: "white",
-        tabBarInactiveTintColor: "gray",
-        tabBar: "#fff",
+        tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#9e9e9e',
+        tabBar: '#1921E4',
         tabBarIconStyle: {
-          borderRadius: 2,
+          borderRadius: 20,
+      
+
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -27,14 +29,18 @@ function HomeBottomNavigator() {
         tabBarStyle: {
           backgroundColor: "#1921E4",
           height: 70,
-          margin: 5,
-          borderRadius: 10,
-        },
-      }}
-    >
-      <Tab.Screen
-        name="Dashboard"
-        component={Dashboard}
+          borderTopStartRadius: 20,
+          borderTopEndRadius: 20,
+          
+        }
+      }} 
+     >
+
+
+      <Tab.Screen 
+        name="Dashboard" 
+        component={Dashboard} 
+
         options={{
           headerShown: false,
           tabBarLabel: "Home",
