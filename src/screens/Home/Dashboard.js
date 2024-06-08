@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#bbdefb",
+    backgroundColor: "#ADD8E6",
     padding: 20,
     marginVertical: 8,
     borderRadius: 10,
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   uploadDate: {
     fontSize: 14,
-    color:'black',
+    color:'gray',
   },
   listContainer: {
     paddingBottom: 20,

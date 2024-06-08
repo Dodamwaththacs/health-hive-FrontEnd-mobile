@@ -147,22 +147,18 @@ const Scan = () => {
         </View>
       ) : (
         <View style={styles.buttonContainer}>
-          <View style={styles.button}>
-            <View style={styles.imageContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => { setScanType('labRequest'); setScanned(false); setIsScannerActive(true); }}>
+            <View style={styles.buttonContent}>
               <Image source={require('../assets/labrequests.png')} style={styles.buttonImage} />
-            </View>
-            <TouchableOpacity onPress={() => { setScanType('labRequest'); setScanned(false); setIsScannerActive(true); }}>
               <Text style={styles.buttonText}>Lab Request</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.button}>
-            <View style={styles.imageContainer}>
-              <Image source={require('../assets/sharereports.png')} style={styles.buttonImage} />
             </View>
-            <TouchableOpacity onPress={() => { setScanType('healthReport'); setScanned(false); setIsScannerActive(true); }}>
-              <Text style={styles.buttonText}>Share Health Report</Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => { setScanType('healthReport'); setScanned(false); setIsScannerActive(true); }}>
+            <View style={styles.buttonContent}>
+              <Image source={require('../assets/sharereports.png')} style={styles.buttonImage} />
+              <Text style={styles.buttonText}>Share your{"\n"}Health Reports</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       )}
       <Modal
@@ -207,7 +203,7 @@ const styles = StyleSheet.create({
     height: 150,
     alignItems: "center",
     marginBottom: 20,
-    marginTop: -140,
+    marginTop: -150,
     padding: 10,
     margin: 10,
     backgroundColor: "#fff",
@@ -224,7 +220,7 @@ const styles = StyleSheet.create({
   },
   guidText: {
     fontSize: 16,
-    color: "#333",
+    color: "gray",
     textAlign: "left",
     flex: 1,
     marginRight: 2,
@@ -266,15 +262,15 @@ const styles = StyleSheet.create({
     marginBottom: -45,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-around',
-    width: '93%',
-    marginTop: 100,
+    width: '90%',
+    marginTop: 30,
   },
   button: {
-    width: 180,
-    height: 180,
-    backgroundColor: 'white',
+    
+    height: 100,
+    backgroundColor: '#ADD8E6',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -283,8 +279,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    marginTop: 20,
+    marginTop: 30,
     elevation: 5,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   imageContainer: {
     width: 50,
@@ -298,10 +298,14 @@ const styles = StyleSheet.create({
   buttonImage: {
     width: 60,
     height: 60,
+    marginRight: 20,
+    marginLeft: -90,
   },
   buttonText: {
-    color: 'black',
-    fontSize: 16,
+    color: 'gray',
+    fontWeight: 'bold',
+    fontSize: 17,
+    marginLeft: 10,
   },
   modalContainer: {
     justifyContent: 'center',
@@ -309,20 +313,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     width: '100%',
     height: '100%',
-    flex: 1
-  
-  
+    flex: 1,
   },
   modalView: {
     width: 350,
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     borderRadius: 10,
     alignItems: 'center',
   },
   modalText: {
     fontSize: 18,
     marginBottom: 10,
+    color: 'gray',
   },
   input: {
     width: '100%',
@@ -339,7 +342,7 @@ const styles = StyleSheet.create({
     width: '90%',
   },
   modalButton: {
-    backgroundColor: '#1921E4',
+    backgroundColor: '#ADD8E6',
     padding: 10,
     borderRadius: 10,
     alignItems: 'center',
@@ -347,7 +350,7 @@ const styles = StyleSheet.create({
     width: '45%', // Adjust width to maintain horizontal alignment
   },
   modalButtonText: {
-    color: 'white',
+    color: 'gray',
     fontSize: 16,
   },
   cancelButton: {

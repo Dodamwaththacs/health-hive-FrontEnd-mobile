@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   guidText: {
     fontSize: 16,
-    color: "#333",
+    color: "gray",
     textAlign: "left",
     flex: 1,
     marginRight: 5, // Add space between text and image
