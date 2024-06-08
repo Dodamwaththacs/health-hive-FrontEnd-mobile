@@ -30,12 +30,11 @@ export default function App() {
     databaseHandling();
   }, []);
   return (
-    // <EmailProvider>
-    //   <NavigationContainer>
-    //     <StackNavigation />
-    //     {/* <FolderNavigation /> */}
-    //   </NavigationContainer>
-    // </EmailProvider>
-    <Pdf />
+    <EmailProvider>
+      <NavigationContainer>
+        <StackNavigation />
+        {/* <FolderNavigation /> */}
+      </NavigationContainer>
+    </EmailProvider>
   );
 }
