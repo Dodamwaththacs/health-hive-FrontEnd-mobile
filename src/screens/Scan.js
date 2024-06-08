@@ -27,7 +27,7 @@ const Scan = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
+      const response = await axios.get(`http://192.168.151.43:33000/api/users/email/${email}`);
       setUser(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error.message);
@@ -42,7 +42,7 @@ const Scan = () => {
     setScannedUserId(scannedUserId);
     
     try {
-      const response = await axios.get(`http://10.10.18.247:33000/api/users/${scannedUserId}`);
+      const response = await axios.get(`http://192.168.151.43:33000/api/users/${scannedUserId}`);
       const scannedUser = response.data;
       
       if (!scannedUser) {
@@ -61,7 +61,7 @@ const Scan = () => {
 
   const handleLabRequest = async () => {
     try {
-      const response = await axios.post('http://10.10.18.247:33000/api/labRequests', {
+      const response = await axios.post('http://192.168.151.43:33000/api/labRequests', {
         user: user.id,
         lab: scannedUserId,
         description: description,
@@ -78,7 +78,7 @@ const Scan = () => {
 
   const handleHealthReport = async () => {
     try {
-      const response = await axios.post('http://10.10.18.247:33000/api/labReportShares', {
+      const response = await axios.post('http://192.168.151.43:33000/api/labReportShares', {
         doctor: scannedUserId,
         patient: user.id,
         description: description,
@@ -131,35 +131,37 @@ const Scan = () => {
         />
       </View>
       {isScannerActive ? (
-        <View style={styles.scannerContainer}>
-          <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={StyleSheet.absoluteFillObject}
-          />
-          <Button
-            title="Cancel"
-            onPress={resetScanner}
-            color="#1921E4"
-            style={styles.cancelButton}
-          />
+        <View style={styles.scannerWrapper}>
+          <View style={styles.scannerContainer}>
+            <BarCodeScanner
+              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+              style={StyleSheet.absoluteFillObject}
+            />
+            <View style={styles.overlay} />
+          </View>
+          <View style={styles.cancelButtonContainer}>
+            <TouchableOpacity style={styles.cancelButton} onPress={resetScanner}>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : (
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
-              <View style={styles.imageContainer}>
-                <Image source={require('../assets/labrequests.png')} style={styles.buttonImage} />
-              </View>
-              <TouchableOpacity onPress={() => { setScanType('labRequest'); setScanned(false); setIsScannerActive(true); }}>
-                <Text style={styles.buttonText}>Lab Request</Text>
-              </TouchableOpacity>
+            <View style={styles.imageContainer}>
+              <Image source={require('../assets/labrequests.png')} style={styles.buttonImage} />
+            </View>
+            <TouchableOpacity onPress={() => { setScanType('labRequest'); setScanned(false); setIsScannerActive(true); }}>
+              <Text style={styles.buttonText}>Lab Request</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.button}>
-              <View style={styles.imageContainer}>
-                <Image source={require('../assets/sharereports.png')} style={styles.buttonImage} />
-              </View>
-              <TouchableOpacity onPress={() => { setScanType('healthReport'); setScanned(false); setIsScannerActive(true); }}>
-                <Text style={styles.buttonText}>Share Health Report</Text>
-              </TouchableOpacity>
+            <View style={styles.imageContainer}>
+              <Image source={require('../assets/sharereports.png')} style={styles.buttonImage} />
+            </View>
+            <TouchableOpacity onPress={() => { setScanType('healthReport'); setScanned(false); setIsScannerActive(true); }}>
+              <Text style={styles.buttonText}>Share Health Report</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -176,15 +178,14 @@ const Scan = () => {
               onChangeText={setDescription}
               value={description}
             />
-            <Button
-              title="Submit"
-              onPress={handleSubmit}
-            />
-            <Button
-              title="Cancel"
-              onPress={() => setIsModalVisible(false)}
-              color="#1921E4"
-            />
+            <View style={styles.horizontalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleSubmit}>
+                <Text style={styles.modalButtonText}>Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -196,7 +197,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: "#fff",
   },
   headerContainer: {
     flexDirection: "row",
@@ -228,24 +230,40 @@ const styles = StyleSheet.create({
     marginRight: 2,
     marginLeft: 10,
   },
-  scannerContainer: {
+  scannerWrapper: {
     flex: 1,
-    width: '90%',
+    width: '100%',
     height: '90%',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
     backgroundColor: '#fff',
+    top: 0,
+    bottom: 2,  
   },
-  barcodebox: {
-    height: '90%',
-    width: '90%',
-    backgroundColor:'#fff'
+  scannerContainer: {
+    width: '75%',
+    height: '82%',
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    position: 'relative',
   },
-  cancelButton: {
+  scanner: {
+    flex: 1,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'white',
+  },
+  cancelButtonContainer: {
     position: 'absolute',
     bottom: 20,
-    borderRadius: 20,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: -45,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -286,13 +304,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   modalContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: '100%',
+    height: '100%',
+    flex: 1
+  
+  
   },
   modalView: {
-    width: 300,
+    width: 350,
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
@@ -309,7 +331,37 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 10,
     marginBottom: 10,
-  }
+    borderRadius: 5,
+  },
+  horizontalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '90%',
+  },
+  modalButton: {
+    backgroundColor: '#1921E4',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginHorizontal: 5,
+    width: '45%', // Adjust width to maintain horizontal alignment
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  cancelButton: {
+    backgroundColor: '#1921E4',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginHorizontal: 5,
+    width: '25%', // Adjust width to maintain horizontal alignment
+  },
+  cancelButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
 });
 
 export default Scan;

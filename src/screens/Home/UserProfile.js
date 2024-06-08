@@ -82,7 +82,7 @@ const UserProfile = ({ route, navigation }) => {
                     text: "Confirm",
                     onPress: async () => {
                         try {
-                            const response = await axios.put(`http://10.10.18.247:33000/api/users/${user.id}`, updatedUser);
+                            const response = await axios.put(`http://192.168.151.43:33000/api/users/${user.id}`, updatedUser);
                             setUser(updatedUser);
                             setEditMode(false);
                             Alert.alert('Changes Saved', 'Your contact information has been updated successfully.', [
