@@ -62,7 +62,7 @@ function HomeBottomNavigator() {
         }}
       />
 
-      {/* <Tab.Screen 
+      <Tab.Screen 
         name="Uploads" 
         component={Uploads} 
         options={{
@@ -72,7 +72,7 @@ function HomeBottomNavigator() {
             <FontAwesome name="upload" color={color} size={size} />
           ),
         }}  
-      /> */}
+      />
 
       <Tab.Screen
         name="Search"

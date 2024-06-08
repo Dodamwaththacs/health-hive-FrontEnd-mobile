@@ -5,11 +5,7 @@ import StackNavigation from "./src/navigation/StackNavigation";
 import FolderNavigation from "./src/screens/Home/documents/FolderNavigation";
 import * as SQLite from "expo-sqlite";
 
-import Pdf from "./src/screens/PDF";
-// import PDFView from './src/screens/Home/PDFView';
-// import FileDownload from './src/screens/Home/fileDownload';
-// import DocumentIPFS from './src/screens/Home/DocumentIPFS';
-// import Documents from './src/screens/Home/documents/Documents';
+
 
 export default function App() {
   useEffect(() => {
@@ -33,7 +29,7 @@ export default function App() {
     <EmailProvider>
       <NavigationContainer>
         <StackNavigation />
-        {/* <FolderNavigation /> */}
+        
       </NavigationContainer>
     </EmailProvider>
   );
