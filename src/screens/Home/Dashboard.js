@@ -99,6 +99,10 @@ const formatDate = (dateString) => {
   return date.toLocaleString(undefined, options);
 };
 
+const openDocument = (item, navigation) => {
+  navigation.navigate('DocumentViewer', { documentUri: item.hash });
+};
+
 const ListCard = ({ documents, user, navigation }) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.item} onPress={() => openDocument(item, navigation)}>
@@ -129,14 +133,13 @@ const ListCard = ({ documents, user, navigation }) => {
   );
 };
 
-const openDocument = (item, navigation) => {
-  navigation.navigate('DocumentView', { item });
-};
+
 
 const Dashboard = ({ navigation }) => {
   const [documents, setDocuments] = useState([]);
   const [user, setUser] = useState(null);
   const { email } = useEmail();
+
 
   const fetchDocuments = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
