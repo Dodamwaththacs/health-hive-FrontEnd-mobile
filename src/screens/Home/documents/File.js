@@ -27,17 +27,17 @@ const FileScreen = ({ route }) => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState(data);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const db = await SQLite.openDatabaseAsync("HealthHive");
-      const response = await db.getAllAsync(
-        `SELECT * FROM fileStorage WHERE folderName = "${folderName}" ;`
-      );
-      console.log(response);
-      setData(response);
-      db.closeAsync();
-    };
+  const fetchData = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(
+      `SELECT * FROM fileStorage WHERE folderName = "${folderName}" ;`
+    );
+    console.log(response);
+    setData(response);
+    db.closeAsync();
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -116,14 +116,9 @@ const FileScreen = ({ route }) => {
       const hash = response.data;
       console.log("File uploaded successfully:", response.data);
 
-      
-
-
-
-  
       const isoDate = currentDate.toISOString();
       console.log("ISO Date and Time: ", isoDate);
-      
+
       const db = await SQLite.openDatabaseAsync("HealthHive");
       await db.execAsync(
         `INSERT INTO fileStorage (fileName, folderName, description, hash, date) VALUES ('${FileName}', '${folderName}', '${Description}', '${hash}', '${isoDate}');`
@@ -135,17 +130,8 @@ const FileScreen = ({ route }) => {
       setFileName("");
       setDescription("");
 
-
-      const fetchData = async () => {
-        const db = await SQLite.openDatabaseAsync("HealthHive");
-        const response = await db.getAllAsync(
-          `SELECT * FROM fileStorage WHERE folderName = "${folderName}" ;`
-        );
-        console.log(response);
-        setData(response);
-        db.closeAsync();
-      };
-      await fetchData();
+      // Fetch the updated data
+      fetchData();
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -230,6 +216,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    marginBottom: 70,
   },
   head: {
     fontSize: 24,
