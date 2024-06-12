@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity }
 import { LineChart } from "react-native-chart-kit";
 import axios from 'axios';
 import { useEmail } from "../../EmailContext";
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect hook
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SQLite from "expo-sqlite";
 
@@ -137,6 +138,15 @@ const Dashboard = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const { email } = useEmail();
 
+  const fetchDocuments = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(
+      `SELECT * FROM fileStorage ORDER BY id DESC LIMIT 5;`
+    );
+    setDocuments(response);
+    db.closeAsync();
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       if (email) {
@@ -144,16 +154,15 @@ const Dashboard = ({ navigation }) => {
         setUser(userData);
       }
 
-      const db = await SQLite.openDatabaseAsync("HealthHive");
-      const response = await db.getAllAsync(
-        `SELECT * FROM fileStorage ORDER BY id DESC LIMIT 5;`
-      );
-      setDocuments(response);
-      db.closeAsync();
+      fetchDocuments();
     };
 
     fetchData();
   }, [email]);
+
+  useFocusEffect(() => {
+    fetchDocuments();
+  });
 
   return (
     <View style={styles.container}>
