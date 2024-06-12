@@ -39,7 +39,7 @@ const SearchBar = () => {
 
   const fileOpen = (hash) => {
     console.log(hash);
-    setFileDownloadUri("http://10.10.7.114:33000/file/" + hash);
+    setFileDownloadUri("http://192.168.151.43:33000/file/" + hash);
     setFileModalVisible(true);
   };
 

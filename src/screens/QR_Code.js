@@ -22,7 +22,7 @@ const QR_Code = ({ route }) => {
             <QRCode
               value={userId.toString()}
               size={235}
-              color="black"
+              color="#0056B3"
               backgroundColor="white"
             />
           )}

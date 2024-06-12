@@ -49,7 +49,7 @@ const FileScreen = ({ route }) => {
   };
 
   const fileOpen = (hash) => {
-    setFileDownloadUri("http://10.10.7.114:33000/file/" + hash);
+    setFileDownloadUri("http://192.168.151.43:33000/file/" + hash);
     setFileModalVisible(true);
   };
 
@@ -102,8 +102,10 @@ const FileScreen = ({ route }) => {
         type: "image/jpeg", // Adjust the file type as needed
       });
       console.log("File log: ", fileUri);
+      const currentDate = new Date();
+      console.log("Current Date and Time: ", currentDate);
       const response = await axios.post(
-        "http://10.10.7.114:33000/file/upload",
+        "http://192.168.151.43:33000/file/upload",
         formData,
         {
           headers: {
@@ -114,9 +116,17 @@ const FileScreen = ({ route }) => {
       const hash = response.data;
       console.log("File uploaded successfully:", response.data);
 
+      
+
+
+
+  
+      const isoDate = currentDate.toISOString();
+      console.log("ISO Date and Time: ", isoDate);
+      
       const db = await SQLite.openDatabaseAsync("HealthHive");
       await db.execAsync(
-        `INSERT INTO fileStorage (fileName, folderName, description, hash) VALUES ('${FileName}', '${folderName}', '${Description}', '${hash}');`
+        `INSERT INTO fileStorage (fileName, folderName, description, hash, date) VALUES ('${FileName}', '${folderName}', '${Description}', '${hash}', '${isoDate}');`
       );
       db.closeAsync();
       setModalVisible(false);
@@ -124,6 +134,7 @@ const FileScreen = ({ route }) => {
       setFileUri(null);
       setFileName("");
       setDescription("");
+
 
       const fetchData = async () => {
         const db = await SQLite.openDatabaseAsync("HealthHive");

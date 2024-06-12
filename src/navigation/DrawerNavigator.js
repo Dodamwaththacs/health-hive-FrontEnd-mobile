@@ -40,7 +40,7 @@ function DrawerNaviagtor() {
     initialRouteName="Health Hive"
     screenOptions={{
       headerStyle: {
-        backgroundColor: '#1921E4',
+        backgroundColor: '#0056B3',
         borderBottomEndRadius: 20,
         borderBottomStartRadius: 20,
         elevation: 20,
@@ -59,7 +59,7 @@ function DrawerNaviagtor() {
       headerTitleAlign: 'center',
       headerRight: () => (
         <Image
-          style={{ width: 50, height: 50, margin: 15, marginRight: 20, marginBottom: 30 }}
+          style={{ width: 50, height: 52, margin: 20, marginRight: 20, marginBottom: 30 }}
           source={Logo}
         />
       ),

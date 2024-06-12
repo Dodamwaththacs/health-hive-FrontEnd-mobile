@@ -41,18 +41,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24, 
     fontWeight: 'bold',
-    color: '#000', 
+    color: '#003366', 
     marginBottom: 4, 
   },
   subtitle: {
     fontSize: 18, 
-    color: '#000', 
+    color: '#003366', 
     marginBottom: 30, 
   },
   button: {
     paddingHorizontal: 20, 
     paddingVertical: 10, 
-    backgroundColor: '#0000ff', 
+    backgroundColor: '#0056B3', 
     borderRadius: 40, 
   },
   buttonText: {

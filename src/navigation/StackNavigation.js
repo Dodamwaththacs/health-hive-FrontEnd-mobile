@@ -12,6 +12,7 @@ import UserProfile from '../screens/Home/UserProfile';
 
 
 
+
 const Stack = createNativeStackNavigator();
 
 function StackNavigation() {
@@ -27,6 +28,7 @@ function StackNavigation() {
         <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown:false}}/>
         <Stack.Screen name="UserProfile" component={UserProfile} options={{ title: 'Your Profie' }} />
         <Stack.Screen name='DrawerNavigator' component={DrawerNavigator} options={{ headerShown: false }} />
+
       </Stack.Navigator>
     
   );

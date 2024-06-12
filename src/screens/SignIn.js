@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 0,
+    color:'#003366',
   },
   sign_bg: {
     width: 350,
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    backgroundColor: "#0000ff",
+    backgroundColor: "#0056B3",
     padding: 15,
     alignItems: "center",
     borderRadius: 20,
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   forgotPassword: {
-    color: "#0000ff",
+    color: "#0056B3",
     marginTop: 15,
   },
 });
