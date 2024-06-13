@@ -10,12 +10,12 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import axios from 'axios';
+import axios from "axios";
 import { useEmail } from "../EmailContext";
 
 const Signin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigation = useNavigation();
   const { setEmail: setEmailContext } = useEmail();
@@ -65,6 +65,7 @@ const handleSignIn = async () => {
     console.error("Error fetching user data:", error);
   }
 };
+
 
   return (
     <View style={styles.container}>

@@ -107,8 +107,8 @@ const LabFolder = ({ route }) => {
   const handleMove = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response = await db.getAllAsync(
-      `SELECT DISTINCT folderName
-      FROM fileStorage
+      `SELECT  folderName
+      FROM folderData
       WHERE folderName <> 'LabReports'
       ORDER BY folderName ASC;`
     );

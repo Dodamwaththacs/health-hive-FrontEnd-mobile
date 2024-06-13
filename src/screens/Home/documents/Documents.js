@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import AddButton from "react-native-vector-icons/AntDesign";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
+import * as SQLite from "expo-sqlite";
 
 const baseDir = `${FileSystem.documentDirectory}HealthHive/`;
 
@@ -40,6 +41,11 @@ const FolderCreator = () => {
       if (!info.exists) {
         await FileSystem.makeDirectoryAsync(baseDir, { intermediates: true });
         createDirectory("LabReports");
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        await db.execAsync(
+          `INSERT INTO folderData (folderName) VALUES ('LabReports');`
+        );
+        db.closeAsync();
       }
     } catch (error) {
       console.error("Error creating base directory:", error);
@@ -69,7 +75,13 @@ const FolderCreator = () => {
       const info = await FileSystem.getInfoAsync(dirUri);
       if (!info.exists) {
         await FileSystem.makeDirectoryAsync(dirUri, { intermediates: true });
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        await db.execAsync(
+          `INSERT INTO folderData (folderName) VALUES ('${folderName}');`
+        );
         return true;
+
+        db.closeAsync();
       } else {
         console.log("Directory already exists!");
         return false;

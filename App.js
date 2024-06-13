@@ -4,8 +4,6 @@ import { EmailProvider } from "./src/EmailContext";
 import StackNavigation from "./src/navigation/StackNavigation";
 import * as SQLite from "expo-sqlite";
 
-
-
 export default function App() {
   useEffect(() => {
     const databaseHandling = async () => {
@@ -18,7 +16,11 @@ export default function App() {
         description TEXT NOT NULL,
         hash TEXT NOT NULL,
         date DATE DEFAULT CURRENT_TIMESTAMP
-      );`
+      );`     
+      CREATE TABLE IF NOT EXISTS folderData (
+      id INTEGER PRIMARY KEY NOT NULL,
+      folderName TEXT NOT NULL);
+      `
       );
       db.closeAsync();
     };
@@ -28,7 +30,6 @@ export default function App() {
     <EmailProvider>
       <NavigationContainer>
         <StackNavigation />
-        
       </NavigationContainer>
     </EmailProvider>
   );

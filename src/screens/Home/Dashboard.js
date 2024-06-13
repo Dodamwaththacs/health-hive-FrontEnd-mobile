@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity } from "react-native";
+import React from "react";
+
 import { LineChart } from "react-native-chart-kit";
-import axios from 'axios';
+import axios from "axios";
 import { useEmail } from "../../EmailContext";
 import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect hook
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as SQLite from "expo-sqlite";
+
 
 const UserProfileCard = ({ user, onPress }) => {
   if (!user) {
@@ -33,7 +35,8 @@ const GreetCard = () => {
   return (
     <View style={styles.card1}>
       <Text style={styles.text}>
-        "Drink enough water daily for good health; aim for at least 8 cups. Your body will thank you!"
+        "Drink enough water daily for good health; aim for at least 8 cups. Your
+        body will thank you!"
       </Text>
     </View>
   );
@@ -49,6 +52,7 @@ const fetchDataByEmail = async (email) => {
     return null;
   }
 };
+
 
 const ChartsCard = () => {
   return (
@@ -120,6 +124,7 @@ const ListCard = ({ documents, user, navigation }) => {
       ListHeaderComponent={
         <>
           <UserProfileCard user={user} onPress={() => navigation.navigate('UserProfile', { userData: user })} />
+
           <GreetCard />
           <ChartsCard />
           <Text style={styles.textHeader}>Recent Uploads</Text>
@@ -127,7 +132,7 @@ const ListCard = ({ documents, user, navigation }) => {
       }
       data={documents}
       renderItem={renderItem}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.listContainer}
     />
   );
@@ -170,6 +175,7 @@ const Dashboard = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ListCard documents={documents} user={user} navigation={navigation} />
+
     </View>
   );
 };
@@ -200,6 +206,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
+
     shadowRadius: 2,
     elevation: 5,
   },
@@ -247,10 +254,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
+
+    color: "black",
   },
   uploadDate: {
     fontSize: 14,
-    color: "#888",
+    color: "gray",
+  },
+  listContainer: {
+    paddingBottom: 20,
   },
 });
 
