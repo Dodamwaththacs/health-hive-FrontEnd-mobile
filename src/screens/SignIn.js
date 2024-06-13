@@ -30,14 +30,14 @@ const handleSignIn = async () => {
     console.log("fetching user data..");
     const body = new URLSearchParams({
       grant_type: 'password',
-      client_id: 'myclient',
+      client_id: 'health-hive-client',
       username: email,
       password: password,
     });
 
     console.log("body..");
 
-    const response = await axios.post('http://10.10.18.247:8080/realms/myrealm/protocol/openid-connect/token', body.toString(), {
+    const response = await axios.post('http://10.10.18.247:8080/realms/Health-Hive/protocol/openid-connect/token', body.toString(), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -52,6 +52,10 @@ const handleSignIn = async () => {
     if (response.status === 200) {
       console.log("Login successful..");
       setEmailContext(email);
+      const token = data.access_token;
+
+      // Set the token as the default Authorization header for all Axios requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // After successful login, navigate to the next screen
       navigation.navigate("LoadingScreen");
     } else {
