@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; // Assuming you are using Expo for icons
+import React from "react";
+import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons"; // Assuming you are using Expo for icons
 
 const DocumentViewer = ({ route }) => {
   const { documentUri } = route.params;
@@ -17,7 +17,7 @@ const DocumentViewer = ({ route }) => {
         <Ionicons name="close-circle" size={30} color="black" />
       </TouchableOpacity>
       <Image
-        source={{ uri: "http://10.10.18.247:33000/file/" + documentUri }}
+        source={{ uri: "http://10.10.7.114:33000/file/" + documentUri }}
         style={styles.image}
         onError={(error) => console.error("Image loading error:", error)}
       />
@@ -28,17 +28,17 @@ const DocumentViewer = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white', // Optional: Add a background color for better visibility
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "white", // Optional: Add a background color for better visibility
+    justifyContent: "center",
+    alignItems: "center",
   },
   image: {
-    width: '80%',
-    height: '80%',
-    resizeMode: 'contain',
+    width: "80%",
+    height: "80%",
+    resizeMode: "contain",
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 20,
     right: 20,
   },

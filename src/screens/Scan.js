@@ -37,7 +37,6 @@ const Scan = () => {
 
   const fetchUserData = async () => {
     try {
-
       const response = await axios.get(
         `http://10.10.7.114:33000/api/users/email/${email}`
       );
@@ -55,7 +54,6 @@ const Scan = () => {
     setScannedUserId(scannedUserId);
 
     try {
-
       const response = await axios.get(
         `http://10.10.7.114:33000/api/users/${scannedUserId}`
       );
@@ -83,12 +81,15 @@ const Scan = () => {
 
   const handleLabRequest = async () => {
     try {
-      const response = await axios.post('http://10.10.18.247:33000/api/labRequests', {
-        user: user.id,
-        lab: scannedUserId,
-        description: description,
-        customerName: user.fullName 
-      });
+      const response = await axios.post(
+        "http://10.10.7.114:33000/api/labRequests",
+        {
+          user: user.id,
+          lab: scannedUserId,
+          description: description,
+          customerName: user.fullName,
+        }
+      );
 
       Alert.alert("Lab Request", "Your lab request has been submitted.");
       resetScanner();
@@ -101,7 +102,6 @@ const Scan = () => {
 
   const handleHealthReport = async () => {
     try {
-
       const response = await axios.post(
         "http://10.10.7.114:33000/api/labReportShares",
         {
@@ -161,15 +161,6 @@ const Scan = () => {
 
   return (
     <View style={styles.container}>
-    
-      <View style={styles.headerContainer}>
-        <Text style={styles.guidText}>
-          To connect with the lab, scan using "Lab Request". {"\n"}
-          To share your health report with another user, scan using "Share
-          Health Report".
-        </Text>
-        <Image source={require("../assets/scan.png")} style={styles.image} />
-      </View>
       {isScannerActive ? (
         <View style={styles.scannerWrapper}>
           <View style={styles.scannerContainer}>
@@ -269,7 +260,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  
+
   scannerWrapper: {
     flex: 1,
     width: "100%",
@@ -306,11 +297,10 @@ const styles = StyleSheet.create({
     marginBottom: -45,
   },
   buttonContainer: {
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    width: '90%',
-    marginTop:-310,
-
+    flexDirection: "column",
+    justifyContent: "space-around",
+    width: "90%",
+    marginTop: -310,
   },
   button: {
     height: 100,
@@ -346,8 +336,8 @@ const styles = StyleSheet.create({
     marginLeft: -90,
   },
   buttonText: {
-    color: '#003366',
-    fontWeight: 'bold',
+    color: "#003366",
+    fontWeight: "bold",
 
     fontSize: 17,
     marginLeft: 10,

@@ -20,52 +20,52 @@ const Signin = () => {
   const navigation = useNavigation();
   const { setEmail: setEmailContext } = useEmail();
 
-  
+  const handleSignIn = async () => {
+    console.log("email..", email);
+    console.log("password..", password);
+    try {
+      console.log("fetching user data..");
+      const body = new URLSearchParams({
+        grant_type: "password",
+        client_id: "health-hive-client",
+        username: email,
+        password: password,
+      });
 
+      console.log("body..");
 
-const handleSignIn = async () => {
-  console.log("email..", email);
-  console.log("password..", password)
-  try {
-    console.log("fetching user data..");
-    const body = new URLSearchParams({
-      grant_type: 'password',
-      client_id: 'health-hive-client',
-      username: email,
-      password: password,
-    });
+      const response = await axios.post(
+        "http://10.10.7.114:8080/realms/Health-Hive/protocol/openid-connect/token",
+        body.toString(),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
 
-    console.log("body..");
+      const data = response.data; // With Axios, the JSON response is automatically parsed
 
-    const response = await axios.post('http://10.10.18.247:8080/realms/Health-Hive/protocol/openid-connect/token', body.toString(), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
+      console.log("connection successful..");
+      console.log("jsonResponse..");
+      console.log(data);
 
-    const data = response.data; // With Axios, the JSON response is automatically parsed
+      if (response.status === 200) {
+        console.log("Login successful..");
+        setEmailContext(email);
+        const token = data.access_token;
 
-    console.log("connection successful..");
-    console.log("jsonResponse..");
-    console.log(data);
-
-    if (response.status === 200) {
-      console.log("Login successful..");
-      setEmailContext(email);
-      const token = data.access_token;
-
-      // Set the token as the default Authorization header for all Axios requests
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // After successful login, navigate to the next screen
-      navigation.navigate("LoadingScreen");
-    } else {
-      console.log("Login failed..");
+        // Set the token as the default Authorization header for all Axios requests
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        // After successful login, navigate to the next screen
+        navigation.navigate("LoadingScreen");
+      } else {
+        console.log("Login failed..");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     }
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  }
-};
-
+  };
 
   return (
     <View style={styles.container}>
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 0,
-    color:'#003366',
+    color: "#003366",
   },
   sign_bg: {
     width: 350,

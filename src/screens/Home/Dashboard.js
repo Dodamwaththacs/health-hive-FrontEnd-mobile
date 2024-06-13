@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
-import React from "react";
-
 import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 import { useEmail } from "../../EmailContext";
-import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect hook
-import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation, useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect hook
+import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
-
-
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  FlatList,
+  Dimensions,
+} from "react-native";
 const UserProfileCard = ({ user, onPress }) => {
   if (!user) {
     return (
@@ -44,15 +49,16 @@ const GreetCard = () => {
 
 const fetchDataByEmail = async (email) => {
   try {
-    const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
-    console.log('Data fetched successfully:', response.data);
+    const response = await axios.get(
+      `http://10.10.7.114:33000/api/users/email/${email}`
+    );
+    console.log("Data fetched successfully:", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching data:', error.message);
+    console.error("Error fetching data:", error.message);
     return null;
   }
 };
-
 
 const ChartsCard = () => {
   return (
@@ -99,22 +105,35 @@ const formatDate = (dateString) => {
     return "Invalid date";
   }
   const date = new Date(parsedDate);
-  const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+  const options = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true,
+  };
   return date.toLocaleString(undefined, options);
 };
 
 const openDocument = (item, navigation) => {
-  navigation.navigate('DocumentViewer', { documentUri: item.hash });
+  navigation.navigate("DocumentViewer", { documentUri: item.hash });
 };
 
 const ListCard = ({ documents, user, navigation }) => {
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.item} onPress={() => openDocument(item, navigation)}>
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => openDocument(item, navigation)}
+    >
       <Icon name="document-outline" size={50} color="#000" />
       <View>
         <Text style={styles.title}>{item.fileName}</Text>
         <Text style={styles.titledescription}>{item.description}</Text>
-        <Text style={styles.uploadDate}>Uploaded on: {formatDate(item.date)}</Text>
+        <Text style={styles.uploadDate}>
+          Uploaded on: {formatDate(item.date)}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -123,7 +142,12 @@ const ListCard = ({ documents, user, navigation }) => {
     <FlatList
       ListHeaderComponent={
         <>
-          <UserProfileCard user={user} onPress={() => navigation.navigate('UserProfile', { userData: user })} />
+          <UserProfileCard
+            user={user}
+            onPress={() =>
+              navigation.navigate("UserProfile", { userData: user })
+            }
+          />
 
           <GreetCard />
           <ChartsCard />
@@ -138,13 +162,10 @@ const ListCard = ({ documents, user, navigation }) => {
   );
 };
 
-
-
 const Dashboard = ({ navigation }) => {
   const [documents, setDocuments] = useState([]);
   const [user, setUser] = useState(null);
   const { email } = useEmail();
-
 
   const fetchDocuments = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
@@ -175,7 +196,6 @@ const Dashboard = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ListCard documents={documents} user={user} navigation={navigation} />
-
     </View>
   );
 };
