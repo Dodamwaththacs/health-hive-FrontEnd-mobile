@@ -23,7 +23,7 @@ function DrawerNaviagtor() {
       try {
 
         const response = await axios.get(
-          `http://10.10.7.114:33000/api/users/email/${email}`
+          `http://10.10.18.247:33000/api/users/email/${email}`
         );
         setUser(response.data);
       } catch (error) {

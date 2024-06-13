@@ -94,7 +94,7 @@ const UserProfile = ({ route, navigation }) => {
           onPress: async () => {
             try {
               const response = await axios.put(
-                `http://10.10.7.114:33000/api/users/${user.id}`,
+                `http://10.10.18.247:33000/api/users/${user.id}`,
                 updatedUser
               );
               setUser(updatedUser);

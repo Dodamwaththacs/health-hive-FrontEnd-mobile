@@ -49,7 +49,7 @@ const FileScreen = ({ route }) => {
   };
 
   const fileOpen = (hash) => {
-    setFileDownloadUri("http://10.10.7.114:33000/file/" + hash);
+    setFileDownloadUri("http://10.10.18.247:33000/file/" + hash);
     setFileModalVisible(true);
   };
 
@@ -105,7 +105,7 @@ const FileScreen = ({ route }) => {
       const currentDate = new Date();
       console.log("Current Date and Time: ", currentDate);
       const response = await axios.post(
-        "http://10.10.7.114:33000/file/upload",
+        "http://10.10.18.247:33000/file/upload",
         formData,
         {
           headers: {
@@ -139,7 +139,7 @@ const FileScreen = ({ route }) => {
 
   const testConnection = async () => {
     try {
-      const response = await axios.get("http://192.168.143.140:33000/");
+      const response = await axios.get("http://10.10.18.247:33000/");
       Alert.alert("Connection Successful!");
       console.log(response.data);
     } catch (error) {
