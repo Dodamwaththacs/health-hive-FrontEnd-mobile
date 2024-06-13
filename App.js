@@ -16,7 +16,7 @@ export default function App() {
         description TEXT NOT NULL,
         hash TEXT NOT NULL,
         date DATE DEFAULT CURRENT_TIMESTAMP
-      );`     
+      );     
       CREATE TABLE IF NOT EXISTS folderData (
       id INTEGER PRIMARY KEY NOT NULL,
       folderName TEXT NOT NULL);
