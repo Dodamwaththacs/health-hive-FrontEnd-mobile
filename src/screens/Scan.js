@@ -37,6 +37,7 @@ const Scan = () => {
 
   const fetchUserData = async () => {
     try {
+
       const response = await axios.get(
         `http://10.10.7.114:33000/api/users/email/${email}`
       );
@@ -54,6 +55,7 @@ const Scan = () => {
     setScannedUserId(scannedUserId);
 
     try {
+
       const response = await axios.get(
         `http://10.10.7.114:33000/api/users/${scannedUserId}`
       );
@@ -81,16 +83,13 @@ const Scan = () => {
 
   const handleLabRequest = async () => {
     try {
-      const response = await axios.post(
-        "http://10.10.7.114:33000/api/labRequests",
-        {
-          user: user.id,
-          lab: scannedUserId,
-          description: description,
-          customerName: user.fullName,
-        }
-      );
-      console.log("Lab request submitted:", response);
+      const response = await axios.post('http://10.10.18.247:33000/api/labRequests', {
+        user: user.id,
+        lab: scannedUserId,
+        description: description,
+        customerName: user.fullName 
+      });
+
       Alert.alert("Lab Request", "Your lab request has been submitted.");
       resetScanner();
     } catch (error) {
@@ -102,6 +101,7 @@ const Scan = () => {
 
   const handleHealthReport = async () => {
     try {
+
       const response = await axios.post(
         "http://10.10.7.114:33000/api/labReportShares",
         {
@@ -161,6 +161,7 @@ const Scan = () => {
 
   return (
     <View style={styles.container}>
+    
       <View style={styles.headerContainer}>
         <Text style={styles.guidText}>
           To connect with the lab, scan using "Lab Request". {"\n"}
@@ -268,36 +269,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "90%",
-    height: 150,
-    alignItems: "center",
-    marginBottom: 20,
-    marginTop: -150,
-    padding: 10,
-    margin: 10,
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  image: {
-    width: 106,
-    height: 106,
-  },
-  guidText: {
-    fontSize: 16,
-    color: "gray",
-    textAlign: "left",
-    flex: 1,
-    marginRight: 2,
-    marginLeft: 10,
-  },
+  
   scannerWrapper: {
     flex: 1,
     width: "100%",
@@ -334,10 +306,11 @@ const styles = StyleSheet.create({
     marginBottom: -45,
   },
   buttonContainer: {
-    flexDirection: "column",
-    justifyContent: "space-around",
-    width: "90%",
-    marginTop: 30,
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    width: '90%',
+    marginTop:-310,
+
   },
   button: {
     height: 100,
@@ -373,8 +346,9 @@ const styles = StyleSheet.create({
     marginLeft: -90,
   },
   buttonText: {
-    color: "gray",
-    fontWeight: "bold",
+    color: '#003366',
+    fontWeight: 'bold',
+
     fontSize: 17,
     marginLeft: 10,
   },

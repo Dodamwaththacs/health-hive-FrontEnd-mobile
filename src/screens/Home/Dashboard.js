@@ -1,16 +1,13 @@
+import React, { useState, useEffect } from "react";
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Dimensions,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+
 import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 import { useEmail } from "../../EmailContext";
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect hook
+import Icon from 'react-native-vector-icons/Ionicons';
+import * as SQLite from "expo-sqlite";
+
 
 const UserProfileCard = ({ user, onPress }) => {
   if (!user) {
@@ -47,16 +44,16 @@ const GreetCard = () => {
 
 const fetchDataByEmail = async (email) => {
   try {
-    const response = await axios.get(
-      `http://10.10.7.114:33000/api/users/email/${email}`
-    );
-    console.log("Data fetched successfully:", response.data);
-    return response.data; // Return the fetched data
+    const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
+    console.log('Data fetched successfully:', response.data);
+    return response.data;
   } catch (error) {
-    console.error("Error fetching data:", error.message);
-    return null; // Return null in case of error
+    console.error('Error fetching data:', error.message);
+    return null;
   }
 };
+
+
 const ChartsCard = () => {
   return (
     <View>
@@ -96,27 +93,41 @@ const ChartsCard = () => {
   );
 };
 
+const formatDate = (dateString) => {
+  const parsedDate = Date.parse(dateString);
+  if (isNaN(parsedDate)) {
+    return "Invalid date";
+  }
+  const date = new Date(parsedDate);
+  const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+  return date.toLocaleString(undefined, options);
+};
+
+const openDocument = (item, navigation) => {
+  navigation.navigate('DocumentViewer', { documentUri: item.hash });
+};
+
 const ListCard = ({ documents, user, navigation }) => {
   const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.title}>{item.name}</Text>
-      <Text style={styles.uploadDate}>Uploaded on: {item.uploadDate}</Text>
-    </View>
+    <TouchableOpacity style={styles.item} onPress={() => openDocument(item, navigation)}>
+      <Icon name="document-outline" size={50} color="#000" />
+      <View>
+        <Text style={styles.title}>{item.fileName}</Text>
+        <Text style={styles.titledescription}>{item.description}</Text>
+        <Text style={styles.uploadDate}>Uploaded on: {formatDate(item.date)}</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
     <FlatList
       ListHeaderComponent={
         <>
-          <UserProfileCard
-            user={user}
-            onPress={() =>
-              navigation.navigate("UserProfile", { userData: user })
-            }
-          />
+          <UserProfileCard user={user} onPress={() => navigation.navigate('UserProfile', { userData: user })} />
+
           <GreetCard />
           <ChartsCard />
-          <Text style={styles.textHeader}>Document List</Text>
+          <Text style={styles.textHeader}>Recent Uploads</Text>
         </>
       }
       data={documents}
@@ -127,67 +138,75 @@ const ListCard = ({ documents, user, navigation }) => {
   );
 };
 
+
+
 const Dashboard = ({ navigation }) => {
-  const [user, setUser] = React.useState(null);
+  const [documents, setDocuments] = useState([]);
+  const [user, setUser] = useState(null);
   const { email } = useEmail();
 
-  React.useEffect(() => {
-    const getUserData = async () => {
-      const userData = await fetchDataByEmail(email);
-      if (userData) {
+
+  const fetchDocuments = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(
+      `SELECT * FROM fileStorage ORDER BY id DESC LIMIT 5;`
+    );
+    setDocuments(response);
+    db.closeAsync();
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (email) {
+        const userData = await fetchDataByEmail(email);
         setUser(userData);
       }
+
+      fetchDocuments();
     };
 
-    getUserData();
-  }, []);
+    fetchData();
+  }, [email]);
 
-  const documents = [
-    { id: 1, name: "Document 1", uploadDate: "2024-04-14" },
-    { id: 2, name: "Document 2", uploadDate: "2024-04-13" },
-    { id: 3, name: "Document 3", uploadDate: "2024-04-12" },
-    { id: 4, name: "Document 4", uploadDate: "2024-04-11" },
-    { id: 5, name: "Document 5", uploadDate: "2024-04-10" },
-    { id: 6, name: "Document 6", uploadDate: "2024-04-09" },
-  ];
-
-  const recentDocuments = documents
-    .sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate))
-    .slice(0, 5);
+  useFocusEffect(() => {
+    fetchDocuments();
+  });
 
   return (
-    <View style={{ flex: 1 }}>
-      <ListCard
-        documents={recentDocuments}
-        user={user}
-        navigation={navigation}
-      />
+    <View style={styles.container}>
+      <ListCard documents={documents} user={user} navigation={navigation} />
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
   card: {
     flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
     padding: 10,
-    margin: 10,
     backgroundColor: "#fff",
-    borderRadius: 40,
+    borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
   },
   card1: {
-    flexDirection: "row",
-    padding: 10,
-    margin: 10,
     backgroundColor: "#fff",
-    borderRadius: 20,
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.8,
+
     shadowRadius: 2,
     elevation: 5,
   },
@@ -195,43 +214,47 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+    marginRight: 10,
   },
   details: {
-    marginLeft: 10,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
+    flex: 1,
   },
   greeting: {
-    fontSize: 14,
+    fontSize: 18,
     color: "#888",
   },
-  textHeader: {
-    fontSize: 20,
+  name: {
+    fontSize: 24,
     fontWeight: "bold",
-    marginTop: 10,
-    marginLeft: 10,
   },
   text: {
+    fontSize: 16,
+    fontStyle: "italic",
+  },
+  textHeader: {
     fontSize: 18,
-    color: "gray",
-    textAlign: "center",
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  listContainer: {
+    paddingBottom: 20,
   },
   item: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#ADD8E6",
-    padding: 20,
-    marginVertical: 8,
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: "#fff",
     borderRadius: 10,
-    marginLeft: 10,
-    marginRight: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
+
     color: "black",
   },
   uploadDate: {

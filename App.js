@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { EmailProvider } from "./src/EmailContext";
 import StackNavigation from "./src/navigation/StackNavigation";
-import FolderNavigation from "./src/screens/Home/documents/FolderNavigation";
 import * as SQLite from "expo-sqlite";
 
 export default function App() {
@@ -16,8 +15,8 @@ export default function App() {
         folderName TEXT NOT NULL,
         description TEXT NOT NULL,
         hash TEXT NOT NULL,
-        date DATE DEFAULT CURRENT_DATE
-      );
+        date DATE DEFAULT CURRENT_TIMESTAMP
+      );`     
       CREATE TABLE IF NOT EXISTS folderData (
       id INTEGER PRIMARY KEY NOT NULL,
       folderName TEXT NOT NULL);

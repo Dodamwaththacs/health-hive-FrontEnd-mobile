@@ -20,52 +20,52 @@ const Signin = () => {
   const navigation = useNavigation();
   const { setEmail: setEmailContext } = useEmail();
 
-  const handleSignIn = async () => {
-    try {
-      const response = await axios.post(
-        "http://10.10.7.114:33000/api/auth/login",
-        {
-          email: email,
-          password: password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("connection successful..");
-      console.log("jsonResponse..");
-      console.log(response.data);
+  
 
-      if (response.status === 200) {
-        console.log("Login successful..");
-        setEmailContext(email);
-        // After successful login, navigate to the next screen
-        navigation.navigate("LoadingScreen");
-      } else {
-        console.log("Login failed..");
-        Alert.alert(
-          "Login failed",
-          response.data.message ||
-            "Please check your credentials and try again."
-        );
-      }
-    } catch (error) {
-      console.log("this is catch block..");
-      if (error.response) {
-        const errorMessage =
-          error.response.data.message || "Something went wrong.";
-        Alert.alert("Login failed..", errorMessage);
-      } else {
-        // Server is unreachable or backend issue
-        Alert.alert(
-          "Server Error",
-          "Unable to connect to the server. Please try again later."
-        );
-      }
+
+const handleSignIn = async () => {
+  console.log("email..", email);
+  console.log("password..", password)
+  try {
+    console.log("fetching user data..");
+    const body = new URLSearchParams({
+      grant_type: 'password',
+      client_id: 'health-hive-client',
+      username: email,
+      password: password,
+    });
+
+    console.log("body..");
+
+    const response = await axios.post('http://10.10.18.247:8080/realms/Health-Hive/protocol/openid-connect/token', body.toString(), {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+
+    const data = response.data; // With Axios, the JSON response is automatically parsed
+
+    console.log("connection successful..");
+    console.log("jsonResponse..");
+    console.log(data);
+
+    if (response.status === 200) {
+      console.log("Login successful..");
+      setEmailContext(email);
+      const token = data.access_token;
+
+      // Set the token as the default Authorization header for all Axios requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      // After successful login, navigate to the next screen
+      navigation.navigate("LoadingScreen");
+    } else {
+      console.log("Login failed..");
     }
-  };
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};
+
 
   return (
     <View style={styles.container}>
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 0,
+    color:'#003366',
   },
   sign_bg: {
     width: 350,
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    backgroundColor: "#0000ff",
+    backgroundColor: "#0056B3",
     padding: 15,
     alignItems: "center",
     borderRadius: 20,
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   forgotPassword: {
-    color: "#0000ff",
+    color: "#0056B3",
     marginTop: 15,
   },
 });

@@ -15,19 +15,20 @@ function HomeBottomNavigator() {
       screenOptions={{
         tabBarActiveTintColor: '#fff',
         tabBarInactiveTintColor: '#9e9e9e',
-        tabBar: '#1921E4',
+        tabBar: '#fff',
         tabBarIconStyle: {
-          borderRadius: 20,
+          borderRadius: 40,
+          marginBottom: -12,
       
 
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "bold",
-          marginBottom: 8,
+          marginBottom: 13,
         },
         tabBarStyle: {
-          backgroundColor: "#1921E4",
+          backgroundColor: "#0056B3",
           height: 70,
           borderTopStartRadius: 20,
           borderTopEndRadius: 20,
