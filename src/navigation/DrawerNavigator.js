@@ -21,7 +21,7 @@ function DrawerNaviagtor() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://192.168.151.43:33000/api/users/email/${email}`);
+        const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
         setUser(response.data);
       } catch (error) {
         console.error('Error fetching user data:', error);

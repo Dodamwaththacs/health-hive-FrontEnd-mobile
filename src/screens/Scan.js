@@ -27,7 +27,7 @@ const Scan = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`http://192.168.151.43:33000/api/users/email/${email}`);
+      const response = await axios.get(`http://10.10.18.247:33000/api/users/email/${email}`);
       setUser(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error.message);
@@ -42,7 +42,7 @@ const Scan = () => {
     setScannedUserId(scannedUserId);
     
     try {
-      const response = await axios.get(`http://192.168.151.43:33000/api/users/${scannedUserId}`);
+      const response = await axios.get(`http://10.10.18.247:33000/api/users/${scannedUserId}`);
       const scannedUser = response.data;
       
       if (!scannedUser) {
@@ -61,7 +61,7 @@ const Scan = () => {
 
   const handleLabRequest = async () => {
     try {
-      const response = await axios.post('http://192.168.151.43:33000/api/labRequests', {
+      const response = await axios.post('http://10.10.18.247:33000/api/labRequests', {
         user: user.id,
         lab: scannedUserId,
         description: description,
@@ -78,7 +78,7 @@ const Scan = () => {
 
   const handleHealthReport = async () => {
     try {
-      const response = await axios.post('http://192.168.151.43:33000/api/labReportShares', {
+      const response = await axios.post('http://10.10.18.247:33000/api/labReportShares', {
         doctor: scannedUserId,
         patient: user.id,
         description: description,
