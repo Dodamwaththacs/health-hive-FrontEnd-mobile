@@ -1,10 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, Dimensions, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { LineChart } from "react-native-chart-kit";
-import axios from 'axios';
+import axios from "axios";
 import { useEmail } from "../../EmailContext";
-
-
 
 const UserProfileCard = ({ user, onPress }) => {
   if (!user) {
@@ -24,9 +30,7 @@ const UserProfileCard = ({ user, onPress }) => {
         <Text style={styles.greeting}>Hello, </Text>
         <Text style={styles.name}>{user.fullName}</Text>
       </View>
-
     </TouchableOpacity>
-    
   );
 };
 
@@ -34,7 +38,8 @@ const GreetCard = () => {
   return (
     <View style={styles.card1}>
       <Text style={styles.text}>
-        "Drink enough water daily for good health; aim for at least 8 cups. Your body will thank you!"
+        "Drink enough water daily for good health; aim for at least 8 cups. Your
+        body will thank you!"
       </Text>
     </View>
   );
@@ -42,14 +47,16 @@ const GreetCard = () => {
 
 const fetchDataByEmail = async (email) => {
   try {
-    const response = await axios.get(`http://192.168.151.43:33000/api/users/email/${email}`);
-    console.log('Data fetched successfully:', response.data);
+    const response = await axios.get(
+      `http://10.10.7.114:33000/api/users/email/${email}`
+    );
+    console.log("Data fetched successfully:", response.data);
     return response.data; // Return the fetched data
   } catch (error) {
-    console.error('Error fetching data:', error.message);
+    console.error("Error fetching data:", error.message);
     return null; // Return null in case of error
   }
-}
+};
 const ChartsCard = () => {
   return (
     <View>
@@ -85,7 +92,6 @@ const ChartsCard = () => {
           borderRadius: 16,
         }}
       />
-      
     </View>
   );
 };
@@ -102,7 +108,12 @@ const ListCard = ({ documents, user, navigation }) => {
     <FlatList
       ListHeaderComponent={
         <>
-          <UserProfileCard user={user} onPress={() => navigation.navigate('UserProfile', {userData:user })} />
+          <UserProfileCard
+            user={user}
+            onPress={() =>
+              navigation.navigate("UserProfile", { userData: user })
+            }
+          />
           <GreetCard />
           <ChartsCard />
           <Text style={styles.textHeader}>Document List</Text>
@@ -110,7 +121,7 @@ const ListCard = ({ documents, user, navigation }) => {
       }
       data={documents}
       renderItem={renderItem}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.listContainer}
     />
   );
@@ -138,14 +149,19 @@ const Dashboard = ({ navigation }) => {
     { id: 4, name: "Document 4", uploadDate: "2024-04-11" },
     { id: 5, name: "Document 5", uploadDate: "2024-04-10" },
     { id: 6, name: "Document 6", uploadDate: "2024-04-09" },
-  
   ];
 
-  const recentDocuments = documents.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate)).slice(0, 5);
+  const recentDocuments = documents
+    .sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate))
+    .slice(0, 5);
 
   return (
     <View style={{ flex: 1 }}>
-      <ListCard documents={recentDocuments} user={user} navigation={navigation} />
+      <ListCard
+        documents={recentDocuments}
+        user={user}
+        navigation={navigation}
+      />
     </View>
   );
 };
@@ -170,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 } ,
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
@@ -216,11 +232,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color:'black',
+    color: "black",
   },
   uploadDate: {
     fontSize: 14,
-    color:'gray',
+    color: "gray",
   },
   listContainer: {
     paddingBottom: 20,

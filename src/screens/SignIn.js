@@ -10,36 +10,34 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import axios from 'axios';
+import axios from "axios";
 import { useEmail } from "../EmailContext";
 
 const Signin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigation = useNavigation();
   const { setEmail: setEmailContext } = useEmail();
 
-  
-
   const handleSignIn = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.151.43:33000/api/auth/login",
+        "http://10.10.7.114:33000/api/auth/login",
         {
-          email: email,  
-          password: password  
+          email: email,
+          password: password,
         },
         {
           headers: {
             "Content-Type": "application/json",
-          }
+          },
         }
       );
       console.log("connection successful..");
       console.log("jsonResponse..");
       console.log(response.data);
-  
+
       if (response.status === 200) {
         console.log("Login successful..");
         setEmailContext(email);
@@ -49,21 +47,25 @@ const Signin = () => {
         console.log("Login failed..");
         Alert.alert(
           "Login failed",
-          response.data.message || "Please check your credentials and try again."
+          response.data.message ||
+            "Please check your credentials and try again."
         );
       }
     } catch (error) {
       console.log("this is catch block..");
       if (error.response) {
-        const errorMessage = error.response.data.message || "Something went wrong.";
+        const errorMessage =
+          error.response.data.message || "Something went wrong.";
         Alert.alert("Login failed..", errorMessage);
       } else {
         // Server is unreachable or backend issue
-        Alert.alert("Server Error", "Unable to connect to the server. Please try again later.");
+        Alert.alert(
+          "Server Error",
+          "Unable to connect to the server. Please try again later."
+        );
       }
     }
   };
-  
 
   return (
     <View style={styles.container}>

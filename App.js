@@ -5,8 +5,6 @@ import StackNavigation from "./src/navigation/StackNavigation";
 import FolderNavigation from "./src/screens/Home/documents/FolderNavigation";
 import * as SQLite from "expo-sqlite";
 
-
-
 export default function App() {
   useEffect(() => {
     const databaseHandling = async () => {
@@ -19,7 +17,11 @@ export default function App() {
         description TEXT NOT NULL,
         hash TEXT NOT NULL,
         date DATE DEFAULT CURRENT_DATE
-      );`
+      );
+      CREATE TABLE IF NOT EXISTS folderData (
+      id INTEGER PRIMARY KEY NOT NULL,
+      folderName TEXT NOT NULL);
+      `
       );
       db.closeAsync();
     };
@@ -29,7 +31,6 @@ export default function App() {
     <EmailProvider>
       <NavigationContainer>
         <StackNavigation />
-        
       </NavigationContainer>
     </EmailProvider>
   );

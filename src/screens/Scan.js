@@ -1,7 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, Alert, TextInput, Modal, TouchableOpacity, Image } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  Alert,
+  TextInput,
+  Modal,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import { BarCodeScanner } from "expo-barcode-scanner";
+import axios from "axios";
 import { useEmail } from "../EmailContext";
 
 const Scan = () => {
@@ -10,14 +20,14 @@ const Scan = () => {
   const [isScannerActive, setIsScannerActive] = useState(false);
   const [scanType, setScanType] = useState(null);
   const [user, setUser] = useState(null);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [scannedUserId, setScannedUserId] = useState(null);
   const { email } = useEmail();
 
   const getCameraPermission = async () => {
     const { status } = await BarCodeScanner.requestPermissionsAsync();
-    setHasPermission(status === 'granted');
+    setHasPermission(status === "granted");
   };
 
   useEffect(() => {
@@ -27,10 +37,12 @@ const Scan = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`http://192.168.151.43:33000/api/users/email/${email}`);
+      const response = await axios.get(
+        `http://10.10.7.114:33000/api/users/email/${email}`
+      );
       setUser(response.data);
     } catch (error) {
-      console.error('Error fetching user data:', error.message);
+      console.error("Error fetching user data:", error.message);
     }
   };
 
@@ -38,39 +50,51 @@ const Scan = () => {
     console.log(`Scanned: type=${type}, data=${data}`);
     setScanned(true);
 
-    const scannedUserId = data.replace('USER_', '');
+    const scannedUserId = data.replace("USER_", "");
     setScannedUserId(scannedUserId);
-    
+
     try {
-      const response = await axios.get(`http://192.168.151.43:33000/api/users/${scannedUserId}`);
+      const response = await axios.get(
+        `http://10.10.7.114:33000/api/users/${scannedUserId}`
+      );
       const scannedUser = response.data;
-      
+
       if (!scannedUser) {
-        Alert.alert("Invalid QR", "This QR code does not belong to a valid user.");
+        Alert.alert(
+          "Invalid QR",
+          "This QR code does not belong to a valid user."
+        );
         resetScanner();
         return;
       }
 
       setIsModalVisible(true);
     } catch (error) {
-      console.error('Error validating user ID:', error.message);
-      Alert.alert("Invalid QR", "This QR code does not belong to a valid user.");
+      console.error("Error validating user ID:", error.message);
+      Alert.alert(
+        "Invalid QR",
+        "This QR code does not belong to a valid user."
+      );
       resetScanner();
     }
   };
 
   const handleLabRequest = async () => {
     try {
-      const response = await axios.post('http://192.168.151.43:33000/api/labRequests', {
-        user: user.id,
-        lab: scannedUserId,
-        description: description,
-        customerName: user.fullName 
-      });
+      const response = await axios.post(
+        "http://10.10.7.114:33000/api/labRequests",
+        {
+          user: user.id,
+          lab: scannedUserId,
+          description: description,
+          customerName: user.fullName,
+        }
+      );
+      console.log("Lab request submitted:", response);
       Alert.alert("Lab Request", "Your lab request has been submitted.");
       resetScanner();
     } catch (error) {
-      console.error('Error submitting lab request:', error.message);
+      console.error("Error submitting lab request:", error.message);
       Alert.alert("Error", "Failed to submit lab request.");
       resetScanner();
     }
@@ -78,17 +102,23 @@ const Scan = () => {
 
   const handleHealthReport = async () => {
     try {
-      const response = await axios.post('http://192.168.151.43:33000/api/labReportShares', {
-        doctor: scannedUserId,
-        patient: user.id,
-        description: description,
-        patientName: user.fullName 
-      });
-      Alert.alert("Health Report Sharing", "Health report shared successfully.");
+      const response = await axios.post(
+        "http://10.10.7.114:33000/api/labReportShares",
+        {
+          doctor: scannedUserId,
+          patient: user.id,
+          description: description,
+          patientName: user.fullName,
+        }
+      );
+      Alert.alert(
+        "Health Report Sharing",
+        "Health report shared successfully."
+      );
       resetScanner();
     } catch (error) {
-      console.error('Error sharing health report:', error.message);
-      console.error('Error response:', error.response.data);
+      console.error("Error sharing health report:", error.message);
+      console.error("Error response:", error.response.data);
       Alert.alert("Error", "Failed to share health records.");
       resetScanner();
     }
@@ -96,9 +126,9 @@ const Scan = () => {
 
   const handleSubmit = () => {
     setIsModalVisible(false);
-    if (scanType === 'labRequest') {
+    if (scanType === "labRequest") {
       handleLabRequest();
-    } else if (scanType === 'healthReport') {
+    } else if (scanType === "healthReport") {
       handleHealthReport();
     }
   };
@@ -112,14 +142,18 @@ const Scan = () => {
     setScanned(false);
     setIsScannerActive(false);
     setScanType(null);
-    setDescription('');
+    setDescription("");
     setScannedUserId(null);
   };
 
   if (!hasPermission) {
     return (
       <View style={styles.container}>
-        <Text>{hasPermission === null ? 'Requesting camera permission...' : 'No access to camera'}</Text>
+        <Text>
+          {hasPermission === null
+            ? "Requesting camera permission..."
+            : "No access to camera"}
+        </Text>
         <Button title="Allow Camera" onPress={getCameraPermission} />
       </View>
     );
@@ -128,12 +162,12 @@ const Scan = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.guidText}>To connect with the lab, scan using "Lab Request". {"\n"}
-        To share your health report with another user, scan using "Share Health Report".</Text>
-        <Image
-          source={require('../assets/scan.png')}
-          style={styles.image}
-        />
+        <Text style={styles.guidText}>
+          To connect with the lab, scan using "Lab Request". {"\n"}
+          To share your health report with another user, scan using "Share
+          Health Report".
+        </Text>
+        <Image source={require("../assets/scan.png")} style={styles.image} />
       </View>
       {isScannerActive ? (
         <View style={styles.scannerWrapper}>
@@ -145,23 +179,48 @@ const Scan = () => {
             <View style={styles.overlay} />
           </View>
           <View style={styles.cancelButtonContainer}>
-            <TouchableOpacity style={styles.cancelButton} onPress={resetScanner}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={resetScanner}
+            >
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       ) : (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => { setScanType('labRequest'); setScanned(false); setIsScannerActive(true); }}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setScanType("labRequest");
+              setScanned(false);
+              setIsScannerActive(true);
+            }}
+          >
             <View style={styles.buttonContent}>
-              <Image source={require('../assets/labrequests.png')} style={styles.buttonImage} />
+              <Image
+                source={require("../assets/labrequests.png")}
+                style={styles.buttonImage}
+              />
               <Text style={styles.buttonText}>Lab Request</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => { setScanType('healthReport'); setScanned(false); setIsScannerActive(true); }}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              setScanType("healthReport");
+              setScanned(false);
+              setIsScannerActive(true);
+            }}
+          >
             <View style={styles.buttonContent}>
-              <Image source={require('../assets/sharereports.png')} style={styles.buttonImage} />
-              <Text style={styles.buttonText}>Share your{"\n"}Health Reports</Text>
+              <Image
+                source={require("../assets/sharereports.png")}
+                style={styles.buttonImage}
+              />
+              <Text style={styles.buttonText}>
+                Share your{"\n"}Health Reports
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -182,10 +241,16 @@ const Scan = () => {
               value={description}
             />
             <View style={styles.horizontalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={handleSubmit}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleSubmit}
+              >
                 <Text style={styles.modalButtonText}>Submit</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={handleCancel}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleCancel}
+              >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -199,8 +264,8 @@ const Scan = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: "#fff",
   },
   headerContainer: {
@@ -235,22 +300,22 @@ const styles = StyleSheet.create({
   },
   scannerWrapper: {
     flex: 1,
-    width: '100%',
-    height: '90%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    backgroundColor: '#fff',
+    width: "100%",
+    height: "90%",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    backgroundColor: "#fff",
     top: 0,
-    bottom: 2,  
+    bottom: 2,
   },
   scannerContainer: {
-    width: '75%',
-    height: '82%',
+    width: "75%",
+    height: "82%",
     borderRadius: 10,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-    position: 'relative',
+    overflow: "hidden",
+    backgroundColor: "#fff",
+    position: "relative",
   },
   scanner: {
     flex: 1,
@@ -259,27 +324,27 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'white',
+    borderColor: "white",
   },
   cancelButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     marginBottom: -45,
   },
   buttonContainer: {
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    width: '90%',
+    flexDirection: "column",
+    justifyContent: "space-around",
+    width: "90%",
     marginTop: 30,
   },
   button: {
     height: 100,
-    backgroundColor: '#ADD8E6',
+    backgroundColor: "#ADD8E6",
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     margin: 5,
     shadowColor: "black",
     shadowOffset: { width: 0, height: 2 },
@@ -289,15 +354,15 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   imageContainer: {
     width: 50,
     height: 50,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 10,
     borderRadius: 10,
   },
@@ -308,66 +373,66 @@ const styles = StyleSheet.create({
     marginLeft: -90,
   },
   buttonText: {
-    color: 'gray',
-    fontWeight: 'bold',
+    color: "gray",
+    fontWeight: "bold",
     fontSize: 17,
     marginLeft: 10,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
   modalView: {
-    width: '80%',
+    width: "80%",
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalText: {
     fontSize: 18,
     marginBottom: 10,
-    color: 'gray',
+    color: "gray",
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     paddingHorizontal: 10,
     marginBottom: 10,
     borderRadius: 5,
   },
   horizontalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   modalButton: {
-    backgroundColor: '#ADD8E6',
+    backgroundColor: "#ADD8E6",
     padding: 10,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 5,
-    width: '45%', // Adjust width to maintain horizontal alignment
-    height: 40,  // Adjust the height to fit the button size
+    width: "45%", // Adjust width to maintain horizontal alignment
+    height: 40, // Adjust the height to fit the button size
   },
   modalButtonText: {
-    color: 'gray',
+    color: "gray",
     fontSize: 16,
   },
   cancelButton: {
-    backgroundColor: '#1921E4',
+    backgroundColor: "#1921E4",
     padding: 10,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 5,
-    width: '25%', // Adjust width to maintain horizontal alignment
+    width: "25%", // Adjust width to maintain horizontal alignment
   },
   cancelButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
 });
