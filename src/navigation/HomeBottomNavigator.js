@@ -4,7 +4,6 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Dashboard from "../screens/Home/Dashboard";
 import FolderNavigation from "../screens/Home/documents/FolderNavigation";
-import Uploads from "../screens/Home/Uploads";
 import Search from "../screens/Home/Search";
 
 const Tab = createBottomTabNavigator();
@@ -13,14 +12,12 @@ function HomeBottomNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#fff',
-        tabBarInactiveTintColor: '#9e9e9e',
-        tabBar: '#fff',
+        tabBarActiveTintColor: "#fff",
+        tabBarInactiveTintColor: "#9e9e9e",
+        tabBar: "#fff",
         tabBarIconStyle: {
           borderRadius: 40,
           marginBottom: -12,
-      
-
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -32,16 +29,12 @@ function HomeBottomNavigator() {
           height: 70,
           borderTopStartRadius: 20,
           borderTopEndRadius: 20,
-          
-        }
-      }} 
-     >
-
-
-      <Tab.Screen 
-        name="Dashboard" 
-        component={Dashboard} 
-
+        },
+      }}
+    >
+      <Tab.Screen
+        name="Dashboard"
+        component={Dashboard}
         options={{
           headerShown: false,
           tabBarLabel: "Home",
@@ -61,18 +54,6 @@ function HomeBottomNavigator() {
             <AntDesign name="copy1" color={color} size={size} />
           ),
         }}
-      />
-
-      <Tab.Screen 
-        name="Uploads" 
-        component={Uploads} 
-        options={{
-          headerShown:false,
-          tabBarLabel: 'Uploads',
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="upload" color={color} size={size} />
-          ),
-        }}  
       />
 
       <Tab.Screen

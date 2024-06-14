@@ -22,6 +22,7 @@ export default function App() {
       folderName TEXT NOT NULL);
       `
       );
+
       db.closeAsync();
     };
     databaseHandling();

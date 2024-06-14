@@ -38,7 +38,7 @@ const Scan = () => {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `http://10.10.18.247:33000/api/users/email/${email}`
+        `http://10.10.7.114:33000/api/users/email/${email}`
       );
       setUser(response.data);
     } catch (error) {
@@ -51,12 +51,12 @@ const Scan = () => {
     setScanned(true);
 
     const scannedUserId = data;
-  setScannedUserId(scannedUserId);
-  console.log("scannedUserId:", scannedUserId);
+    setScannedUserId(scannedUserId);
+    console.log("scannedUserId:", scannedUserId);
 
     try {
       const response = await axios.get(
-        `http://10.10.18.247:33000/api/users/${scannedUserId}`
+        `http://10.10.7.114:33000/api/users/${scannedUserId}`
       );
       const scannedUser = response.data;
 
@@ -87,7 +87,7 @@ const Scan = () => {
     console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
-        "http://10.10.18.247:33000/api/labRequests",
+        "http://10.10.7.114:33000/api/labRequests",
         {
           user: user.id,
           lab: scannedUserId,
@@ -110,11 +110,10 @@ const Scan = () => {
     console.log("patient:", user.id);
     console.log("description:", description);
     console.log("patientName:", user.fullName);
-    
 
     try {
       const response = await axios.post(
-        "http://10.10.18.247:33000/api/labReportShares",
+        "http://10.10.7.114:33000/api/labReportShares",
         {
           doctor: scannedUserId,
           patient: user.id,
@@ -138,7 +137,6 @@ const Scan = () => {
   const handleSubmit = () => {
     setIsModalVisible(false);
     if (scanType === "labRequest") {
-      
       handleLabRequest();
     } else if (scanType === "healthReport") {
       console.log("lab report share");

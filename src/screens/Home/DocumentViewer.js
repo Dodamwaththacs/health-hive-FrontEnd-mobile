@@ -17,7 +17,7 @@ const DocumentViewer = ({ route }) => {
         <Ionicons name="close-circle" size={30} color="black" />
       </TouchableOpacity>
       <Image
-        source={{ uri: "http://10.10.18.247:33000/file/" + documentUri }}
+        source={{ uri: "http://10.10.7.114:33000/file/" + documentUri }}
         style={styles.image}
         onError={(error) => console.error("Image loading error:", error)}
       />
