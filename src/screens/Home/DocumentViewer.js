@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons"; // Assuming you are using Expo fo
 const DocumentViewer = ({ route }) => {
   const { documentUri } = route.params;
   const navigation = useNavigation();
+  console.log("Document URI:", documentUri);
 
   const handleClose = () => {
     navigation.goBack(); // Navigate back to the previous screen (Dashboard in this case)

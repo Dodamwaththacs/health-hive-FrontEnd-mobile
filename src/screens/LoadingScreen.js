@@ -8,13 +8,13 @@ import {
   Animated,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import * as SQLite from "expo-sqlite";
 
 const LoadingScreen = () => {
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity value
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
 
   useEffect(() => {
-    // Animation sequence
     Animated.loop(
       Animated.sequence([
         Animated.timing(fadeAnim, {
@@ -30,12 +30,10 @@ const LoadingScreen = () => {
       ])
     ).start();
 
-    // Navigate to Dashboard screen after 3 seconds
     const timeout = setTimeout(() => {
       navigation.navigate("DrawerNavigator");
     }, 3000);
 
-    // Clear the timeout to avoid memory leaks
     return () => clearTimeout(timeout);
   }, [fadeAnim, navigation]);
 
@@ -67,7 +65,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
     fontSize: 18,
-    color:'#003366'
+    color: "#003366",
   },
 });
 

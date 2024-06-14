@@ -15,6 +15,7 @@ import * as SQLite from "expo-sqlite";
 import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useEmail } from "../../../EmailContext";
 
 const FileScreen = ({ route }) => {
   const [fileUri, setFileUri] = useState(null);
@@ -26,11 +27,12 @@ const FileScreen = ({ route }) => {
   const [FileName, setFileName] = useState("");
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState(data);
+  const { email } = useEmail();
 
   const fetchData = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response = await db.getAllAsync(
-      `SELECT * FROM fileStorage WHERE folderName = "${folderName}" ;`
+      `SELECT * FROM fileStorage WHERE folderName = "${folderName}" AND userEmail = "${email}" ;`
     );
     console.log(response);
     setData(response);
@@ -49,6 +51,8 @@ const FileScreen = ({ route }) => {
   };
 
   const fileOpen = (hash) => {
+    console.log("Opening file with hash:", hash);
+    console.log("File hash:", hash);
     setFileDownloadUri("http://10.10.7.114:33000/file/" + hash);
     setFileModalVisible(true);
   };
@@ -121,7 +125,7 @@ const FileScreen = ({ route }) => {
 
       const db = await SQLite.openDatabaseAsync("HealthHive");
       await db.execAsync(
-        `INSERT INTO fileStorage (fileName, folderName, description, hash, date) VALUES ('${FileName}', '${folderName}', '${Description}', '${hash}', '${isoDate}');`
+        `INSERT INTO fileStorage (userEmail,fileName, folderName, description, hash, date) VALUES ('${email}','${FileName}', '${folderName}', '${Description}', '${hash}', '${isoDate}');`
       );
       db.closeAsync();
       setModalVisible(false);

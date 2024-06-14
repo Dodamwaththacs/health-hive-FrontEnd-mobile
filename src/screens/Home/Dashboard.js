@@ -167,31 +167,35 @@ const Dashboard = ({ navigation }) => {
   const [user, setUser] = useState(null);
   const { email } = useEmail();
 
-  const fetchDocuments = async () => {
-    const db = await SQLite.openDatabaseAsync("HealthHive");
-    const response = await db.getAllAsync(
-      `SELECT * FROM fileStorage ORDER BY id DESC LIMIT 5;`
-    );
-    setDocuments(response);
-    db.closeAsync();
-  };
-
   useEffect(() => {
-    const fetchData = async () => {
-      if (email) {
-        const userData = await fetchDataByEmail(email);
-        setUser(userData);
-      }
-
-      fetchDocuments();
+    const fetchUser = async () => {
+      const userData = await fetchDataByEmail(email);
+      setUser(userData);
     };
 
-    fetchData();
+    fetchUser();
   }, [email]);
 
-  useFocusEffect(() => {
-    fetchDocuments();
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchDocuments = async () => {
+        console.log("Fetching documents.adasd..");
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        const response = await db.getAllAsync(
+          `SELECT * FROM fileStorage WHERE userEmail = '${email}';`
+        );
+        console.log("Documents fetched:", response);
+        setDocuments(response);
+        db.closeAsync();
+      };
+
+      fetchDocuments();
+
+      return () => {
+        // Any cleanup operation goes here if needed
+      };
+    }, []) // Empty dependency array ensures this runs once when the screen comes into focus
+  );
 
   return (
     <View style={styles.container}>

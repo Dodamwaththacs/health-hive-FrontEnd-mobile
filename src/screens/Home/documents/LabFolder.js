@@ -13,6 +13,7 @@ import Checkbox from "expo-checkbox";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
+import { useEmail } from "../../../EmailContext";
 
 const LabFolder = ({ route }) => {
   const { folderName } = route.params;
@@ -23,6 +24,7 @@ const LabFolder = ({ route }) => {
   const [fileDownloadUri, setFileDownloadUri] = useState(null);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const { email } = useEmail();
 
   useEffect(() => {
     const fetchDataFromOringin = async () => {
@@ -38,7 +40,7 @@ const LabFolder = ({ route }) => {
           console.log(originData[i]);
           try {
             await db.execAsync(
-              `INSERT INTO fileStorage (fileName, folderName, description, hash) VALUES ('${originData[i].name}', '${folderName}', '${originData[i].filePath}', '${originData[i].fileHash}');`
+              `INSERT INTO fileStorage (userEmail, fileName, folderName, description, hash) VALUES ('${email}','${originData[i].name}', '${folderName}', '${originData[i].filePath}', '${originData[i].fileHash}');`
             );
             try {
               await axios.delete(

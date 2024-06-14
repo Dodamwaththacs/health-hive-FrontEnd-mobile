@@ -3,14 +3,17 @@ import { NavigationContainer } from "@react-navigation/native";
 import { EmailProvider } from "./src/EmailContext";
 import StackNavigation from "./src/navigation/StackNavigation";
 import * as SQLite from "expo-sqlite";
+import TempScreen from "./src/screens/TempScreen";
 
 export default function App() {
   useEffect(() => {
     const databaseHandling = async () => {
       const db = await SQLite.openDatabaseAsync("HealthHive");
-      await db.execAsync(
-        `CREATE TABLE IF NOT EXISTS fileStorage (
+      try {
+        await db.execAsync(
+          `CREATE TABLE IF NOT EXISTS fileStorage (
         id INTEGER PRIMARY KEY NOT NULL,
+        userEmail TEXT NOT NULL,
         fileName TEXT NOT NULL,
         folderName TEXT NOT NULL,
         description TEXT NOT NULL,
@@ -21,7 +24,11 @@ export default function App() {
       id INTEGER PRIMARY KEY NOT NULL,
       folderName TEXT NOT NULL);
       `
-      );
+        );
+        console.log("Tables created successfully!");
+      } catch (e) {
+        console.log(e);
+      }
 
       db.closeAsync();
     };
@@ -33,5 +40,6 @@ export default function App() {
         <StackNavigation />
       </NavigationContainer>
     </EmailProvider>
+    // <TempScreen />
   );
 }
