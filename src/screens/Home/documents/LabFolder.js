@@ -30,7 +30,7 @@ const LabFolder = ({ route }) => {
     const fetchDataFromOringin = async () => {
       try {
         const response = await axios.get(
-          "http://10.10.7.114:33000/api/files/user/1"
+          "http://192.168.221.140:33000/api/files/user/1"
         );
         const originData = response.data;
 
@@ -44,7 +44,7 @@ const LabFolder = ({ route }) => {
             );
             try {
               await axios.delete(
-                "http://10.10.7.114:33000/api/files/" + originData[i].id
+                "http://192.168.221.140:33000/api/files/" + originData[i].id
               );
             } catch (error) {
               console.error("Error data delete : ", error);
@@ -53,7 +53,7 @@ const LabFolder = ({ route }) => {
 
             try {
               await axios.delete(
-                "http://10.10.7.114:33000/api/labDataUploads/" +
+                "http://192.168.221.140:33000/api/labDataUploads/" +
                   originData[i].labDataUploadId
               );
             } catch (error) {
@@ -63,7 +63,7 @@ const LabFolder = ({ route }) => {
 
             try {
               await axios.delete(
-                "http://10.10.7.114:33000/api/labRequests/" +
+                "http://192.168.221.140:33000/api/labRequests/" +
                   originData[i].labRequestId
               );
             } catch (error) {
@@ -102,7 +102,7 @@ const LabFolder = ({ route }) => {
 
   const fileOpen = (hash) => {
     console.log(hash);
-    setFileDownloadUri("http://10.10.7.114:33000/file/" + hash);
+    setFileDownloadUri("http://192.168.221.140:33000/api/ipfs/" + hash);
     setFileModalVisible(true);
   };
 

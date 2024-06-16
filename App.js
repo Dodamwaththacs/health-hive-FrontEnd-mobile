@@ -3,6 +3,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { EmailProvider } from "./src/EmailContext";
 import StackNavigation from "./src/navigation/StackNavigation";
 import * as SQLite from "expo-sqlite";
+import axios from "axios";
+
 import TempScreen from "./src/screens/TempScreen";
 
 export default function App() {
@@ -32,6 +34,15 @@ export default function App() {
 
       db.closeAsync();
     };
+    const tokenChecker = async () => {
+      const axiosInstance = axios.create();
+      if (axiosInstance.defaults.headers.common["Authorization"]) {
+        console.log("Token is set");
+      } else {
+        console.log("Token is not set");
+      }
+    };
+    tokenChecker();
     databaseHandling();
   }, []);
   return (

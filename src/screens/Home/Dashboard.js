@@ -50,7 +50,7 @@ const GreetCard = () => {
 const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
-      `http://10.10.7.114:33000/api/users/email/${email}`
+      `http://192.168.221.140:33000/api/users/email/${email}`
     );
     console.log("Data fetched successfully:", response.data);
     return response.data;
@@ -182,7 +182,7 @@ const Dashboard = ({ navigation }) => {
         console.log("Fetching documents.adasd..");
         const db = await SQLite.openDatabaseAsync("HealthHive");
         const response = await db.getAllAsync(
-          `SELECT * FROM fileStorage WHERE userEmail = '${email}';`
+          `SELECT * FROM fileStorage WHERE userEmail = '${email}'  ORDER BY id DESC LIMIT 5 ;`
         );
         console.log("Documents fetched:", response);
         setDocuments(response);

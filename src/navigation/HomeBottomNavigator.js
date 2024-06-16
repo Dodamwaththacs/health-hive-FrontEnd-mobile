@@ -5,6 +5,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Dashboard from "../screens/Home/Dashboard";
 import FolderNavigation from "../screens/Home/documents/FolderNavigation";
 import Search from "../screens/Home/Search";
+import Documents from "../screens/Home/documents/Documents";
 
 const Tab = createBottomTabNavigator();
 
@@ -46,7 +47,7 @@ function HomeBottomNavigator() {
 
       <Tab.Screen
         name="Documents"
-        component={FolderNavigation}
+        component={Documents}
         options={{
           headerShown: false,
           tabBarLabel: "Documents",

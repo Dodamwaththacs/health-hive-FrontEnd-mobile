@@ -35,7 +35,7 @@ const Signin = () => {
       console.log("body..");
 
       const response = await axios.post(
-        "http://10.10.7.114:8080/realms/Health-Hive/protocol/openid-connect/token",
+        "http://192.168.221.140:8080/realms/Health-Hive/protocol/openid-connect/token",
         body.toString(),
         {
           headers: {
@@ -55,7 +55,7 @@ const Signin = () => {
         setEmailContext(email);
         const token = data.access_token;
 
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
         navigation.navigate("LoadingScreen");
       } else {

@@ -1,16 +1,51 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; // Assuming you are using Expo for icons
+import { Ionicons } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system";
+import axios from "axios";
 
 const DocumentViewer = ({ route }) => {
   const { documentUri } = route.params;
   const navigation = useNavigation();
+  const [imageUri, setImageUri] = useState(null);
+
   console.log("Document URI:", documentUri);
 
   const handleClose = () => {
-    navigation.goBack(); // Navigate back to the previous screen (Dashboard in this case)
+    navigation.goBack();
   };
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const imageUrl = "http://192.168.221.140:33000/api/ipfs/" + documentUri;
+        const fileUri = `${FileSystem.documentDirectory}image.jpg`;
+
+        const response = await axios({
+          url: imageUrl,
+          method: "GET",
+          responseType: "blob",
+        });
+
+        const reader = new FileReader();
+        reader.readAsDataURL(response.data);
+        reader.onloadend = async () => {
+          const base64data = reader.result;
+          await FileSystem.writeAsStringAsync(
+            fileUri,
+            base64data.split(",")[1],
+            { encoding: FileSystem.EncodingType.Base64 }
+          );
+          setImageUri(fileUri);
+        };
+      } catch (error) {
+        console.error("Error fetching the image: ", error);
+      }
+    };
+
+    fetchImage();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -18,7 +53,9 @@ const DocumentViewer = ({ route }) => {
         <Ionicons name="close-circle" size={30} color="black" />
       </TouchableOpacity>
       <Image
-        source={{ uri: "http://10.10.7.114:33000/file/" + documentUri }}
+        source={{
+          uri: imageUri,
+        }}
         style={styles.image}
         onError={(error) => console.error("Image loading error:", error)}
       />
