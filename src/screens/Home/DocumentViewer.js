@@ -12,15 +12,23 @@ const DocumentViewer = ({ route }) => {
 
   console.log("Document URI:", documentUri);
 
-  const handleClose = () => {
-    navigation.goBack();
+  const handleClose = async () => {
+    try {
+      await FileSystem.deleteAsync(imageUri);
+      console.log("Image deleted successfully:", imageUri);
+    } catch (error) {
+      console.error("Error deleting the image:", error);
+    } finally {
+      navigation.goBack();
+    }
   };
 
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const imageUrl = "http://192.168.221.140:33000/api/ipfs/" + documentUri;
-        const fileUri = `${FileSystem.documentDirectory}image.jpg`;
+        const imageUrl = "http://192.168.87.140:33000/api/ipfs/" + documentUri;
+        const fileUri = `${FileSystem.cacheDirectory} ${documentUri}.jpg`;
+        console.log("Image URL:", imageUrl);
 
         const response = await axios({
           url: imageUrl,
@@ -38,6 +46,7 @@ const DocumentViewer = ({ route }) => {
             { encoding: FileSystem.EncodingType.Base64 }
           );
           setImageUri(fileUri);
+          console.log("Image written to file system:", fileUri);
         };
       } catch (error) {
         console.error("Error fetching the image: ", error);
@@ -45,7 +54,7 @@ const DocumentViewer = ({ route }) => {
     };
 
     fetchImage();
-  }, []);
+  }, [documentUri]);
 
   return (
     <View style={styles.container}>

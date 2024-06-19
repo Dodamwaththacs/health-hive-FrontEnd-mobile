@@ -13,20 +13,21 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import * as SQLite from "expo-sqlite";
+import { useNavigation } from "@react-navigation/native";
 
 const SearchBar = () => {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [filemodalVisible, setFileModalVisible] = useState(false);
   const [fileDownloadUri, setFileDownloadUri] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const databaseData = async () => {
       if (searchText !== "") {
-        console.log("This is search text", searchText);
         const db = await SQLite.openDatabaseAsync("HealthHive");
         const response = await db.getAllAsync(
-          `SELECT * FROM fileStorage WHERE fileName LIKE "%${searchText}%" ;`
+          `SELECT * FROM fileStorage WHERE fileName LIKE "%${searchText}%" ORDER BY fileName ASC LIMIT 5 ;`
         );
         db.closeAsync();
         setSearchResults(response);
@@ -37,10 +38,8 @@ const SearchBar = () => {
     databaseData();
   }, [searchText]);
 
-  const fileOpen = (hash) => {
-    console.log(hash);
-    setFileDownloadUri("http://192.168.221.140:33000/api/ipfs/" + hash);
-    setFileModalVisible(true);
+  const openDocument = (hash) => {
+    navigation.navigate("DocumentViewer", { documentUri: hash });
   };
 
   const handleSearch = (text) => {
@@ -67,7 +66,7 @@ const SearchBar = () => {
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <TouchableOpacity onPress={() => fileOpen(item.hash)}>
+            <TouchableOpacity onPress={() => openDocument(item.hash)}>
               <Text style={styles.name}>{item.fileName}</Text>
               <Text>{item.folderName}</Text>
             </TouchableOpacity>

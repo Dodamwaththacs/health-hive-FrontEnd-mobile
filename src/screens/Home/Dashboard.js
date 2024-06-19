@@ -5,6 +5,7 @@ import { useEmail } from "../../EmailContext";
 import { useNavigation, useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect hook
 import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
+import * as SecureStore from "expo-secure-store";
 import {
   View,
   Text,
@@ -50,9 +51,8 @@ const GreetCard = () => {
 const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
-      `http://192.168.221.140:33000/api/users/email/${email}`
+      `http://192.168.87.140:33000/api/users/email/${email}`
     );
-    console.log("Data fetched successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error.message);
@@ -165,26 +165,19 @@ const ListCard = ({ documents, user, navigation }) => {
 const Dashboard = ({ navigation }) => {
   const [documents, setDocuments] = useState([]);
   const [user, setUser] = useState(null);
-  const { email } = useEmail();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await fetchDataByEmail(email);
-      setUser(userData);
-    };
-
-    fetchUser();
-  }, [email]);
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchDocuments = async () => {
-        console.log("Fetching documents.adasd..");
+        console.log("Use focus effect ");
+        const email = await SecureStore.getItemAsync("userEmail");
+
         const db = await SQLite.openDatabaseAsync("HealthHive");
         const response = await db.getAllAsync(
-          `SELECT * FROM fileStorage WHERE userEmail = '${email}'  ORDER BY id DESC LIMIT 5 ;`
+          `SELECT * FROM fileStorage WHERE userEmail = "${email}"  ORDER BY id DESC LIMIT 5 ;`
         );
-        console.log("Documents fetched:", response);
+
+        console.log("Documents fetched in use focus effect :", response);
         setDocuments(response);
         db.closeAsync();
       };
@@ -196,6 +189,28 @@ const Dashboard = ({ navigation }) => {
       };
     }, []) // Empty dependency array ensures this runs once when the screen comes into focus
   );
+
+  useEffect(() => {
+    // const fetchDocuments = async () => {
+    //   console.log("Fetch document ");
+    //   const db = await SQLite.openDatabaseAsync("HealthHive");
+    //   const response = await db.getAllAsync(
+    //     `SELECT * FROM fileStorage WHERE userEmail = "adam@email.com"  ORDER BY id DESC LIMIT 5 ;`
+    //   );
+
+    //   console.log("Documents fetched in use effect :", response);
+    //   setDocuments(response);
+    //   db.closeAsync();
+    // };
+    const fetchData = async () => {
+      const email = await SecureStore.getItemAsync("userEmail");
+
+      const userData = await fetchDataByEmail(email);
+      setUser(userData);
+    };
+    fetchData();
+    // fetchDocuments();
+  }, []);
 
   return (
     <View style={styles.container}>

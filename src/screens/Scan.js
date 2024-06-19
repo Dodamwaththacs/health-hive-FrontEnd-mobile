@@ -13,6 +13,7 @@ import {
 import { BarCodeScanner } from "expo-barcode-scanner";
 import axios from "axios";
 import { useEmail } from "../EmailContext";
+import * as SecureStore from "expo-secure-store";
 
 const Scan = () => {
   const [hasPermission, setHasPermission] = useState(false);
@@ -36,9 +37,11 @@ const Scan = () => {
   }, []);
 
   const fetchUserData = async () => {
+    const email = await SecureStore.getItemAsync("userEmail");
+
     try {
       const response = await axios.get(
-        `http://192.168.221.140:33000/api/users/email/${email}`
+        `http://192.168.87.140:33000/api/users/email/${email}`
       );
       setUser(response.data);
     } catch (error) {
@@ -56,7 +59,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.221.140:33000/api/users/${scannedUserId}`
+        `http://192.168.87.140:33000/api/users/${scannedUserId}`
       );
       const scannedUser = response.data;
 
@@ -87,7 +90,7 @@ const Scan = () => {
     console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
-        "http://192.168.221.140:33000/api/labRequests",
+        "http://192.168.87.140:33000/api/labRequests",
         {
           user: user.id,
           lab: scannedUserId,
@@ -113,7 +116,7 @@ const Scan = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.221.140:33000/api/labReportShares",
+        "http://192.168.87.140:33000/api/labReportShares",
         {
           doctor: scannedUserId,
           patient: user.id,

@@ -7,11 +7,13 @@ import {
   Text,
   Image,
   Alert,
+  Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import { useEmail } from "../EmailContext";
+import { AuthContext } from "../../App";
 
 const Signin = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +21,7 @@ const Signin = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigation = useNavigation();
   const { setEmail: setEmailContext } = useEmail();
+  const { signIn } = React.useContext(AuthContext);
 
   const handleSignIn = async () => {
     console.log("email..", email);
@@ -35,7 +38,7 @@ const Signin = () => {
       console.log("body..");
 
       const response = await axios.post(
-        "http://192.168.221.140:8080/realms/Health-Hive/protocol/openid-connect/token",
+        "http://192.168.87.140:8080/realms/Health-Hive/protocol/openid-connect/token",
         body.toString(),
         {
           headers: {
@@ -45,25 +48,28 @@ const Signin = () => {
       );
 
       const data = response.data;
-
-      console.log("connection successful..");
-      console.log("jsonResponse..");
-      console.log(data);
+      signIn(data.access_token, email);
 
       if (response.status === 200) {
         console.log("Login successful..");
         setEmailContext(email);
         const token = data.access_token;
 
-        // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-        navigation.navigate("LoadingScreen");
+        // navigation.navigate("DrawerNavigator");
       } else {
         console.log("Login failed..");
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
+  };
+
+  const handleForgotPassword = () => {
+    const url =
+      "http://192.168.87.140:8080/realms/Health-Hive/login-actions/reset-credentials";
+    Linking.openURL(url);
   };
 
   return (
@@ -100,7 +106,7 @@ const Signin = () => {
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("Reset")}>
+      <TouchableOpacity onPress={handleForgotPassword}>
         <Text style={styles.forgotPassword}>Forgot Password</Text>
       </TouchableOpacity>
     </View>

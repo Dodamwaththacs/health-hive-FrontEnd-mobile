@@ -16,75 +16,86 @@ import LabFolder from "../screens/Home/documents/LabFolder";
 
 const Stack = createNativeStackNavigator();
 
-function StackNavigation() {
+function StackNavigation({ userToken }) {
   return (
-    <Stack.Navigator initialRouteName="Splash">
-      <Stack.Screen
-        name="Splash"
-        component={Splash}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="SignIn"
-        component={SignIn}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Reset"
-        component={Reset}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="OTPScreen"
-        component={OTPScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ResetPasswordScreen"
-        component={ResetPasswordScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="LoadingScreen"
-        component={LoadingScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Dashboard"
-        component={Dashboard}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="UserProfile"
-        component={UserProfile}
-        options={{ title: "Your Profie" }}
-      />
-      <Stack.Screen
-        name="DrawerNavigator"
-        component={DrawerNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="DocumentViewer"
-        component={DocumentViewer}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Documents"
-        component={Documents}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="file"
-        component={File}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="LabFolder"
-        component={LabFolder}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
+    console.log("Stack navigation userToken : ", userToken),
+    (
+      <Stack.Navigator initialRouteName="Splash">
+        {userToken == null ? (
+          <>
+            <Stack.Screen
+              name="Splash"
+              component={Splash}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="SignIn"
+              component={SignIn}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Reset"
+              component={Reset}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="OTPScreen"
+              component={OTPScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ResetPasswordScreen"
+              component={ResetPasswordScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="LoadingScreen"
+              component={LoadingScreen}
+              options={{ headerShown: false }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="DrawerNavigator"
+              component={DrawerNavigator}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="UserProfile"
+              component={UserProfile}
+              options={{ title: "Your Profile" }}
+            />
+
+            <Stack.Screen
+              name="Dashboard"
+              component={Dashboard}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="DocumentViewer"
+              component={DocumentViewer}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Documents"
+              component={Documents}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="File"
+              component={File}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="LabFolder"
+              component={LabFolder}
+              options={{ headerShown: false }}
+            />
+          </>
+        )}
+      </Stack.Navigator>
+    )
   );
 }
 

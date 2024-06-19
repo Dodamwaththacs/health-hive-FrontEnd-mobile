@@ -15,7 +15,8 @@ import * as SQLite from "expo-sqlite";
 import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useEmail } from "../../../EmailContext";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 
 const FileScreen = ({ route }) => {
   const [fileUri, setFileUri] = useState(null);
@@ -27,9 +28,10 @@ const FileScreen = ({ route }) => {
   const [FileName, setFileName] = useState("");
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState(data);
-  const { email } = useEmail();
+  const navigation = useNavigation();
 
   const fetchData = async () => {
+    const email = await SecureStore.getItemAsync("userEmail");
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response = await db.getAllAsync(
       `SELECT * FROM fileStorage WHERE folderName = "${folderName}" AND userEmail = "${email}" ;`
@@ -39,22 +41,17 @@ const FileScreen = ({ route }) => {
     db.closeAsync();
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   const filterByFileName = (text) => {
     const filtered = data.filter((item) =>
       item.fileName.toLowerCase().includes(text.toLowerCase())
     );
     setFilteredData(filtered);
-  };
-
-  const fileOpen = (hash) => {
-    console.log("Opening file with hash:", hash);
-    console.log("File hash:", hash);
-    setFileDownloadUri("http://192.168.221.140:33000/api/ipfs/" + hash);
-    setFileModalVisible(true);
   };
 
   const pickFile = async () => {
@@ -74,10 +71,14 @@ const FileScreen = ({ route }) => {
     console.log(result);
   };
 
+  const openDocument = (hash) => {
+    navigation.navigate("DocumentViewer", { documentUri: hash });
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.icon}>
-        <TouchableOpacity onPress={() => fileOpen(item.hash)}>
+        <TouchableOpacity onPress={() => openDocument(item.hash)}>
           <Icon name="document-outline" size={50} color="#000" />
         </TouchableOpacity>
       </View>
@@ -88,15 +89,6 @@ const FileScreen = ({ route }) => {
     </View>
   );
 
-  const databaseData = async () => {
-    const db = await SQLite.openDatabaseAsync("HealthHive");
-    const firstRow = await db.getAllAsync(
-      `SELECT * FROM fileStorage WHERE folderName = "${folderName}" ;`
-    );
-    console.log(firstRow);
-    db.closeAsync();
-  };
-
   const fileUpload = async () => {
     try {
       const formData = new FormData();
@@ -105,11 +97,9 @@ const FileScreen = ({ route }) => {
         name: "file",
         type: "image/jpeg", // Adjust the file type as needed
       });
-      console.log("File log: ", fileUri);
       const currentDate = new Date();
-      console.log("Current Date and Time: ", currentDate);
       const response = await axios.post(
-        "http://192.168.221.140:33000/api/ipfs/upload",
+        "http://192.168.87.140:33000/api/ipfs/upload",
         formData,
         {
           headers: {
@@ -118,11 +108,9 @@ const FileScreen = ({ route }) => {
         }
       );
       const hash = response.data;
-      console.log("File uploaded successfully:", response.data);
-
+      console.log("File uploaded successfully:", hash);
+      const email = await SecureStore.getItemAsync("userEmail");
       const isoDate = currentDate.toISOString();
-      console.log("ISO Date and Time: ", isoDate);
-
       const db = await SQLite.openDatabaseAsync("HealthHive");
       await db.execAsync(
         `INSERT INTO fileStorage (userEmail,fileName, folderName, description, hash, date) VALUES ('${email}','${FileName}', '${folderName}', '${Description}', '${hash}', '${isoDate}');`
@@ -138,12 +126,17 @@ const FileScreen = ({ route }) => {
       fetchData();
     } catch (error) {
       console.error("Error uploading file:", error);
+      setModalVisible(false);
+      Alert.alert("File uploaded Error!");
+      setFileUri(null);
+      setFileName("");
+      setDescription("");
     }
   };
 
   const testConnection = async () => {
     try {
-      const response = await axios.get("http://192.168.221.140:33000/");
+      const response = await axios.get("http://192.168.87.140:33000/");
       Alert.alert("Connection Successful!");
       console.log(response.data);
     } catch (error) {

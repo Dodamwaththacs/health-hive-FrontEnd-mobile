@@ -26,10 +26,29 @@ const FolderCreator = () => {
   const navigation = useNavigation();
   const labFolder = baseDir + "LabReports/";
 
-  useEffect(() => {
-    createBaseDirectory();
-    updateDirectoryList();
-  }, []);
+  const createDirectory = async (folderName) => {
+    const dirUri = `${baseDir}${folderName}`;
+    console.log(dirUri);
+    try {
+      const info = await FileSystem.getInfoAsync(dirUri);
+      if (!info.exists) {
+        await FileSystem.makeDirectoryAsync(dirUri, { intermediates: true });
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        await db.execAsync(
+          `INSERT INTO folderData (folderName) VALUES ('${folderName}');`
+        );
+        db.closeAsync();
+
+        return true;
+      } else {
+        console.log("Directory already exists!");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error creating directory:", error);
+      return false;
+    }
+  };
 
   const handlePress = () => {
     setDropdownOpen(!dropdownOpen);
@@ -64,31 +83,7 @@ const FolderCreator = () => {
     if (name == "LabReports") {
       navigation.navigate("LabFolder", { folderName: name });
     } else {
-      navigation.navigate("file", { folderName: name });
-    }
-  };
-
-  const createDirectory = async (folderName) => {
-    const dirUri = `${baseDir}${folderName}`;
-    console.log(dirUri);
-    try {
-      const info = await FileSystem.getInfoAsync(dirUri);
-      if (!info.exists) {
-        await FileSystem.makeDirectoryAsync(dirUri, { intermediates: true });
-        const db = await SQLite.openDatabaseAsync("HealthHive");
-        await db.execAsync(
-          `INSERT INTO folderData (folderName) VALUES ('${folderName}');`
-        );
-        return true;
-
-        db.closeAsync();
-      } else {
-        console.log("Directory already exists!");
-        return false;
-      }
-    } catch (error) {
-      console.error("Error creating directory:", error);
-      return false;
+      navigation.navigate("File", { folderName: name });
     }
   };
 
@@ -144,6 +139,11 @@ const FolderCreator = () => {
     const dirs = await listDirectories();
     setDirectories(dirs);
   };
+
+  useEffect(() => {
+    createBaseDirectory();
+    updateDirectoryList();
+  }, []);
 
   return (
     <View style={styles.container}>
