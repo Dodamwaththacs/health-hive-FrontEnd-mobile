@@ -14,6 +14,7 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 import axios from "axios";
 import { useEmail } from "../EmailContext";
 import * as SecureStore from "expo-secure-store";
+import * as SQLite from "expo-sqlite";
 
 const Scan = () => {
   const [hasPermission, setHasPermission] = useState(false);
@@ -24,7 +25,10 @@ const Scan = () => {
   const [description, setDescription] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [scannedUserId, setScannedUserId] = useState(null);
-  const { email } = useEmail();
+  const [files, setFiles] = useState([]);
+  const [isFileModalVisible, setIsFileModalVisible] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [labReportSharesId, setLabReportSharesId] = useState([]);
 
   const getCameraPermission = async () => {
     const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -41,7 +45,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.87.140:33000/api/users/email/${email}`
+        `http://192.168.229.140:33000/api/users/email/${email}`
       );
       setUser(response.data);
     } catch (error) {
@@ -59,7 +63,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.87.140:33000/api/users/${scannedUserId}`
+        `http://192.168.229.140:33000/api/users/${scannedUserId}`
       );
       const scannedUser = response.data;
 
@@ -90,7 +94,7 @@ const Scan = () => {
     console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
-        "http://192.168.87.140:33000/api/labRequests",
+        "http://192.168.229.140:33000/api/labRequests",
         {
           user: user.id,
           lab: scannedUserId,
@@ -113,10 +117,10 @@ const Scan = () => {
     console.log("patient:", user.id);
     console.log("description:", description);
     console.log("patientName:", user.fullName);
-
+    let response;
     try {
-      const response = await axios.post(
-        "http://192.168.87.140:33000/api/labReportShares",
+      response = await axios.post(
+        "http://192.168.229.140:33000/api/labReportShares",
         {
           doctor: scannedUserId,
           patient: user.id,
@@ -124,17 +128,67 @@ const Scan = () => {
           patientName: user.fullName,
         }
       );
-      Alert.alert(
-        "Health Report Sharing",
-        "Health report shared successfully."
-      );
+      console.log("response", response.data);
       resetScanner();
+      setLabReportSharesId(response.data);
+      fileSelect();
     } catch (error) {
       console.error("Error sharing health report:", error.message);
       console.error("Error response:", error.response.data);
       Alert.alert("Error", "Failed to share health records.");
       resetScanner();
     }
+  };
+
+  const fileSelect = async () => {
+    try {
+      console.log("labReportShares", labReportSharesId);
+      const db = await SQLite.openDatabaseAsync("HealthHive");
+      const response = await db.getAllAsync(
+        `SELECT * FROM fileStorage WHERE userEmail = "${user.email}"`
+      );
+      await db.closeAsync();
+
+      console.log("response", response);
+      setFiles(response);
+      setIsFileModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching files:", error.message);
+    }
+  };
+
+  const fileUpload = async () => {
+    try {
+      for (let i = 0; i < selectedFiles.length; i++) {
+        console.log("selectedFiles", selectedFiles[i]);
+
+        const response = await axios.post(
+          "http://192.168.229.140:33000/api/shareFiles",
+          {
+            labReportShare: labReportSharesId,
+            fileHash: selectedFiles[i],
+          }
+        );
+      }
+      setIsFileModalVisible(false);
+      Alert.alert("Health report shared successfully.");
+    } catch (error) {
+      Alert.alert("Error", "Failed to share health records.");
+      console.error("Error sharing health report:", error.message);
+    }
+  };
+
+  const handleFileSelect = (fileName) => {
+    setSelectedFiles((prevSelectedFiles) => {
+      if (prevSelectedFiles.includes(fileName)) {
+        console.log("prevSelectedFiles", prevSelectedFiles);
+
+        return prevSelectedFiles.filter((file) => file !== fileName);
+      } else {
+        console.log("prevSelectedFiles", prevSelectedFiles);
+        return [...prevSelectedFiles, fileName];
+      }
+    });
   };
 
   const handleSubmit = () => {
@@ -263,6 +317,44 @@ const Scan = () => {
           </View>
         </View>
       </Modal>
+      <Modal
+        visible={isFileModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsFileModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Files:</Text>
+            {files.map((file, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleFileSelect(file.hash)}
+                style={[
+                  styles.fileContainer,
+                  selectedFiles.includes(file.hash) &&
+                    styles.selectedFileContainer,
+                ]}
+              >
+                <Text style={styles.fileName}>File Name: {file.fileName}</Text>
+                <Text style={styles.fileText}>
+                  Description: {file.description}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => fileUpload()}
+            >
+              <Text style={styles.modalButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Button
+        onPress={() => console.log(selectedFiles)}
+        title="File Selected"
+      />
     </View>
   );
 };
@@ -412,6 +504,23 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  fileContainer: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
+  },
+  fileName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  fileText: {
+    color: "#333",
+  },
+  selectedFileContainer: {
+    backgroundColor: "#00FFFF", // Highlight color for selected files
   },
 });
 

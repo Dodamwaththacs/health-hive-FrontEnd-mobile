@@ -26,7 +26,7 @@ const DocumentViewer = ({ route }) => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const imageUrl = "http://192.168.87.140:33000/api/ipfs/" + documentUri;
+        const imageUrl = "http://192.168.229.140:33000/api/ipfs/" + documentUri;
         const fileUri = `${FileSystem.cacheDirectory} ${documentUri}.jpg`;
         console.log("Image URL:", imageUrl);
 
