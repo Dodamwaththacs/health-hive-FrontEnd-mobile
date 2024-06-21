@@ -10,9 +10,13 @@ import {
   View,
   Text,
   TouchableOpacity,
+  TextInput,
+  Modal,
+  Button,
   StyleSheet,
   Image,
   FlatList,
+  Alert,
   Dimensions,
 } from "react-native";
 const UserProfileCard = ({ user, onPress }) => {
@@ -51,7 +55,7 @@ const GreetCard = () => {
 const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
-      `http://192.168.87.140:33000/api/users/email/${email}`
+      `http://192.168.205.43:33000/api/users/email/${email}`
     );
     return response.data;
   } catch (error) {
@@ -60,29 +64,111 @@ const fetchDataByEmail = async (email) => {
   }
 };
 
-const ChartsCard = () => {
+const ChartsCard = ({ userId }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
+  const [notes, setNotes] = useState("");
+  const [userData, setUserData] = useState([]);
+
+  const handleAddButtonPress = () => {
+    setModalVisible(true);
+  };
+
+  const handleSubmit = async () => {
+    if (!weight || !height) {
+      Alert.alert("Error", "Please enter both weight and height.");
+      return;
+    }
+
+    Alert.alert(
+      "Confirm Submission",
+      "Are you sure you want to add this data?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            const data = { weight, height, notes, user: userId, date: new Date() };
+            try {
+              await axios.post('http://192.168.205.43:33000/api/healthData', data);
+              setModalVisible(false);
+              fetchUserData();  // Fetch updated user data after submission
+            } catch (error) {
+              console.error("Error saving health data:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`http://192.168.205.43:33000/api/healthData/userId/${userId}`);
+      setUserData(response.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setUserData([]); // Set an empty array to ensure chart renders without data
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserData();
+    }
+  }, [userId]);
+
+  const calculateBMI = (weight, height) => {
+    if (!weight || !height) {
+      return 0; // Return 0 if weight or height is not provided
+    }
+    const heightInMeters = height / 100;
+    return parseFloat((weight / (heightInMeters * heightInMeters)).toFixed(2));
+  };
+
+  const chartData = userData.map(data => {
+    if (data.weight && data.height) {
+      return calculateBMI(data.weight, data.height);
+    }
+    return 0; // Default to 0 if weight or height is missing
+  });
+
+  const defaultData = {
+    labels: userData.length > 0 ? userData.map(data => new Date(data.date).toLocaleString('default', { month: 'short' })) : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    datasets: [{
+      data: chartData.length > 0 ? chartData : [0, 0, 0, 0, 0, 0]
+    }],
+  };
+
   return (
     <View>
-      <Text style={styles.textHeader}>Your weight...</Text>
+      <Text style={styles.textHeader}>Your BMI</Text>
+      <TouchableOpacity style={styles.addButton} onPress={handleAddButtonPress}>
+        <Icon name="add-circle-outline" size={30} color="#000" />
+      </TouchableOpacity>
       <LineChart
-        data={{
-          labels: ["January", "February", "March", "April", "May", "June"],
-          datasets: [{ data: [70, 73, 79, 76, 70, 65] }],
-        }}
+        data={defaultData}
         width={Dimensions.get("window").width}
         height={220}
-        yAxisLabel="kg"
-        yAxisInterval={5}
+        yAxisLabel=""
+        yAxisSuffix=" BMI"
+        yAxisInterval={1}
         chartConfig={{
           backgroundColor: "#ffd600",
           backgroundGradientFrom: "#ff6d00",
           backgroundGradientTo: "#ffab00",
-          decimalPlaces: 0,
+          decimalPlaces: 2,
           color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
           labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: {
-            borderRadius: 16,
-          },
+          style: { borderRadius: 16 },
           propsForDots: {
             r: "6",
             strokeWidth: "2",
@@ -90,11 +176,43 @@ const ChartsCard = () => {
           },
         }}
         bezier
-        style={{
-          margin: 10,
-          borderRadius: 16,
-        }}
+        fromZero={true} // Ensure Y-axis starts from 0
+        style={{ margin: 10, borderRadius: 16 }}
       />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>Add Your Health Data</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Weight (kg)"
+            keyboardType="numeric"
+            value={weight}
+            onChangeText={setWeight}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Height (cm)"
+            keyboardType="numeric"
+            value={height}
+            onChangeText={setHeight}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Notes"
+            value={notes}
+            onChangeText={setNotes}
+          />
+          <View style={styles.buttonContainer}>
+            <Button title="Submit" onPress={handleSubmit} />
+            <Button title="Cancel" onPress={handleCancel} color="#FF6347" />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -150,7 +268,7 @@ const ListCard = ({ documents, user, navigation }) => {
           />
 
           <GreetCard />
-          <ChartsCard />
+          {user && <ChartsCard userId={user.id} />}
           <Text style={styles.textHeader}>Recent Uploads</Text>
         </>
       }
@@ -303,6 +421,46 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 20,
   },
+
+ 
+    addButton: {
+      position: 'absolute',
+      right: 10,
+      top: 10,
+      zIndex: 1,
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: "white",
+      borderRadius: 20,
+      padding: 35,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    modalText: {
+      marginBottom: 15,
+      textAlign: "center",
+      fontSize: 20,
+    },
+    input: {
+      height: 40,
+      borderColor: "gray",
+      borderWidth: 1,
+      marginBottom: 10,
+      width: "100%",
+      padding: 10,
+    },
+    buttonContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      width: "100%",
+    },
+
+  
 });
 
 export default Dashboard;
