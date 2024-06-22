@@ -60,9 +60,19 @@ const Signin = () => {
         // navigation.navigate("DrawerNavigator");
       } else {
         console.log("Login failed..");
+        Alert.alert(
+          "Login failed1",
+          response.data.message || "Something went wrong. Please try again."
+        );
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Please check your credentials and try again.";
+        Alert.alert("Login failed..", errorMessage);
+      } else {
+        // Server is unreachable or backend issue
+        Alert.alert("Server Error", "Unable to connect to the server. Please try again later.");
+      }
     }
   };
 

@@ -159,7 +159,7 @@ const ChartsCard = ({ userId }) => {
         width={Dimensions.get("window").width}
         height={220}
         yAxisLabel=""
-        yAxisSuffix=" BMI"
+        yAxisSuffix=""
         yAxisInterval={1}
         chartConfig={{
           backgroundColor: "#ffd600",
@@ -245,7 +245,7 @@ const ListCard = ({ documents, user, navigation }) => {
       style={styles.item}
       onPress={() => openDocument(item, navigation)}
     >
-      <Icon name="document-outline" size={50} color="#000" />
+      <Icon name="document-outline" size={40} color="#000" marginLeft={20} />
       <View>
         <Text style={styles.title}>{item.fileName}</Text>
         <Text style={styles.titledescription}>{item.description}</Text>
@@ -338,32 +338,27 @@ const Dashboard = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
   card: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
     padding: 10,
+    margin: 10,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 40,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
+    shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
   },
   card1: {
+    flexDirection: "row",
+    padding: 10,
+    margin: 10,
     backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
+    borderRadius: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-
+    shadowOffset: { width: 0, height: 2 } ,
+    shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
   },
@@ -371,57 +366,57 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 10,
   },
   details: {
-    flex: 1,
-  },
-  greeting: {
-    fontSize: 18,
-    color: "#888",
+    marginLeft: 10,
   },
   name: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  text: {
-    fontSize: 16,
-    fontStyle: "italic",
-  },
-  textHeader: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
   },
-  listContainer: {
-    paddingBottom: 20,
+  greeting: {
+    fontSize: 14,
+    color: "#888",
+  },
+  textHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  text: {
+    fontSize: 18,
+    color: "gray",
+    textAlign: "center",
   },
   item: {
     flexDirection: "row",
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: "#fff",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#bbdefb",
+    padding: 20,
+    marginVertical: 8,
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
-
-    color: "black",
+    color:'black',
+    marginLeft: 0,
+  },
+  titledescription: {
+    fontSize: 16,
+    color:'black',
+  marginLeft: 0,
   },
   uploadDate: {
     fontSize: 14,
-    color: "gray",
+    color:'black',
+    marginLeft: 0,
   },
   listContainer: {
     paddingBottom: 20,
   },
-
  
     addButton: {
       position: 'absolute',
