@@ -131,6 +131,8 @@ const Dashboard = ({ navigation }) => {
   const [documents, setDocuments] = useState([]);
   const [user, setUser] = useState(null);
 
+  console.log("user:", user)
+
   useFocusEffect(
     React.useCallback(() => {
       const fetchDocuments = async () => {

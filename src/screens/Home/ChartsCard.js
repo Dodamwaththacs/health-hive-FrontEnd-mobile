@@ -3,8 +3,6 @@ import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
 import GestureRecognizer from 'react-native-swipe-gestures';
-import * as SQLite from "expo-sqlite";
-import * as SecureStore from "expo-secure-store";
 import {
   View,
   Text,
@@ -13,12 +11,10 @@ import {
   Modal,
   Button,
   StyleSheet,
-  Image,
-  FlatList,
   Alert,
   Dimensions,
 } from "react-native";
-import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
+import {Svg,  Circle, Line, Text as SvgText, Rect,Path } from 'react-native-svg';
 import moment from 'moment';
 
 const ChartsCard = ({ userId }) => {
@@ -27,7 +23,7 @@ const ChartsCard = ({ userId }) => {
   const [height, setHeight] = useState("");
   const [notes, setNotes] = useState("");
   const [userData, setUserData] = useState([]);
-  const [dob, setDob] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState("");
   const [currentView, setCurrentView] = useState('bmi'); // State to toggle between views
 
@@ -76,7 +72,7 @@ const ChartsCard = ({ userId }) => {
       setUserData(response.data);
       // Fetch additional user profile data
       const profileResponse = await axios.get(`http://192.168.205.43:33000/api/users/${userId}`);
-      setDob(profileResponse.data.dob);
+      setDateOfBirth(profileResponse.data.dateOfBirth);
       setGender(profileResponse.data.gender);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -98,6 +94,35 @@ const ChartsCard = ({ userId }) => {
     return parseFloat((weight / (heightInMeters * heightInMeters)).toFixed(2));
   };
 
+  const getBMICategory = (bmi, age, gender) => {
+    if (age < 18) {
+      // For children and teens, BMI categories are different. Here we handle adult BMI.
+      return "BMI categories for children and teens are not handled.";
+    }
+    if (bmi < 18.5) return "Underweight";
+    if (bmi < 25) return "Normal weight";
+    if (bmi < 30) return "Overweight";
+    return "Obesity";
+  };
+
+  const getWeightChangeSuggestion = (bmi, height, weight) => {
+    const heightInMeters = height / 100;
+    let targetWeight = 0;
+    if (bmi < 18.5) {
+      targetWeight = 18.5 * heightInMeters * heightInMeters;
+      return `Gain ${(targetWeight - weight).toFixed(2)} kg to reach a normal weight.`;
+    }
+    if (bmi >= 25) {
+      targetWeight = 24.9 * heightInMeters * heightInMeters;
+      return `Lose ${(weight - targetWeight).toFixed(2)} kg to reach a normal weight.`;
+    }
+    return "Your weight is normal.";
+  };
+
+  const calculateAge = dateOfBirth => {
+    return moment().diff(moment(dateOfBirth), 'years');
+  };
+
   const chartData = userData.map(data => {
     if (data.weight && data.height) {
       return calculateBMI(data.weight, data.height);
@@ -113,42 +138,77 @@ const ChartsCard = ({ userId }) => {
   };
 
   const latestBMI = chartData[chartData.length - 1] || 0;
+  const age = calculateAge(dateOfBirth);
+  const bmiCategory = getBMICategory(latestBMI, age, gender);
+  const weightChangeSuggestion = getWeightChangeSuggestion(latestBMI, height, weight);
 
-  const calculateAge = dob => {
-    return moment().diff(moment(dob), 'years');
-  };
-
+  
   const GaugeChart = ({ value }) => {
-    const gaugeSize = 200;
+    const gaugeSize = 300;
     const radius = gaugeSize / 2;
-    const strokeWidth = 20;
+    const strokeWidth = 60;
     const normalizedValue = Math.min(Math.max(value, 0), 40); // Clamp the value between 0 and 40
-
-    const getColor = value => {
-      if (value < 16.0) return 'blue';
-      if (value < 18.5) return 'lightblue';
-      if (value < 25) return 'green';
-      if (value < 30) return 'orange';
-      if (value < 35) return 'darkorange';
-      if (value < 40) return 'red';
-      return 'darkred';
+  
+    const sections = [
+      { color: '#00BFFF', from: 0, to: 18.5, label: 'Underweight' },
+      { color: '#32CD32', from: 18.5, to: 25, label: 'Normal' },
+      { color: '#FFA500', from: 25, to: 30, label: 'Overweight' },
+      { color: '#FF4500', from: 30, to: 40, label: 'Obesity' },
+    ];
+  
+    const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
+      const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0;
+  
+      return {
+        x: centerX + radius * Math.cos(angleInRadians),
+        y: centerY + radius * Math.sin(angleInRadians),
+      };
     };
-
+  
+    const describeArc = (x, y, radius, startAngle, endAngle) => {
+      const start = polarToCartesian(x, y, radius, endAngle);
+      const end = polarToCartesian(x, y, radius, startAngle);
+  
+      const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+  
+      const d = [
+        'M', start.x, start.y,
+        'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y,
+      ].join(' ');
+  
+      return d;
+    };
+  
+    const getSectionLabel = (value) => {
+      for (let section of sections) {
+        if (value >= section.from && value < section.to) {
+          return section.label;
+        }
+      }
+      return sections[sections.length - 1].label;
+    };
+  
     return (
-      <Svg width={gaugeSize} height={gaugeSize}>
-        <Circle cx={radius} cy={radius} r={radius} fill="#eee" />
-        <Circle cx={radius} cy={radius} r={radius - strokeWidth / 2} fill="none" stroke="#ddd" strokeWidth={strokeWidth} />
-        <Line
-          x1={radius}
-          y1={radius}
-          x2={radius + (radius - strokeWidth) * Math.cos((normalizedValue / 40) * Math.PI - Math.PI / 2)}
-          y2={radius + (radius - strokeWidth) * Math.sin((normalizedValue / 40) * Math.PI - Math.PI / 2)}
-          stroke={getColor(value)}
+      <View style={styles.containerGaugeChart}>
+      <Svg width={gaugeSize} height={gaugeSize / 2}>
+        {sections.map((section, index) => (
+          <Path
+            key={index}
+            d={describeArc(radius, radius, radius - strokeWidth / 2, (section.from / 40) * 180, (section.to / 40) * 180)}
+            stroke={section.color}
+            strokeWidth={strokeWidth}
+            fill="none"
+          />
+        ))}
+        <Path
+          d={describeArc(radius, radius, radius - strokeWidth / 2, (normalizedValue / 40) * 180, (normalizedValue / 40) * 180 + 1)}
+          stroke="black"
           strokeWidth={strokeWidth}
+          fill="none"
         />
         <SvgText
           x={radius}
-          y={radius}
+          y={radius - 30}
           fill="black"
           fontSize="20"
           fontWeight="bold"
@@ -157,10 +217,21 @@ const ChartsCard = ({ userId }) => {
         >
           {value}
         </SvgText>
+        <SvgText
+          x={radius}
+          y={radius + 20}
+          fill="black"
+          fontSize="16"
+          fontWeight="bold"
+          textAnchor="middle"
+          dy=".3em"
+        >
+          {getSectionLabel(value)}
+        </SvgText>
       </Svg>
+      </View>
     );
   };
-
   const config = {
     velocityThreshold: 0.3,
     directionalOffsetThreshold: 80,
@@ -182,52 +253,63 @@ const ChartsCard = ({ userId }) => {
       style={styles.container}
     >
       {currentView === 'bmi' ? (
-        <View>
+        <View style={styles.containerGaugeChartCard}>
           <Text style={styles.textHeader}>Your BMI</Text>
           <GaugeChart value={latestBMI} />
-          <Text style={styles.bmiText}>{`Age: ${calculateAge(dob)} | Gender: ${gender}`}</Text>
-          <TouchableOpacity style={styles.addButton} onPress={handleAddButtonPress}>
-            <Icon name="add-circle-outline" size={30} color="#000" />
-          </TouchableOpacity>
+          <Text style={styles.bmiText}>{weightChangeSuggestion}</Text>
+          <Text style={styles.bmiText}>Age: {age}</Text>
+          <Text style={styles.bmiText}>Gender: {gender}</Text>
         </View>
       ) : (
-        <View>
+        <View style={styles.containerGaugeChartCard}>
           <Text style={styles.textHeader}>BMI History</Text>
           <LineChart
             data={defaultData}
-            width={Dimensions.get("window").width - 20}
+            width={Dimensions.get("window").width * 0.9}
             height={220}
-            yAxisLabel=""
             yAxisSuffix=""
             yAxisInterval={1}
             chartConfig={{
-              backgroundColor: "#ffd600",
-              backgroundGradientFrom: "#ff6d00",
-              backgroundGradientTo: "#ffab00",
+              backgroundColor: "#e26a00",
+              backgroundGradientFrom: "#fb8c00",
+              backgroundGradientTo: "#ffa726",
               decimalPlaces: 2,
               color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
               labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: { borderRadius: 16 },
+              style: {
+                borderRadius: 16
+              },
               propsForDots: {
                 r: "6",
                 strokeWidth: "2",
-                stroke: "#ffa726",
-              },
+                stroke: "#ffa726"
+              }
             }}
             bezier
-            fromZero={true}
-            style={{ margin: 10, borderRadius: 16 }}
+            style={{
+              marginVertical: 8,
+              borderRadius: 16
+            }}
           />
         </View>
       )}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={handleAddButtonPress}
+      >
+        <Icon name="add" size={30} color="white" />
+      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Add Your Health Data</Text>
+          <Text style={styles.modalText}>Add Health Data</Text>
           <TextInput
             style={styles.input}
             placeholder="Weight (kg)"
@@ -248,10 +330,8 @@ const ChartsCard = ({ userId }) => {
             value={notes}
             onChangeText={setNotes}
           />
-          <View style={styles.buttonContainer}>
-            <Button title="Submit" onPress={handleSubmit} />
-            <Button title="Cancel" onPress={handleCancel} color="#FF6347" />
-          </View>
+          <Button title="Submit" onPress={handleSubmit} />
+          <Button title="Cancel" onPress={handleCancel} />
         </View>
       </Modal>
     </GestureRecognizer>
@@ -261,26 +341,27 @@ const ChartsCard = ({ userId }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
     padding: 20,
-    borderRadius: 16,
   },
   textHeader: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 10,
-    marginLeft: 10,
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
   },
   bmiText: {
     fontSize: 16,
-    marginTop: 10,
     textAlign: 'center',
+    marginVertical: 10,
   },
   addButton: {
     position: 'absolute',
-    right: 10,
-    top: 10,
-    zIndex: 1,
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#ff6347',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 5,
   },
   modalView: {
     margin: 20,
@@ -289,29 +370,52 @@ const styles = StyleSheet.create({
     padding: 35,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
+    elevation: 5
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    width: 200,
   },
   modalText: {
     marginBottom: 15,
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 10,
-    width: "100%",
-    padding: 10,
+  containerGaugeChart: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
+  // containerGaugeChartCard: {
+  //   flexDirection: "row",
+  //   padding: 10,
+  //   margin: 10,
+  //   backgroundColor: "#fff",
+  //   borderRadius: 20,
+  //   shadowColor: "#000",
+  //   shadowOffset: { width: 0, height: 2 } ,
+  //   shadowOpacity: 0.3,
+  //   shadowRadius: 2,
+  //   elevation: 5,
+  //   width: '100%',
+  //   height: 280,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   marginRight: 30,
+  // },
+
 });
 
 export default ChartsCard;
