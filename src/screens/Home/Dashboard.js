@@ -6,6 +6,8 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native"; // Imp
 import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
 import * as SecureStore from "expo-secure-store";
+// import GreetCard from "./GreetCard";
+import GreetCard from "./GreetCard";
 import {
   View,
   Text,
@@ -37,21 +39,21 @@ const UserProfileCard = ({ user, onPress }) => {
   );
 };
 
-const GreetCard = () => {
-  return (
-    <View style={styles.card1}>
-      <Text style={styles.text}>
-        "Drink enough water daily for good health; aim for at least 8 cups. Your
-        body will thank you!"
-      </Text>
-    </View>
-  );
-};
+// const GreetCard = () => {
+//   return (
+//     <View style={styles.card1}>
+//       <Text style={styles.text}>
+//         "Drink enough water daily for good health; aim for at least 8 cups. Your
+//         body will thank you!"
+//       </Text>
+//     </View>
+//   );
+// };
 
 const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
-      `http://192.168.229.140:33000/api/users/email/${email}`
+      `http://192.168.94.140:33000/api/users/email/${email}`
     );
     return response.data;
   } catch (error) {
@@ -237,18 +239,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
-  card1: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-
-    shadowRadius: 2,
-    elevation: 5,
-  },
   photo: {
     width: 50,
     height: 50,
@@ -266,10 +256,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
-  text: {
-    fontSize: 16,
-    fontStyle: "italic",
-  },
+
   textHeader: {
     fontSize: 18,
     fontWeight: "bold",

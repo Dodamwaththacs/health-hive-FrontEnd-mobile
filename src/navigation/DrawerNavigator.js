@@ -31,7 +31,7 @@ function DrawerNaviagtor() {
         const email = await SecureStore.getItemAsync("userEmail");
 
         const response = await axios.get(
-          `http://192.168.229.140:33000/api/users/email/${email}`
+          `http://192.168.94.140:33000/api/users/email/${email}`
         );
         setUser(response.data);
       } catch (error) {
@@ -94,7 +94,11 @@ function DrawerNaviagtor() {
         component={QR_Code}
         initialParams={{ userId: user.id }}
       />
-      <Drawer.Screen name="Notification" component={Notification} />
+      <Drawer.Screen
+        name="Notification"
+        component={Notification}
+        initialParams={{ userId: user.id }}
+      />
       <Drawer.Screen name="Setting" component={Setting} />
       <Drawer.Screen name="Help" component={Help} />
       <Drawer.Screen name="About" component={About} />
