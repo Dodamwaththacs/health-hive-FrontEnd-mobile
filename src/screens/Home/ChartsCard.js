@@ -97,7 +97,7 @@ const ChartsCard = ({ userId }) => {
   const getBMICategory = (bmi, age, gender) => {
     if (age < 18) {
       // For children and teens, BMI categories are different. Here we handle adult BMI.
-      return "BMI categories for children and teens are not handled.";
+      return "BMI categories for children and teens are not handled.For children and teens, BMI categories are different. Here we handle adult BMI.";
     }
     if (bmi < 18.5) return "Underweight";
     if (bmi < 25) return "Normal weight";
@@ -137,17 +137,31 @@ const ChartsCard = ({ userId }) => {
     }],
   };
 
+  const latestData = userData[userData.length - 1] || {};
   const latestBMI = chartData[chartData.length - 1] || 0;
   const age = calculateAge(dateOfBirth);
   const bmiCategory = getBMICategory(latestBMI, age, gender);
-  const weightChangeSuggestion = getWeightChangeSuggestion(latestBMI, height, weight);
+  const weightChangeSuggestion = getWeightChangeSuggestion(latestBMI, latestData.height, latestData.weight);
+
 
   
-  const GaugeChart = ({ value }) => {
-    const gaugeSize = 300;
+  const GaugeChart = ({ value, Category }) => {
+    const gaugeSize = 280;
     const radius = gaugeSize / 2;
     const strokeWidth = 60;
     const normalizedValue = Math.min(Math.max(value, 0), 40); // Clamp the value between 0 and 40
+  
+    const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
+      const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0;
+      return {
+        x: centerX + radius * Math.cos(angleInRadians),
+        y: centerY + radius * Math.sin(angleInRadians),
+      };
+    };
+  
+    const arrowAngle = (normalizedValue / 40) * 180;
+    const arrowLength = radius - strokeWidth / 10 - 30;
+    const arrowEnd = polarToCartesian(radius, radius, arrowLength, arrowAngle);
   
     const sections = [
       { color: '#00BFFF', from: 0, to: 18.5, label: 'Underweight' },
@@ -156,26 +170,14 @@ const ChartsCard = ({ userId }) => {
       { color: '#FF4500', from: 30, to: 40, label: 'Obesity' },
     ];
   
-    const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
-      const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0;
-  
-      return {
-        x: centerX + radius * Math.cos(angleInRadians),
-        y: centerY + radius * Math.sin(angleInRadians),
-      };
-    };
-  
     const describeArc = (x, y, radius, startAngle, endAngle) => {
       const start = polarToCartesian(x, y, radius, endAngle);
       const end = polarToCartesian(x, y, radius, startAngle);
-  
       const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
-  
       const d = [
         'M', start.x, start.y,
         'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y,
       ].join(' ');
-  
       return d;
     };
   
@@ -189,46 +191,51 @@ const ChartsCard = ({ userId }) => {
     };
   
     return (
-      <View style={styles.containerGaugeChart}>
-      <Svg width={gaugeSize} height={gaugeSize / 2}>
-        {sections.map((section, index) => (
-          <Path
-            key={index}
-            d={describeArc(radius, radius, radius - strokeWidth / 2, (section.from / 40) * 180, (section.to / 40) * 180)}
-            stroke={section.color}
-            strokeWidth={strokeWidth}
-            fill="none"
+      <View style={styles.GaugeChart}>
+        <Svg width={gaugeSize} height={gaugeSize / 2 + 30}>
+          {sections.map((section, index) => (
+            <Path
+              key={index}
+              d={describeArc(radius, radius, radius - strokeWidth / 2, (section.from / 40) * 180, (section.to / 40) * 180)}
+              stroke={section.color}
+              strokeWidth={strokeWidth}
+              fill="none"
+            />
+          ))}
+          
+          <Line
+            x1={radius}
+            y1={radius}
+            x2={arrowEnd.x}
+            y2={arrowEnd.y}
+            stroke="black"
+            strokeWidth={5}
           />
-        ))}
-        <Path
-          d={describeArc(radius, radius, radius - strokeWidth / 2, (normalizedValue / 40) * 180, (normalizedValue / 40) * 180 + 1)}
-          stroke="black"
-          strokeWidth={strokeWidth}
-          fill="none"
-        />
-        <SvgText
-          x={radius}
-          y={radius - 30}
-          fill="black"
-          fontSize="20"
-          fontWeight="bold"
-          textAnchor="middle"
-          dy=".3em"
-        >
-          {value}
-        </SvgText>
-        <SvgText
-          x={radius}
-          y={radius + 20}
-          fill="black"
-          fontSize="16"
-          fontWeight="bold"
-          textAnchor="middle"
-          dy=".3em"
-        >
-          {getSectionLabel(value)}
-        </SvgText>
-      </Svg>
+          <Circle cx={radius} cy={radius} r={5} fill="black" />
+          <SvgText
+            x={radius}
+            y={radius - 30}
+            fill="black"
+            fontSize="20"
+            fontWeight="bold"
+            textAnchor="middle"
+            dy=".3em"
+          >
+            {value}
+          </SvgText>
+          <SvgText
+            x={radius}
+            y={radius + 20}
+            fill="black"
+            fontSize="16"
+            fontWeight="bold"
+            textAnchor="middle"
+            dy=".3em"
+          >
+            {getSectionLabel(value)}
+          </SvgText>
+        
+        </Svg>
       </View>
     );
   };
@@ -253,15 +260,15 @@ const ChartsCard = ({ userId }) => {
       style={styles.container}
     >
       {currentView === 'bmi' ? (
-        <View style={styles.containerGaugeChartCard}>
+        <View style={styles.containerGaugeChart}>
           <Text style={styles.textHeader}>Your BMI</Text>
-          <GaugeChart value={latestBMI} />
+
+          <GaugeChart value={latestBMI} category={bmiCategory} />
           <Text style={styles.bmiText}>{weightChangeSuggestion}</Text>
-          <Text style={styles.bmiText}>Age: {age}</Text>
-          <Text style={styles.bmiText}>Gender: {gender}</Text>
+        
         </View>
       ) : (
-        <View style={styles.containerGaugeChartCard}>
+        <View style={styles.containerGaugeChart}>
           <Text style={styles.textHeader}>BMI History</Text>
           <LineChart
             data={defaultData}
@@ -297,7 +304,7 @@ const ChartsCard = ({ userId }) => {
         style={styles.addButton}
         onPress={handleAddButtonPress}
       >
-        <Icon name="add" size={30} color="white" />
+        <Icon name="add" size={20} color="white" />
       </TouchableOpacity>
       <Modal
         animationType="slide"
@@ -330,8 +337,10 @@ const ChartsCard = ({ userId }) => {
             value={notes}
             onChangeText={setNotes}
           />
-          <Button title="Submit" onPress={handleSubmit} />
-          <Button title="Cancel" onPress={handleCancel} />
+         <View style={styles.buttonContainer}>
+            <Button title="Submit" onPress={handleSubmit} />
+            <Button title="Cancel" onPress={handleCancel} color="#FF6347" />
+          </View>
         </View>
       </Modal>
     </GestureRecognizer>
@@ -341,24 +350,30 @@ const ChartsCard = ({ userId }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 10,
+    marginTop: -5,
+    
   },
   textHeader: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
+  infoText:{
+    marginTop:5,
+  },
+
   bmiText: {
     fontSize: 16,
     textAlign: 'center',
-    marginVertical: 10,
+    marginVertical: 5,
   },
   addButton: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 265,
     right: 20,
-    backgroundColor: '#ff6347',
+    backgroundColor: '#0056B3',
     borderRadius: 50,
     padding: 10,
     elevation: 5,
@@ -396,25 +411,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 } ,
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 5,
+    height: 310,
   },
-  // containerGaugeChartCard: {
-  //   flexDirection: "row",
-  //   padding: 10,
-  //   margin: 10,
-  //   backgroundColor: "#fff",
-  //   borderRadius: 20,
-  //   shadowColor: "#000",
-  //   shadowOffset: { width: 0, height: 2 } ,
-  //   shadowOpacity: 0.3,
-  //   shadowRadius: 2,
-  //   elevation: 5,
-  //   width: '100%',
-  //   height: 280,
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  //   marginRight: 30,
-  // },
+  GaugeChart: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 5,
+    padding: 10,
+  },
+    
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
 
 });
 
