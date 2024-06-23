@@ -49,7 +49,7 @@ export default function App() {
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
         const responce = await axios.get(
-          "http://192.168.94.140:33000/api/hello"
+          "http://192.168.69.140:33000/api/hello"
         );
         if (responce.status === 200) {
           dispatch({ type: "RESTORE_TOKEN", token: userToken });
@@ -127,13 +127,13 @@ export default function App() {
   );
 
   return (
-    <AuthContext.Provider value={authContext}>
-      <EmailProvider>
-        <NavigationContainer>
-          <StackNavigation userToken={state.userToken} />
-        </NavigationContainer>
-      </EmailProvider>
-    </AuthContext.Provider>
-    // <TempScreen />
+    // <AuthContext.Provider value={authContext}>
+    //   <EmailProvider>
+    //     <NavigationContainer>
+    //       <StackNavigation userToken={state.userToken} />
+    //     </NavigationContainer>
+    //   </EmailProvider>
+    // </AuthContext.Provider>
+    <TempScreen />
   );
 }

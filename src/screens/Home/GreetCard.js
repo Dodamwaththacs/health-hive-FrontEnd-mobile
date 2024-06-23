@@ -8,7 +8,7 @@ const GreetCard = () => {
     const fetchData = async () => {
       console.log("GreetCard mounted");
       const response = await axios.get(
-        "http://192.168.94.140:33000/api/dailyTips"
+        "http://192.168.69.140:33000/api/dailyTips"
       );
       console.log("response", response.data);
       console.log("response.data[0].tip", response.data[0].tip);

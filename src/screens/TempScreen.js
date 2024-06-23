@@ -1,106 +1,35 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Button,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as FileSystem from "expo-file-system";
-import axios from "axios";
-import * as Sharing from "expo-sharing";
+import { Text, View, StyleSheet } from "react-native";
+import React from "react";
+import PDF from "react-native-pdf";
 
-const DocumentViewer = () => {
-  const documentUri = "QmXsAGdDrahP6t1bhoLsTQSCePTw6BWJdS5CWWyAGUsmRr";
-  const [imageUri, setImageUri] = useState(null);
-
-  console.log("Document URI:", documentUri);
-
-  const handleClose = async () => {
-    try {
-      await FileSystem.deleteAsync(imageUri);
-      console.log("Image deleted successfully:", imageUri);
-    } catch (error) {
-      console.error("Error deleting the image:", error);
-    }
+export default function App() {
+  const PdfResource = {
+    uri: "http://www.pdf995.com/samples/pdf.pdf",
+    cache: true,
   };
-
-  const handleShare = async () => {
-    try {
-      await Sharing.shareAsync(imageUri);
-    } catch (error) {
-      console.error("Error sharing the image:", error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        const imageUrl = "http://192.168.94.140:33000/api/ipfs/" + documentUri;
-        const fileUri = `${FileSystem.cacheDirectory} ${documentUri}.jpg`;
-        console.log("Image URL:", imageUrl);
-
-        const response = await axios({
-          url: imageUrl,
-          method: "GET",
-          responseType: "blob",
-        });
-
-        const reader = new FileReader();
-        reader.readAsDataURL(response.data);
-        reader.onloadend = async () => {
-          const base64data = reader.result;
-          await FileSystem.writeAsStringAsync(
-            fileUri,
-            base64data.split(",")[1],
-            { encoding: FileSystem.EncodingType.Base64 }
-          );
-          setImageUri(fileUri);
-          console.log("Image written to file system:", fileUri);
-        };
-      } catch (error) {
-        console.error("Error fetching the image: ", error);
-      }
-    };
-
-    fetchImage();
-  }, [documentUri]);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-        <Ionicons name="close-circle" size={30} color="black" />
-      </TouchableOpacity>
-      <Image
-        source={{
-          uri: imageUri,
+      <PDF
+        trustAllCerts={false}
+        source={PdfResource}
+        style={styles.pdf}
+        onLoadComplete={(numberOfPages, filePath) => {
+          console.log(`number of pages: ${numberOfPages}`);
         }}
-        style={styles.image}
-        onError={(error) => console.error("Image loading error:", error)}
       />
-      <Button title="Share" onPress={handleShare} />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white", // Optional: Add a background color for better visibility
     justifyContent: "center",
     alignItems: "center",
   },
-  image: {
-    width: "80%",
-    height: "80%",
-    resizeMode: "contain",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 20,
-    right: 20,
+  pdf: {
+    flex: 1,
+    width: "100%",
   },
 });
-
-export default DocumentViewer;
