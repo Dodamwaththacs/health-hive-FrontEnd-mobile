@@ -104,7 +104,9 @@ const FileScreen = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.197.140:33000/api/ipfs/upload",
+
+        "http://192.168.205.43:33000/api/ipfs/upload",
+
         formData,
         {
           headers: {
@@ -141,7 +143,9 @@ const FileScreen = ({ route }) => {
 
   const testConnection = async () => {
     try {
-      const response = await axios.get("http://192.168.197.140:33000/");
+
+      const response = await axios.get("http://192.168.205.43:33000/");
+
       Alert.alert("Connection Successful!");
       console.log(response.data);
     } catch (error) {

@@ -12,11 +12,16 @@ import {
   View,
   Text,
   TouchableOpacity,
+  TextInput,
+  Modal,
+  Button,
   StyleSheet,
   Image,
   FlatList,
+  Alert,
   Dimensions,
 } from "react-native";
+import ChartsCard from "./ChartsCard";
 const UserProfileCard = ({ user, onPress }) => {
   if (!user) {
     return (
@@ -53,7 +58,9 @@ const UserProfileCard = ({ user, onPress }) => {
 const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
-      `http://192.168.197.140:33000/api/users/email/${email}`
+
+      `http://192.168.205.43:33000/api/users/email/${email}`
+
     );
     return response.data;
   } catch (error) {
@@ -62,44 +69,6 @@ const fetchDataByEmail = async (email) => {
   }
 };
 
-const ChartsCard = () => {
-  return (
-    <View>
-      <Text style={styles.textHeader}>Your weight...</Text>
-      <LineChart
-        data={{
-          labels: ["January", "February", "March", "April", "May", "June"],
-          datasets: [{ data: [70, 73, 79, 76, 70, 65] }],
-        }}
-        width={Dimensions.get("window").width}
-        height={220}
-        yAxisLabel="kg"
-        yAxisInterval={5}
-        chartConfig={{
-          backgroundColor: "#ffd600",
-          backgroundGradientFrom: "#ff6d00",
-          backgroundGradientTo: "#ffab00",
-          decimalPlaces: 0,
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: {
-            borderRadius: 16,
-          },
-          propsForDots: {
-            r: "6",
-            strokeWidth: "2",
-            stroke: "#ffa726",
-          },
-        }}
-        bezier
-        style={{
-          margin: 10,
-          borderRadius: 16,
-        }}
-      />
-    </View>
-  );
-};
 
 const formatDate = (dateString) => {
   const parsedDate = Date.parse(dateString);
@@ -129,13 +98,11 @@ const ListCard = ({ documents, user, navigation }) => {
       style={styles.item}
       onPress={() => openDocument(item, navigation)}
     >
-      <Icon name="document-outline" size={50} color="#000" />
-      <View>
+      <Icon name="document-outline" size={50} color="#000" marginLeft={10} />
+      <View style={styles.itemContainer}>
         <Text style={styles.title}>{item.fileName}</Text>
         <Text style={styles.titledescription}>{item.description}</Text>
-        <Text style={styles.uploadDate}>
-          Uploaded on: {formatDate(item.date)}
-        </Text>
+        <Text style={styles.uploadDate}>Uploaded on: {formatDate(item.date)}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -152,7 +119,7 @@ const ListCard = ({ documents, user, navigation }) => {
           />
 
           <GreetCard />
-          <ChartsCard />
+          {user && <ChartsCard userId={user.id} />}
           <Text style={styles.textHeader}>Recent Uploads</Text>
         </>
       }
@@ -167,6 +134,8 @@ const ListCard = ({ documents, user, navigation }) => {
 const Dashboard = ({ navigation }) => {
   const [documents, setDocuments] = useState([]);
   const [user, setUser] = useState(null);
+
+  console.log("user:", user)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -222,74 +191,102 @@ const Dashboard = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
   card: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
     padding: 10,
+    margin: 10,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: 40,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
+    shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
   },
+
+  card1: {
+    flexDirection: "row",
+    padding: 10,
+    margin: 10,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 } ,
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+
   photo: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 10,
   },
   details: {
-    flex: 1,
-  },
-  greeting: {
-    fontSize: 18,
-    color: "#888",
+    marginLeft: 10,
   },
   name: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
+  },
+  greeting: {
+    fontSize: 14,
+    color: "#888",
   },
 
   textHeader: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginTop: 10,
+    marginLeft: 10,
   },
-  listContainer: {
-    paddingBottom: 20,
+  text: {
+    fontSize: 18,
+    color: "gray",
+    textAlign: "center",
   },
   item: {
     flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#bbdefb",
+    flexDirection: "row",
     padding: 10,
-    marginVertical: 5,
-    backgroundColor: "#fff",
+    margin: 10,
     borderRadius: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 2 } ,
+    shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
+  
   },
+itemContainer:{
+    marginRight:80,
+},
   title: {
     fontSize: 18,
     fontWeight: "bold",
-
-    color: "black",
+    color:'black',
+    marginLeft: 0,
+  },
+  titledescription: {
+    fontSize: 16,
+    color:'black',
+  marginLeft: 0,
   },
   uploadDate: {
     fontSize: 14,
-    color: "gray",
+    color:'black',
+    marginLeft: 0,
   },
   listContainer: {
     paddingBottom: 20,
   },
+ 
+   
+
+  
 });
 
 export default Dashboard;

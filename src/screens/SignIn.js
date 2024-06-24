@@ -38,7 +38,9 @@ const Signin = () => {
       console.log("body..");
 
       const response = await axios.post(
-        "http://192.168.197.140:8080/realms/Health-Hive/protocol/openid-connect/token",
+
+        "http://192.168.205.43:8080/realms/Health-Hive/protocol/openid-connect/token",
+
         body.toString(),
         {
           headers: {
@@ -60,15 +62,27 @@ const Signin = () => {
         // navigation.navigate("DrawerNavigator");
       } else {
         console.log("Login failed..");
+        Alert.alert(
+          "Login failed1",
+          response.data.message || "Something went wrong. Please try again."
+        );
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Please check your credentials and try again.";
+        Alert.alert("Login failed..", errorMessage);
+      } else {
+        // Server is unreachable or backend issue
+        Alert.alert("Server Error", "Unable to connect to the server. Please try again later.");
+      }
     }
   };
 
   const handleForgotPassword = () => {
     const url =
-      "http://192.168.197.140:8080/realms/Health-Hive/login-actions/reset-credentials";
+
+      "http://192.168.205.43:8080/realms/Health-Hive/login-actions/reset-credentials";
+
     Linking.openURL(url);
   };
 
