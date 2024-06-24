@@ -27,10 +27,16 @@ const ChartsCard = ({ userId }) => {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState("");
   const [currentView, setCurrentView] = useState('bmi'); // State to toggle between views
+  const [hasEntryToday, setHasEntryToday] = useState(false);
+  
   
 
   const handleAddButtonPress = () => {
-    setModalVisible(true);
+    if (hasEntryToday) {
+      Alert.alert("Alert", "You already have data for today.");
+    } else {
+      setModalVisible(true);
+    }
   };
 
   const handleSubmit = async () => {
@@ -71,8 +77,14 @@ const ChartsCard = ({ userId }) => {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(`http://192.168.205.43:33000/api/healthData/userId/${userId}`);
-      setUserData(response.data);
-      // Fetch additional user profile data
+      const userData = response.data;
+
+      // Check if there is an entry for today
+      const today = moment().startOf('day');
+      const entryToday = userData.some(data => moment(data.date).isSame(today, 'day'));
+      setHasEntryToday(entryToday);
+
+      setUserData(userData);
       const profileResponse = await axios.get(`http://192.168.205.43:33000/api/users/${userId}`);
       setDateOfBirth(profileResponse.data.dateOfBirth);
       setGender(profileResponse.data.gender);
@@ -270,63 +282,50 @@ const ChartsCard = ({ userId }) => {
         </View>
       ) : (
         <View style={styles.containerGaugeChart}>
-        <Text style={styles.textHeader}>Weight History</Text>
-        <View style={styles.chartContainer}>
-          <View style={styles.yAxis}>
-            {defaultData.datasets[0].data.map((value, index) => (
-              <Text key={index} style={styles.yAxisText}>
-                {value}
-              </Text>
-            ))}
+          <Text style={styles.textHeader}>Weight Chart</Text>
+          <View style={styles.chartBackground}>
+            <ScrollView horizontal contentContainerStyle={styles.scrollViewContent}>
+              <LineChart
+                data={defaultData}
+                width={Dimensions.get('window').width * 1.5}
+                height={230}
+                marginvertical={10}
+                chartConfig={{
+                  backgroundColor: "#e26a00",
+                  backgroundGradientFrom: "#fb8c00",
+                  backgroundGradientTo: "#ffa726",
+                  decimalPlaces: 2,
+                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  },
+                  propsForDots: {
+                    r: "6",
+                    strokeWidth: "4",
+                    stroke: "#ffa726",
+                  },
+                  yAxisLabel: '',
+                  yAxisSuffix: 'kg',
+                  yAxisInterval: 1,
+                }}
+                bezier
+                style={styles.chart}
+                withVerticalLabels={true}
+                withHorizontalLabels={true}
+              />
+              
+            </ScrollView>
           </View>
-          <ScrollView horizontal contentContainerStyle={styles.chartScrollView}>
-            <LineChart
-              data={defaultData}
-              width={Math.max(Dimensions.get("window").width - 60, defaultData.labels.length * 50)}
-              height={220}
-              yAxisSuffix=""
-              yAxisInterval={1}
-              withInnerLines={false}
-              withOuterLines={false}
-              withHorizontalLabels={false}
-              withVerticalLabels={false}
-              chartConfig={{
-                backgroundColor: "#fb8c00",
-                backgroundGradientFrom: "#fb8c00",
-                backgroundGradientTo: "#ffa726",
-                decimalPlaces: 1,
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                propsForDots: {
-                  r: "6",
-                  strokeWidth: "2",
-                  stroke: "#ffa726"
-                }
-              }}
-              bezier
-              style={styles.chart}
-            />
-          </ScrollView>
-          <ScrollView horizontal contentContainerStyle={styles.xAxisContainer}>
-            {defaultData.labels.map((label, index) => (
-              <Text key={index} style={styles.xAxisText}>
-                {label}
-              </Text>
-            ))}
-          </ScrollView>
         </View>
-      </View>
-    )}
+      )}
 
       <View style={styles.dotContainer}>
         <View style={[styles.dot, currentView === 'bmi' && styles.activeDot]} />
         <View style={[styles.dot, currentView === 'history' && styles.activeDot]} />
       </View>
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={handleAddButtonPress}
-      >
+      <TouchableOpacity style={styles.addButton} onPress={handleAddButtonPress}>
         <Icon name="add" size={20} color="white" />
       </TouchableOpacity>
       <Modal
@@ -472,41 +471,33 @@ const styles = StyleSheet.create({
   activeDot: {
     backgroundColor: '#0056B3',
   },
-  chartContainer: {
+  chartBackground: {
+    position: 'relative',
+    width: '100%',
+    height: 230,
+    backgroundColor: '#e26a00',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  scrollViewContent: {
     flexDirection: 'row',
-    alignItems: 'center',
-    height: 250,
-  },
-  yAxis: {
-    height: 220,
-    justifyContent: 'space-between',
-    marginRight: 10,
-  },
-  yAxisText: {
-    fontSize: 12,
-    color: 'black',
-    textAlign: 'right',
-  },
-  chartScrollView: {
-    paddingBottom: 20,
   },
   chart: {
-    marginVertical: 8,
+    marginVertical: 0,
     borderRadius: 16,
+    marginLeft: 0,// Adjust to align with static y-axis
   },
-  xAxisContainer: {
-    flexDirection: 'row',
+  yAxis: {
     position: 'absolute',
+    top: 0,
+    left: 0,
     bottom: 0,
-    left: 40,
+    justifyContent: 'space-between',
+    paddingLeft: 10,
   },
-  xAxisText: {
-    fontSize: 12,
-    color: 'black',
-    width: 50,
-    textAlign: 'center',
+  yAxisLabel: {
+    color: "#fff",
   },
-
 });
 
 export default ChartsCard;
