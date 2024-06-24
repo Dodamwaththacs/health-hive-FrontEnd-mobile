@@ -22,13 +22,14 @@
       "package": "com.chamika_3131.healthhive"
     },
     "web": {},
-    "extra": {
-      "eas": {
-        "projectId": "bc6c731b-d387-40a6-8f5a-7ae57d354a40"
-      }
-    },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b6b3ec72-c6d7-44e4-937e-f34624a835a6"
+      }
+    },
+    "owner": "chamika_3131"
   }
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -6,10 +6,27 @@ import Dashboard from "../screens/Home/Dashboard";
 import FolderNavigation from "../screens/Home/documents/FolderNavigation";
 import Search from "../screens/Home/Search";
 import Documents from "../screens/Home/documents/Documents";
+import * as SecureStore from "expo-secure-store";
 
 const Tab = createBottomTabNavigator();
 
 function HomeBottomNavigator() {
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const email = await SecureStore.getItemAsync("userEmail");
+        setEmail(email);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        signOut();
+      }
+    };
+
+    fetchUserData();
+  });
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -48,6 +65,7 @@ function HomeBottomNavigator() {
       <Tab.Screen
         name="Documents"
         component={Documents}
+        initialParams={{ useremail: email }}
         options={{
           headerShown: false,
           tabBarLabel: "Documents",

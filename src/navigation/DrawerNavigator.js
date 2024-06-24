@@ -32,6 +32,7 @@ function DrawerNaviagtor() {
 
         const response = await axios.get(
           `http://192.168.205.43:33000/api/users/email/${email}`
+
         );
         setUser(response.data);
       } catch (error) {
@@ -94,7 +95,11 @@ function DrawerNaviagtor() {
         component={QR_Code}
         initialParams={{ userId: user.id }}
       />
-      <Drawer.Screen name="Notification" component={Notification} />
+      <Drawer.Screen
+        name="Shared Files"
+        component={Notification}
+        initialParams={{ userId: user.id }}
+      />
       <Drawer.Screen name="Setting" component={Setting} />
       <Drawer.Screen name="Help" component={Help} />
       <Drawer.Screen name="About" component={About} />
