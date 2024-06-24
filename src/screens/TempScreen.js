@@ -4,7 +4,7 @@ import PDF from "react-native-pdf";
 
 export default function App() {
   const PdfResource = {
-    uri: "http://www.pdf995.com/samples/pdf.pdf",
+    uri: "https://picsum.photos/200/300",
     cache: true,
   };
 

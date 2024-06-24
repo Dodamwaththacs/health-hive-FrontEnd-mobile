@@ -64,6 +64,11 @@ const FileScreen = ({ route }) => {
       setFileUri(fileUri);
       console.log("Image file selected:", fileUri);
       setModalVisible(true);
+    }
+    if (fileType.startsWith("application/pdf")) {
+      console.log("PDF file selected:", fileUri);
+      setFileUri(fileUri);
+      setModalVisible(true);
     } else {
       // Handle non-image files here
       console.log("Non-image file selected:", fileType);
@@ -99,7 +104,7 @@ const FileScreen = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.69.140:33000/api/ipfs/upload",
+        "http://192.168.197.140:33000/api/ipfs/upload",
         formData,
         {
           headers: {
@@ -136,7 +141,7 @@ const FileScreen = ({ route }) => {
 
   const testConnection = async () => {
     try {
-      const response = await axios.get("http://192.168.69.140:33000/");
+      const response = await axios.get("http://192.168.197.140:33000/");
       Alert.alert("Connection Successful!");
       console.log(response.data);
     } catch (error) {

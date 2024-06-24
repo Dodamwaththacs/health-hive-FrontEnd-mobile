@@ -38,7 +38,7 @@ const Signin = () => {
       console.log("body..");
 
       const response = await axios.post(
-        "http://192.168.69.140:8080/realms/Health-Hive/protocol/openid-connect/token",
+        "http://192.168.197.140:8080/realms/Health-Hive/protocol/openid-connect/token",
         body.toString(),
         {
           headers: {
@@ -68,7 +68,7 @@ const Signin = () => {
 
   const handleForgotPassword = () => {
     const url =
-      "http://192.168.69.140:8080/realms/Health-Hive/login-actions/reset-credentials";
+      "http://192.168.197.140:8080/realms/Health-Hive/login-actions/reset-credentials";
     Linking.openURL(url);
   };
 
