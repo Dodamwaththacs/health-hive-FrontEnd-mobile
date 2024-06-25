@@ -33,7 +33,11 @@ const UserProfileCard = ({ user, onPress }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <Image
-        source={require("../../assets/profilePic.jpg")}
+        source={
+          user.profilePictureUrl
+            ? { uri: user.profilePictureUrl }
+            : require("../../assets/profilePic.jpeg")
+        }
         style={styles.photo}
       />
       <View style={styles.details}>
@@ -59,7 +63,7 @@ const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
 
-      `http://192.168.205.43:33000/api/users/email/${email}`
+      `http://10.10.18.247:33000/api/users/email/${email}`
 
     );
     return response.data;
@@ -139,6 +143,11 @@ const Dashboard = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      const fetchUserData = async () => {
+        const email = await SecureStore.getItemAsync("userEmail");
+        const userData = await fetchDataByEmail(email);
+        setUser(userData);
+      };
       const fetchDocuments = async () => {
         console.log("Use focus effect ");
         const email = await SecureStore.getItemAsync("userEmail");
@@ -154,6 +163,7 @@ const Dashboard = ({ navigation }) => {
       };
 
       fetchDocuments();
+      fetchUserData();
 
       return () => {
         // Any cleanup operation goes here if needed

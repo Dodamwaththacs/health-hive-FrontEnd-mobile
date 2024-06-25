@@ -8,7 +8,7 @@ const GreetCard = () => {
     const fetchData = async () => {
       console.log("GreetCard mounted");
       const response = await axios.get(
-        "http://192.168.197.140:33000/api/dailyTips"
+        "http://10.10.18.247:33000/api/dailyTips"
       );
       console.log("response", response.data);
       console.log("response.data[0].tip", response.data[0].tip);
@@ -26,14 +26,14 @@ const GreetCard = () => {
 
 styles = StyleSheet.create({
   card1: {
+    flexDirection: "row",
+    padding: 10,
+    margin: 10,
     backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
+    borderRadius: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-
+    shadowOffset: { width: 0, height: 2 } ,
+    shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
   },

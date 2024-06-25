@@ -37,7 +37,7 @@ const DocumentViewer = ({ route }) => {
       setIsLoading(true);
 
       try {
-        const imageUrl = "http://192.168.205.43:33000/api/ipfs/" + documentUri;
+        const imageUrl = "http://10.10.18.247:33000/api/ipfs/" + documentUri;
 
         const fileUri = `${FileSystem.cacheDirectory} ${documentUri}.jpg`;
         console.log("Image URL:", imageUrl);

@@ -58,7 +58,7 @@ const ChartsCard = ({ userId }) => {
           onPress: async () => {
             const data = { weight, height, notes, user: userId, date: new Date() };
             try {
-              await axios.post('http://192.168.205.43:33000/api/healthData', data);
+              await axios.post('http://10.10.18.247:33000/api/healthData', data);
               setModalVisible(false);
               fetchUserData();
             } catch (error) {
@@ -76,7 +76,7 @@ const ChartsCard = ({ userId }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`http://192.168.205.43:33000/api/healthData/userId/${userId}`);
+      const response = await axios.get(`http://10.10.18.247:33000/api/healthData/userId/${userId}`);
       const userData = response.data;
 
       // Check if there is an entry for today
@@ -85,7 +85,7 @@ const ChartsCard = ({ userId }) => {
       setHasEntryToday(entryToday);
 
       setUserData(userData);
-      const profileResponse = await axios.get(`http://192.168.205.43:33000/api/users/${userId}`);
+      const profileResponse = await axios.get(`http://10.10.18.247:33000/api/users/${userId}`);
       setDateOfBirth(profileResponse.data.dateOfBirth);
       setGender(profileResponse.data.gender);
     } catch (error) {

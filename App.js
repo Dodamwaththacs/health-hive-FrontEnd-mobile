@@ -49,7 +49,7 @@ export default function App() {
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
         const responce = await axios.get(
-          "http://192.168.205.43:33000/api/hello"
+          "http://10.10.18.247:33000/api/hello"
 
         );
         if (responce.status === 200) {

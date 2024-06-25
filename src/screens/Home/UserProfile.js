@@ -15,6 +15,8 @@ import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useEmail } from "../../EmailContext";
+import { storage, ref } from "../../../firebaseConfig";
+import { uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"; // Adjust path as per your project structure
 
 const UserProfile = ({ route, navigation }) => {
   const { userData } = route.params;
@@ -27,14 +29,33 @@ const UserProfile = ({ route, navigation }) => {
     emergencyContactName: userData.emergencyContactName || "",
     emergencyContactNumber: userData.emergencyContactNumber || "",
   });
-  const [profilePicUri, setProfilePicUri] = useState(null);
+  const [profilePicUri, setProfilePicUri] = useState(userData.profilePicUri || null); // Initialize with user's existing profile pic, if any
   const [imageActionModalVisible, setImageActionModalVisible] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`http://10.10.18.247:33000/api/users/${user.id}`);
+        const fetchedUser = response.data;
+        setUser(fetchedUser);
+        setProfilePicUri(fetchedUser.profilePictureUrl || null);
+        setEditData({
+          telephoneNumber: fetchedUser.telephoneNumber || "",
+          emergencyContactName: fetchedUser.emergencyContactName || "",
+          emergencyContactNumber: fetchedUser.emergencyContactNumber || "",
+        });
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+        Alert.alert("Error", "Failed to load user profile.");
+      }
+    };
+  
+    fetchUserData();
+  
+    // Request permissions for image picker
     (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
           "Permission Required",
@@ -46,32 +67,70 @@ const UserProfile = ({ route, navigation }) => {
 
   const handleChoosePhoto = async (fromCamera) => {
     let result;
-    if (fromCamera) {
-      result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.5,
-      });
-    } else {
-      result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.5,
-      });
-    }
-
-    if (!result.cancelled) {
-      const uri = result.assets[0].uri;
-      setProfilePicUri(uri);
-      console.log("New profile pic URI:", uri); // This should now log the correct URI
-      setImageActionModalVisible(false);
+    try {
+      if (fromCamera) {
+        result = await ImagePicker.launchCameraAsync({
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.5,
+        });
+      } else {
+        result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 0.5,
+        });
+      }
+  
+      if (!result.canceled) {
+        const uri = fromCamera ? result.uri : result.assets[0].uri;
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        
+        const storageRef = ref(storage, `profilePics/${user.id}`);
+        await uploadBytes(storageRef, blob);
+  
+        const downloadURL = await getDownloadURL(storageRef);
+        setProfilePicUri(downloadURL);
+  
+        // Update the backend with the new profile picture URL
+        await axios.put(`http://10.10.18.247:33000/api/users/${user.id}`, {
+          ...user,
+          profilePictureUrl: downloadURL
+        });
+  
+        console.log("New profile pic URI:", downloadURL);
+        setImageActionModalVisible(false);
+      }
+    } catch (error) {
+      console.error('Error picking or uploading image:', error);
+      Alert.alert('Error', 'Failed to pick or upload image. Please try again.');
     }
   };
-
-  const handleDeletePhoto = () => {
-    setProfilePicUri(null);
-    setImageActionModalVisible(false);
+  const handleDeletePhoto = async () => {
+    try {
+      if (profilePicUri) {
+        const storageRef = ref(storage, `profilePics/${user.id}`);
+        await deleteObject(storageRef);
+        console.log('Image deleted successfully from Firebase Storage');
+  
+        setProfilePicUri(null);
+  
+        // Update the backend to remove the profile picture URL
+        await axios.put(`http://10.10.18.247:33000/api/users/${user.id}`, {
+          ...user,
+          profilePictureUrl: null
+        });
+  
+        setImageActionModalVisible(false);
+      } else {
+        console.warn('No profile pic URI to delete.');
+      }
+    } catch (error) {
+      console.error('Error deleting image from Firebase Storage:', error);
+      Alert.alert('Error', 'Failed to delete image.');
+    }
   };
 
   const openImageActions = () => {
@@ -83,42 +142,32 @@ const UserProfile = ({ route, navigation }) => {
   };
 
   const handleSaveChanges = async () => {
-    const updatedUser = { ...user, ...editData };
-    Alert.alert(
-      "Confirm Changes",
-      "Are you sure you want to save these changes?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Confirm",
-          onPress: async () => {
-            try {
-              const response = await axios.put(
-
-                `http://192.168.205.43:33000/api/users/${user.id}`,
-
-                updatedUser
-              );
-              setUser(updatedUser);
-              setEditMode(false);
-              Alert.alert(
-                "Changes Saved",
-                "Your contact information has been updated successfully.",
-                [
-                  {
-                    text: "OK",
-                    onPress: () => console.log("Changes saved and confirmed"),
-                  },
-                ]
-              );
-            } catch (error) {
-              console.error("Failed to update user data:", error);
-              Alert.alert("Error", "Failed to update contact information.");
-            }
+    const updatedUser = { 
+      ...user, 
+      ...editData, 
+      profilePictureUrl: profilePicUri 
+    };
+    try {
+      const response = await axios.put(
+        `http://10.10.18.247:33000/api/users/${user.id}`,
+        updatedUser
+      );
+      setUser(updatedUser);
+      setEditMode(false);
+      Alert.alert(
+        "Changes Saved",
+        "Your profile has been updated successfully.",
+        [
+          {
+            text: "OK",
+            onPress: () => console.log("Changes saved and confirmed"),
           },
-        },
-      ]
-    );
+        ]
+      );
+    } catch (error) {
+      console.error("Failed to update user data:", error);
+      Alert.alert("Error", "Failed to update profile.");
+    }
   };
 
   const openPhotoModal = () => {
@@ -168,15 +217,15 @@ const UserProfile = ({ route, navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Image
-              key={profilePicUri}
-              source={
-                profilePicUri
-                  ? { uri: profilePicUri }
-                  : require("../../assets/profilePic.jpg")
-              }
-              style={styles.fullSizeProfilePic}
-            />
+          <Image
+  key={profilePicUri}
+  source={
+    profilePicUri
+      ? { uri: profilePicUri }
+      : require("../../assets/profilePic.jpeg")
+  }
+  style={styles.profilePic}
+/>
             <Button title="Close" onPress={closePhotoModal} />
           </View>
         </View>
@@ -189,7 +238,7 @@ const UserProfile = ({ route, navigation }) => {
             source={
               profilePicUri
                 ? { uri: profilePicUri }
-                : require("../../assets/profilePic.jpg")
+                : require("../../assets/profilePic.jpeg")
             }
             style={styles.profilePic}
           />
