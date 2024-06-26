@@ -123,6 +123,8 @@ const ListCard = ({ documents, user, navigation }) => {
           />
 
           <GreetCard />
+
+
           {user && <ChartsCard userId={user.id} />}
           <Text style={styles.textHeader}>Recent Uploads</Text>
         </>

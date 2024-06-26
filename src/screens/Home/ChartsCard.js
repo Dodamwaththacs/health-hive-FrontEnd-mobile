@@ -145,9 +145,9 @@ const ChartsCard = ({ userId }) => {
   });
 
   const defaultData = {
-    labels: userData.length > 0 ? userData.map(data => moment(data.date).format('MMM DD')) : [],
+    labels: userData.map(data => moment(data.date).format('MMM DD')),
     datasets: [{
-      data: chartData.length > 0 ? chartData : []
+      data: chartData.length > 0 ? chartData : [0] // Provide a default value if chartData is empty
     }],
   };
 
