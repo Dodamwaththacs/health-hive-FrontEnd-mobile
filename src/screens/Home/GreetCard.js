@@ -38,7 +38,7 @@ const GreetCard = () => {
           useNativeDriver: true,
         }).start();
       });
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [tips, fadeAnim]);

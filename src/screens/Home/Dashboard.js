@@ -48,16 +48,6 @@ const UserProfileCard = ({ user, onPress }) => {
   );
 };
 
-// const GreetCard = () => {
-//   return (
-//     <View style={styles.card1}>
-//       <Text style={styles.text}>
-//         "Drink enough water daily for good health; aim for at least 8 cups. Your
-//         body will thank you!"
-//       </Text>
-//     </View>
-//   );
-// };
 
 const fetchDataByEmail = async (email) => {
   try {
@@ -174,17 +164,7 @@ const Dashboard = ({ navigation }) => {
   );
 
   useEffect(() => {
-    // const fetchDocuments = async () => {
-    //   console.log("Fetch document ");
-    //   const db = await SQLite.openDatabaseAsync("HealthHive");
-    //   const response = await db.getAllAsync(
-    //     `SELECT * FROM fileStorage WHERE userEmail = "adam@email.com"  ORDER BY id DESC LIMIT 5 ;`
-    //   );
-
-    //   console.log("Documents fetched in use effect :", response);
-    //   setDocuments(response);
-    //   db.closeAsync();
-    // };
+   
     const fetchData = async () => {
       const email = await SecureStore.getItemAsync("userEmail");
 

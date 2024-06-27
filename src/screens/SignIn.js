@@ -80,11 +80,9 @@ const Signin = () => {
 
   const handleForgotPassword = () => {
     const url =
-
-      "http://10.10.18.247:8080/realms/Health-Hive/login-actions/reset-credentials";
-
+      "https://lemur-6.cloud-iam.com/auth/realms/teamnova/login-actions/reset-credentials";
     Linking.openURL(url);
-  };
+  };
 
   return (
     <View style={styles.container}>

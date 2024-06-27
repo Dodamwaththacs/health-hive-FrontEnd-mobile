@@ -77,7 +77,13 @@ const ChartsCard = ({ userId }) => {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(`http://10.10.18.247:33000/api/healthData/userId/${userId}`);
-      const userData = response.data;
+      
+
+      const userData = response.data.map(data => ({
+        ...data,
+        date: moment(data.date) })
+      );
+        
 
       // Check if there is an entry for today
       const today = moment().startOf('day');
@@ -145,9 +151,9 @@ const ChartsCard = ({ userId }) => {
   });
 
   const defaultData = {
-    labels: userData.map(data => moment(data.date).format('MMM DD')),
+    labels: userData.length > 0 ? userData.map(data => moment(data.date).format('MMM DD')) : [],
     datasets: [{
-      data: chartData.length > 0 ? chartData : [0] // Provide a default value if chartData is empty
+      data: chartData.length > 0 ? chartData : []
     }],
   };
 
@@ -280,45 +286,61 @@ const ChartsCard = ({ userId }) => {
           <Text style={styles.bmiText}>{weightChangeSuggestion}</Text>
 
         </View>
-      ) : (
-        <View style={styles.containerGaugeChart}>
-          <Text style={styles.textHeader}>Weight Chart</Text>
-          <View style={styles.chartBackground}>
-            <ScrollView horizontal contentContainerStyle={styles.scrollViewContent}>
-              <LineChart
-                data={defaultData}
-                width={Dimensions.get('window').width * 1.5}
-                height={230}
-                marginvertical={10}
-                chartConfig={{
-                  backgroundColor: "#e26a00",
-                  backgroundGradientFrom: "#fb8c00",
-                  backgroundGradientTo: "#ffa726",
-                  decimalPlaces: 2,
-                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                  style: {
-                    borderRadius: 16,
-                  },
-                  propsForDots: {
-                    r: "6",
-                    strokeWidth: "4",
-                    stroke: "#ffa726",
-                  },
-                  yAxisLabel: '',
-                  yAxisSuffix: 'kg',
-                  yAxisInterval: 1,
-                }}
-                bezier
-                style={styles.chart}
-                withVerticalLabels={true}
-                withHorizontalLabels={true}
-              />
-              
-            </ScrollView>
-          </View>
+      ) : <View style={styles.containerGaugeChart}>
+      <Text style={styles.textHeader}>Weight Chart</Text>
+      <View style={styles.chartBackground}>
+        <ScrollView horizontal contentContainerStyle={styles.scrollViewContent}>
+        <LineChart
+      data={defaultData}
+      width={Dimensions.get('window').width * 1.5 - 40} // Adjusted width
+      height={220} // Adjusted height
+      chartConfig={{
+        backgroundColor: "#e26a00",
+        backgroundGradientFrom: "#fb8c00",
+        backgroundGradientTo: "#ffa726",
+        decimalPlaces: 2,
+        padding: 12,
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        style: {
+          borderRadius: 16,
+          padding: 10,
+        },
+        propsForDots: {
+          r: "6",
+          strokeWidth: "3", // Reduced stroke width
+          stroke: "#ffa726",
+        },
+        yAxisLabel: '',
+        yAxisSuffix: 'kg',
+        yAxisInterval: 1,
+      }}
+      bezier
+      style={{
+        marginVertical: 0,
+        borderRadius: 16,
+        marginBottom: 10,
+      }}
+      withVerticalLabels={true}
+      withHorizontalLabels={true}
+      renderDotContent={({ x, y, index, indexData }) => (
+        <View key={index} style={{
+          position: 'absolute',
+          top: y - 24,
+          left: x - 16,
+          backgroundColor: 'white',
+          borderRadius: 10, // Reduced border radius
+          padding: 4,
+        }}>
+          <Text style={{ color: '#ffa726', fontWeight: 'bold', fontSize: 10 }}> 
+            {indexData}kg
+          </Text>
         </View>
       )}
+    />
+        </ScrollView>
+      </View>
+    </View>}
 
       <View style={styles.dotContainer}>
         <View style={[styles.dot, currentView === 'bmi' && styles.activeDot]} />
@@ -474,10 +496,11 @@ const styles = StyleSheet.create({
   chartBackground: {
     position: 'relative',
     width: '100%',
-    height: 230,
+    height: 220,
     backgroundColor: '#e26a00',
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
+
   },
   scrollViewContent: {
     flexDirection: 'row',
