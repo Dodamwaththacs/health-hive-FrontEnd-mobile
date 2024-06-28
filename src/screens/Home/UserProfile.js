@@ -9,14 +9,13 @@ import {
   ScrollView,
   Alert,
   Modal,
-  Button,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useEmail } from "../../EmailContext";
 import { storage, ref } from "../../../firebaseConfig";
-import { uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"; // Adjust path as per your project structure
+import { uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 const UserProfile = ({ route, navigation }) => {
   const { userData } = route.params;
@@ -29,9 +28,11 @@ const UserProfile = ({ route, navigation }) => {
     emergencyContactName: userData.emergencyContactName || "",
     emergencyContactNumber: userData.emergencyContactNumber || "",
   });
-  const [profilePicUri, setProfilePicUri] = useState(userData.profilePicUri || null); // Initialize with user's existing profile pic, if any
+  const [profilePicUri, setProfilePicUri] = useState(userData.profilePicUri || null);
   const [imageActionModalVisible, setImageActionModalVisible] = useState(false);
   const [photoModalVisible, setPhotoModalVisible] = useState(false);
+  const [errors, setErrors] = useState({});
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -50,10 +51,9 @@ const UserProfile = ({ route, navigation }) => {
         Alert.alert("Error", "Failed to load user profile.");
       }
     };
-  
+
     fetchUserData();
-  
-    // Request permissions for image picker
+
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -82,7 +82,7 @@ const UserProfile = ({ route, navigation }) => {
           quality: 0.5,
         });
       }
-  
+
       if (!result.canceled) {
         const uri = fromCamera ? result.uri : result.assets[0].uri;
         const response = await fetch(uri);
@@ -90,17 +90,15 @@ const UserProfile = ({ route, navigation }) => {
         
         const storageRef = ref(storage, `profilePics/${user.id}`);
         await uploadBytes(storageRef, blob);
-  
+
         const downloadURL = await getDownloadURL(storageRef);
         setProfilePicUri(downloadURL);
-  
-        // Update the backend with the new profile picture URL
+
         await axios.put(`http://192.168.3.43:33000/api/users/${user.id}`, {
           ...user,
           profilePictureUrl: downloadURL
         });
-  
-        console.log("New profile pic URI:", downloadURL);
+
         setImageActionModalVisible(false);
       }
     } catch (error) {
@@ -108,21 +106,20 @@ const UserProfile = ({ route, navigation }) => {
       Alert.alert('Error', 'Failed to pick or upload image. Please try again.');
     }
   };
+
   const handleDeletePhoto = async () => {
     try {
       if (profilePicUri) {
         const storageRef = ref(storage, `profilePics/${user.id}`);
         await deleteObject(storageRef);
-        console.log('Image deleted successfully from Firebase Storage');
-  
+        
         setProfilePicUri(null);
-  
-        // Update the backend to remove the profile picture URL
+
         await axios.put(`http://192.168.3.43:33000/api/users/${user.id}`, {
           ...user,
           profilePictureUrl: null
         });
-  
+
         setImageActionModalVisible(false);
       } else {
         console.warn('No profile pic URI to delete.');
@@ -141,6 +138,7 @@ const UserProfile = ({ route, navigation }) => {
     setEditMode(!editMode);
   };
 
+  
   const handleSaveChanges = async () => {
     const updatedUser = { 
       ...user, 
@@ -157,12 +155,7 @@ const UserProfile = ({ route, navigation }) => {
       Alert.alert(
         "Changes Saved",
         "Your profile has been updated successfully.",
-        [
-          {
-            text: "OK",
-            onPress: () => console.log("Changes saved and confirmed"),
-          },
-        ]
+        [{ text: "OK", onPress: () => console.log("Changes saved and confirmed") }]
       );
     } catch (error) {
       console.error("Failed to update user data:", error);
@@ -180,35 +173,37 @@ const UserProfile = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Modal
-        visible={imageActionModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setImageActionModalVisible(false)}
+     <Modal
+  visible={imageActionModalVisible}
+  transparent={true}
+  animationType="fade"
+  onRequestClose={() => setImageActionModalVisible(false)}
+>
+  <View style={styles.centeredView}>
+    <View style={styles.modalView}>
+      <Text style={[styles.textStyle, {marginBottom: 20, fontSize: 18}]}>Choose an option</Text>
+      <TouchableOpacity style={styles.button} onPress={() => handleChoosePhoto(true)}>
+        <Ionicons name="camera" size={24} color="#0056B3" />
+        <Text style={styles.textStyle}>Take a Photo</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => handleChoosePhoto(false)}>
+        <Ionicons name="images" size={24} color="#0056B3" />
+        <Text style={styles.textStyle}>Choose from Gallery</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={handleDeletePhoto}>
+        <Ionicons name="trash-bin" size={24} color="#0056B3" />
+        <Text style={styles.textStyle}>Remove Photo</Text>
+      </TouchableOpacity>
+      <TouchableOpacity 
+        style={[styles.button, {marginTop: 10}]} 
+        onPress={() => setImageActionModalVisible(false)}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleChoosePhoto(true)}
-            >
-              <Ionicons name="camera" size={30} color="black" />
-              <Text style={styles.textStyle}>Camera</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleChoosePhoto(false)}
-            >
-              <Ionicons name="images" size={30} color="black" />
-              <Text style={styles.textStyle}>Gallery</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleDeletePhoto}>
-              <Ionicons name="trash-bin" size={30} color="black" />
-              <Text style={styles.textStyle}>Remove</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        <Ionicons name="close" size={24} color="#0056B3" />
+        <Text style={styles.textStyle}>Cancel</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
 
       <Modal
         visible={photoModalVisible}
@@ -216,17 +211,15 @@ const UserProfile = ({ route, navigation }) => {
         onRequestClose={closePhotoModal}
       >
         <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-          <Image
-  key={profilePicUri}
-  source={
-    profilePicUri
-      ? { uri: profilePicUri }
-      : require("../../assets/profilePic.jpeg")
-  }
-  style={styles.profilePic}
-/>
-            <Button title="Close" onPress={closePhotoModal} />
+          <View style={styles.modalView2}>
+            <Image
+              key={profilePicUri}
+              source={profilePicUri ? { uri: profilePicUri } : require("../../assets/profilePic.jpeg")}
+              style={styles.fullSizeProfilePic}
+            />
+            <TouchableOpacity style={styles.closeButton2} onPress={closePhotoModal}>
+            <Ionicons name="close-circle" size={30} color="#0056B3" />
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -235,87 +228,105 @@ const UserProfile = ({ route, navigation }) => {
         <TouchableOpacity onPress={openPhotoModal}>
           <Image
             key={profilePicUri}
-            source={
-              profilePicUri
-                ? { uri: profilePicUri }
-                : require("../../assets/profilePic.jpeg")
-            }
+            source={profilePicUri ? { uri: profilePicUri } : require("../../assets/profilePic.jpeg")}
             style={styles.profilePic}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={openImageActions}
-          style={styles.editIconContainer}
-        >
-          <Ionicons
-            name="pencil"
-            size={30}
-            color="white"
-            style={styles.editIcon}
-          />
+        <TouchableOpacity onPress={openImageActions} style={styles.editIconContainer}>
+          <Ionicons name="pencil" size={20} color="#0056B3" />
         </TouchableOpacity>
         <Text style={styles.nameText}>{user.fullName}</Text>
       </View>
 
       <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>Email: {user.email}</Text>
-        <Text style={styles.infoText}>Date of Birth: {user.dateOfBirth}</Text>
-        <Text style={styles.infoText}>NIC: {user.nic}</Text>
-        <Text style={styles.infoText}>Gender: {user.gender}</Text>
+        <View style={styles.infoText}>
+          <Ionicons name="mail" size={24} color="#0056B3" style={styles.infoIcon} />
+          <Text style={styles.detailsText}>{user.email}</Text>
+        </View>
+        <View style={styles.infoText}>
+          <Ionicons name="calendar" size={24} color="#0056B3" style={styles.infoIcon} />
+          <Text style={styles.detailsText}>{user.dateOfBirth}</Text>
+        </View>
+        <View style={styles.infoText}>
+          <Ionicons name="card" size={24} color="#0056B3" style={styles.infoIcon} />
+          <Text style={styles.detailsText}>{user.nic}</Text>
+        </View>
+        <View style={styles.infoText}>
+          <Ionicons name="person" size={24} color="#0056B3" style={styles.infoIcon} />
+          <Text style={styles.detailsText}>{user.gender}</Text>
+        </View>
       </View>
 
       <View style={styles.contactInfoContainer}>
         <Text style={styles.sectionTitle}>Contact Information</Text>
         <TouchableOpacity onPress={toggleEditMode} style={styles.editButton}>
-          <Ionicons name="pencil" size={24} color="black" />
         </TouchableOpacity>
         {editMode ? (
           <>
             <TextInput
-              style={styles.editableText}
-              value={editData.telephoneNumber}
-              onChangeText={(text) =>
-                setEditData({ ...editData, telephoneNumber: text })
-              }
-            />
-            <TextInput
-              style={styles.editableText}
-              value={editData.emergencyContactName}
-              onChangeText={(text) =>
-                setEditData({ ...editData, emergencyContactName: text })
-              }
-              placeholder="Emergency Contact Name..."
-            />
-            <TextInput
-              style={styles.editableText}
-              value={editData.emergencyContactNumber}
-              onChangeText={(text) =>
-                setEditData({ ...editData, emergencyContactNumber: text })
-              }
-              placeholder="Emergency Contact Number..."
-            />
-            <Button
-              color="#1921E4"
-              title="Save Changes"
-              onPress={handleSaveChanges}
-            />
+  style={[styles.editableText, errors.telephoneNumber && styles.errorInput]}
+  value={editData.telephoneNumber}
+  onChangeText={(text) => {
+    const numericText = text.replace(/[^0-9]/g, '');
+    setEditData({ ...editData, telephoneNumber: numericText.slice(0, 10) });
+  }}
+  placeholder="Your Contact Number"
+  keyboardType="numeric"
+  maxLength={10}
+/>
+{errors.telephoneNumber && <Text style={styles.errorText}>{errors.telephoneNumber}</Text>}
+
+<TextInput
+  style={[styles.editableText, errors.emergencyContactName && styles.errorInput]}
+  value={editData.emergencyContactName}
+  onChangeText={(text) => {
+    const alphabeticText = text.replace(/[^a-zA-Z\s]/g, '');
+    setEditData({ ...editData, emergencyContactName: alphabeticText });
+  }}
+  placeholder="Emergency Contact Name"
+/>
+{errors.emergencyContactName && <Text style={styles.errorText}>{errors.emergencyContactName}</Text>}
+
+<TextInput
+  style={[styles.editableText, errors.emergencyContactNumber && styles.errorInput]}
+  value={editData.emergencyContactNumber}
+  onChangeText={(text) => {
+    const numericText = text.replace(/[^0-9]/g, '');
+    setEditData({ ...editData, emergencyContactNumber: numericText.slice(0, 10) });
+  }}
+  placeholder="Emergency Contact Number"
+  keyboardType="numeric"
+  maxLength={10}
+/>
+{errors.emergencyContactNumber && <Text style={styles.errorText}>{errors.emergencyContactNumber}</Text>}
+{errors.emergencyContactNumber && <Text style={styles.errorText}>{errors.emergencyContactNumber}</Text>}
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
+              <Text style={styles.saveButtonText}>Save Changes</Text>
+            </TouchableOpacity>
           </>
         ) : (
           <>
-            <Text style={styles.infoText}>
-              Your Contact Number: {editData.telephoneNumber || "Not Provided"}
-            </Text>
-            <Text style={styles.infoText}>
-              Emergency Contact Name:{" "}
-              {editData.emergencyContactName || "Not Provided"}
-            </Text>
-            <Text style={styles.infoText}>
-              Emergency Contact:{" "}
-              {editData.emergencyContactNumber || "Not Provided"}
-            </Text>
+            <View style={styles.infoText}>
+              <Ionicons name="call" size={24} color="#0056B3" style={styles.infoIcon} />
+              <Text style={styles.detailsText}>{editData.telephoneNumber || "Your Contact Number"}</Text>
+            </View>
+            <View style={styles.infoText}>
+              <Ionicons name="person" size={24} color="#B30000" style={styles.infoIcon} />
+              <Text style={styles.detailsText}>{editData.emergencyContactName || "Emergency Contact Person"}</Text>
+            </View>
+            <View style={styles.infoText}>
+              <Ionicons name="call" size={24} color="#B30000" style={styles.infoIcon} />
+              <Text style={styles.detailsText}>{editData.emergencyContactNumber || "Emergency Contact Number"}</Text>
+            </View>
           </>
         )}
       </View>
+
+      {!editMode && (
+        <TouchableOpacity style={styles.editProfileButton} onPress={toggleEditMode}>
+          <Text style={styles.editProfileText}>Edit</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 };
@@ -323,29 +334,106 @@ const UserProfile = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#f0f0f0",
   },
   header: {
     alignItems: "center",
-    marginTop: 50,
+    backgroundColor: "#0056B3",
+    paddingTop: 50,
+    paddingBottom: 30,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   profilePic: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: "white",
   },
   editIconContainer: {
     position: "absolute",
-    right: 150,
-    bottom: 30,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    padding: 6,
-    borderRadius: 15,
+    right: 145,
+    bottom: 70,
+    backgroundColor: "#fff",
+    padding: 8,
+    borderRadius: 20,
   },
-  editIcon: {},
   nameText: {
-    fontSize: 18,
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
     marginTop: 10,
+  },
+  infoContainer: {
+    padding: 20,
+  },
+  infoText: {
+    fontSize: 16,
+    marginBottom: 10,
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  infoIcon: {
+    marginRight: 10,
+  },
+  detailsText: {
+    color: "gray",
+    fontFamily: "Arial",
+  },
+  contactInfoContainer: {
+    padding: 20,
+    marginTop: -30,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#0056B3",
+    
+  },
+  editButton: {
+    position: "absolute",
+    right: 20,
+    top: 20,
+  },
+  editableText: {
+    fontSize: 16,
+    marginBottom: 15,
+    padding: 15,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#fff",
+  },
+  saveButton: {
+    backgroundColor: "#0056B3",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  saveButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  editProfileButton: {
+    backgroundColor: "#0056B3",
+    padding: 15,
+    borderRadius: 25,
+    alignItems: "center",
+    marginHorizontal: 20,
+    marginBottom: 20,
+    
+  },
+  editProfileText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
   centeredView: {
     flex: 1,
@@ -355,18 +443,19 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+   
+  },
+  modalView2: {
+    margin: 0,
+    backgroundColor: "transparent",
+    borderRadius: 20,
+    padding: 0,
+    alignItems: "center",
+   
   },
   button: {
     padding: 10,
@@ -378,41 +467,27 @@ const styles = StyleSheet.create({
     color: "black",
     textAlign: "center",
   },
-  infoContainer: {
-    padding: 20,
-  },
-  infoText: {
-    fontSize: 16,
-    marginBottom: 10,
-    backgroundColor: "#e9e9ef",
-    padding: 10,
-    borderRadius: 5,
-  },
-  contactInfoContainer: {
-    padding: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  editableText: {
-    fontSize: 16,
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "#fff",
-  },
   fullSizeProfilePic: {
-    width: 300,
-    height: 300,
-    borderRadius: 150,
+    width: 350,
+    height: 350,
+    borderRadius: 20,
+    marginBottom: 0,
   },
-  editButton: {
+  closeButton: {
     position: "absolute",
-    right: 20,
     top: 20,
+    right: 20,
+    color: "white",
+  },
+  closeButton2: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    
+  },
+  closeButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
 

@@ -14,7 +14,6 @@ import Documents from "../screens/Home/documents/Documents";
 import File from "../screens/Home/documents/File";
 import LabFolder from "../screens/Home/documents/LabFolder";
 
-
 const Stack = createNativeStackNavigator();
 
 function StackNavigation({ userToken }) {
@@ -62,13 +61,16 @@ function StackNavigation({ userToken }) {
               component={DrawerNavigator}
               options={{ headerShown: false }}
             />
-
             <Stack.Screen
               name="UserProfile"
               component={UserProfile}
-              options={{ title: "Your Profile" }}
+              options={{
+                title: "Your Profile",
+                headerStyle: { backgroundColor: "#0056B3" },
+                headerTintColor: "#fff",
+                headerTitleStyle: { fontWeight: 'bold' },
+              }}
             />
-
             <Stack.Screen
               name="Dashboard"
               component={Dashboard}
