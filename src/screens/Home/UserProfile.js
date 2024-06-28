@@ -36,7 +36,7 @@ const UserProfile = ({ route, navigation }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://10.10.18.247:33000/api/users/${user.id}`);
+        const response = await axios.get(`http://192.168.3.43:33000/api/users/${user.id}`);
         const fetchedUser = response.data;
         setUser(fetchedUser);
         setProfilePicUri(fetchedUser.profilePictureUrl || null);
@@ -95,7 +95,7 @@ const UserProfile = ({ route, navigation }) => {
         setProfilePicUri(downloadURL);
   
         // Update the backend with the new profile picture URL
-        await axios.put(`http://10.10.18.247:33000/api/users/${user.id}`, {
+        await axios.put(`http://192.168.3.43:33000/api/users/${user.id}`, {
           ...user,
           profilePictureUrl: downloadURL
         });
@@ -118,7 +118,7 @@ const UserProfile = ({ route, navigation }) => {
         setProfilePicUri(null);
   
         // Update the backend to remove the profile picture URL
-        await axios.put(`http://10.10.18.247:33000/api/users/${user.id}`, {
+        await axios.put(`http://192.168.3.43:33000/api/users/${user.id}`, {
           ...user,
           profilePictureUrl: null
         });
@@ -149,7 +149,7 @@ const UserProfile = ({ route, navigation }) => {
     };
     try {
       const response = await axios.put(
-        `http://10.10.18.247:33000/api/users/${user.id}`,
+        `http://192.168.3.43:33000/api/users/${user.id}`,
         updatedUser
       );
       setUser(updatedUser);

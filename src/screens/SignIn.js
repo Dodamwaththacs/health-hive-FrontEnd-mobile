@@ -30,7 +30,7 @@ const Signin = () => {
       console.log("fetching user data..");
       const body = new URLSearchParams({
         grant_type: "password",
-        client_id: "health-hive-client",
+        client_id: "Health-Hive-Client",
         username: email,
         password: password,
       });
@@ -39,7 +39,7 @@ const Signin = () => {
 
       const response = await axios.post(
 
-        "http://10.10.18.247:8080/realms/Health-Hive/protocol/openid-connect/token",
+        "https://lemur-6.cloud-iam.com/auth/realms/teamnova/protocol/openid-connect/token",
 
         body.toString(),
         {

@@ -12,7 +12,7 @@ const Notification = ({ route }) => {
   const fetchFiles = () => {
     console.log("userId", userId);
     axios
-      .get(`http://10.10.18.247:33000/api/shareFiles/user/${userId}`, {
+      .get(`http://192.168.3.43:33000/api/shareFiles/user/${userId}`, {
         headers: {
           accept: "application/json",
         },

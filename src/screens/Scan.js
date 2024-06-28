@@ -46,7 +46,7 @@ const Scan = () => {
     try {
       const response = await axios.get(
 
-        `http://10.10.18.247:33000/api/users/email/${email}`
+        `http://192.168.3.43:33000/api/users/email/${email}`
 
       );
       setUser(response.data);
@@ -66,7 +66,7 @@ const Scan = () => {
     try {
       const response = await axios.get(
 
-        `http://10.10.18.247:33000/api/users/${scannedUserId}`
+        `http://192.168.3.43:33000/api/users/${scannedUserId}`
 
       );
       const scannedUser = response.data;
@@ -99,7 +99,7 @@ const Scan = () => {
     try {
       const response = await axios.post(
 
-        "http://10.10.18.247:33000/api/labRequests",
+        "http://192.168.3.43:33000/api/labRequests",
 
         {
           user: user.id,
@@ -123,7 +123,7 @@ const Scan = () => {
     try {
 
       const response = await axios.post(
-        "http://10.10.18.247:33000/api/labReportShares",
+        "http://192.168.3.43:33000/api/labReportShares",
 
         {
           doctor: scannedUserId,
@@ -167,7 +167,7 @@ const Scan = () => {
         console.log("selectedFiles", selectedFiles[i]);
 
         const response = await axios.post(
-          "http://10.10.18.247:33000/api/shareFiles",
+          "http://192.168.3.43:33000/api/shareFiles",
           {
             labReportShare: labReportSharesId,
             fileHash: selectedFiles[i],

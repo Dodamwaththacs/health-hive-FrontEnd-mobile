@@ -31,7 +31,7 @@ function DrawerNaviagtor() {
         const email = await SecureStore.getItemAsync("userEmail");
 
         const response = await axios.get(
-          `http://10.10.18.247:33000/api/users/email/${email}`
+          `http://192.168.3.43:33000/api/users/email/${email}`
 
         );
         setUser(response.data);

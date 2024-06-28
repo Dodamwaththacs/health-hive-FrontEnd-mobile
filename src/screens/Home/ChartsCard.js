@@ -58,7 +58,7 @@ const ChartsCard = ({ userId }) => {
           onPress: async () => {
             const data = { weight, height, notes, user: userId, date: new Date() };
             try {
-              await axios.post('http://10.10.18.247:33000/api/healthData', data);
+              await axios.post('http://192.168.3.43:33000/api/healthData', data);
               setModalVisible(false);
               fetchUserData();
             } catch (error) {
@@ -76,13 +76,14 @@ const ChartsCard = ({ userId }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`http://10.10.18.247:33000/api/healthData/userId/${userId}`);
+      const response = await axios.get(`http://192.168.3.43:33000/api/healthData/userId/${userId}`);
       
 
       const userData = response.data.map(data => ({
         ...data,
-        date: moment(data.date) })
-      );
+        date: moment(data.date),
+        weight: parseFloat(data.weight)
+      }));
         
 
       // Check if there is an entry for today
@@ -91,7 +92,7 @@ const ChartsCard = ({ userId }) => {
       setHasEntryToday(entryToday);
 
       setUserData(userData);
-      const profileResponse = await axios.get(`http://10.10.18.247:33000/api/users/${userId}`);
+      const profileResponse = await axios.get(`http://192.168.3.43:33000/api/users/${userId}`);
       setDateOfBirth(profileResponse.data.dateOfBirth);
       setGender(profileResponse.data.gender);
     } catch (error) {
@@ -144,16 +145,13 @@ const ChartsCard = ({ userId }) => {
   };
 
   const chartData = userData.map(data => {
-    if (data.weight) {
-      return data.weight;
-    }
-    return 0;
+    return data.weight ? parseFloat(data.weight) : 0;
   });
 
   const defaultData = {
-    labels: userData.length > 0 ? userData.map(data => moment(data.date).format('MMM DD')) : [],
+    labels: userData.length > 0 ? userData.map(data => moment(data.date).format('MMM DD')) : ['No data available'],
     datasets: [{
-      data: chartData.length > 0 ? chartData : []
+      data: chartData.length > 0 ? chartData : [0]
     }],
   };
 
