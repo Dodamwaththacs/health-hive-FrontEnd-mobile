@@ -28,6 +28,32 @@ const ChartsCard = ({ userId }) => {
   const [gender, setGender] = useState("");
   const [currentView, setCurrentView] = useState('bmi'); // State to toggle between views
   const [hasEntryToday, setHasEntryToday] = useState(false);
+
+
+  const calculateMonthlyAverageWeight = () => {
+    const currentMonth = moment().month();
+    const currentYear = moment().year();
+    const thisMonthData = userData.filter(data => {
+      const dataDate = moment(data.date);
+      return dataDate.month() === currentMonth && dataDate.year() === currentYear;
+    });
+    
+    if (thisMonthData.length === 0) return 'N/A';
+    const sum = thisMonthData.reduce((acc, data) => acc + data.weight, 0);
+    return (sum / thisMonthData.length).toFixed(2);
+  };
+
+  const getLastUpdatedWeight = () => {
+    if (userData.length === 0) return { weight: 'N/A', date: 'N/A' };
+    const lastEntry = userData[userData.length - 1];
+    return {
+      weight: lastEntry.weight.toFixed(2),
+      date: moment(lastEntry.date).format('MMM DD')
+    };
+  };
+
+  const monthlyAverageWeight = calculateMonthlyAverageWeight();
+  const lastUpdatedWeight = getLastUpdatedWeight();
   
   
 
@@ -311,7 +337,7 @@ const ChartsCard = ({ userId }) => {
         },
         yAxisLabel: '',
         yAxisSuffix: 'kg',
-        yAxisInterval: 1,
+        yAxisInterval: 20,
       }}
       bezier
       style={{
@@ -321,6 +347,18 @@ const ChartsCard = ({ userId }) => {
       }}
       withVerticalLabels={true}
       withHorizontalLabels={true}
+
+
+      decorator={() => {
+        return (
+          <View style={styles.decoratorContainer}>
+            <Text style={styles.decoratorText}>Average: {monthlyAverageWeight} kg</Text>
+            <Text style={styles.decoratorText}>
+              Today, {lastUpdatedWeight.date}: {lastUpdatedWeight.weight} kg
+            </Text>
+          </View>
+        )
+      }}
       renderDotContent={({ x, y, index, indexData }) => (
         <View key={index} style={{
           position: 'absolute',
@@ -518,6 +556,21 @@ const styles = StyleSheet.create({
   },
   yAxisLabel: {
     color: "#fff",
+  },
+ 
+  decoratorContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    right: 10,
+  },
+  decoratorText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });
 
