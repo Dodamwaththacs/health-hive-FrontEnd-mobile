@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
-import { Image, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Image, View, Text, StyleSheet, TouchableOpacity ,Alert} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "./HomeBottomNavigator";
 import Scan from "../screens/Scan";
@@ -21,6 +21,26 @@ const Drawer = createDrawerNavigator();
 
 
 function CustomDrawerContent(props) {
+  const handleLogout = () => {
+    Alert.alert(
+      "Log Out",
+      "Are you sure you would like to log out? You'll need to log in again",
+      [
+        {
+          text: "NO",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { 
+          text: "YES", 
+          onPress: () => {
+            // Perform logout actions here
+            props.navigation.navigate('SignOut');
+          }
+        }
+      ]
+    );
+  };
   
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContent}>
@@ -37,7 +57,7 @@ function CustomDrawerContent(props) {
           icon={({  size }) => (
             <Ionicons name="log-out-outline" color={'#0056B3'} size={size} />
           )}
-          onPress={() => props.navigation.navigate('SignOut')}
+          onPress={handleLogout}
           labelStyle={styles.drawerItemLabel}
         />
       </View>
