@@ -311,7 +311,13 @@ const ChartsCard = ({ userId }) => {
 
         </View>
       ) : <View style={styles.containerGaugeChart}>
-      <Text style={styles.textHeader}>Weight Chart</Text>
+      {/* <Text style={styles.textHeader}>Weight Chart</Text> */}
+      <View style={styles.decoratorContainer}>
+            <Text style={styles.decoratorText}>Average: {monthlyAverageWeight} kg</Text>
+            <Text style={styles.decoratorText}>
+              Today, {lastUpdatedWeight.date}: {lastUpdatedWeight.weight} kg
+            </Text>
+          </View>
       <View style={styles.chartBackground}>
         <ScrollView horizontal contentContainerStyle={styles.scrollViewContent}>
         <LineChart
@@ -324,6 +330,7 @@ const ChartsCard = ({ userId }) => {
         backgroundGradientTo: "#ffa726",
         decimalPlaces: 2,
         padding: 12,
+      
         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
         labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
         style: {
@@ -337,7 +344,8 @@ const ChartsCard = ({ userId }) => {
         },
         yAxisLabel: '',
         yAxisSuffix: 'kg',
-        yAxisInterval: 20,
+        yAxisInterval: 10, // Changed from 20 to create more steps
+        paddingTop: 30,
       }}
       bezier
       style={{
@@ -347,26 +355,22 @@ const ChartsCard = ({ userId }) => {
       }}
       withVerticalLabels={true}
       withHorizontalLabels={true}
+      segments={4}
 
 
-      decorator={() => {
-        return (
-          <View style={styles.decoratorContainer}>
-            <Text style={styles.decoratorText}>Average: {monthlyAverageWeight} kg</Text>
-            <Text style={styles.decoratorText}>
-              Today, {lastUpdatedWeight.date}: {lastUpdatedWeight.weight} kg
-            </Text>
-          </View>
-        )
-      }}
+      
+  
+         
+        
+    
       renderDotContent={({ x, y, index, indexData }) => (
         <View key={index} style={{
           position: 'absolute',
-          top: y - 24,
+          top: y - 10,
           left: x - 16,
           backgroundColor: 'white',
           borderRadius: 10, // Reduced border radius
-          padding: 4,
+          padding: 2,
         }}>
           <Text style={{ color: '#ffa726', fontWeight: 'bold', fontSize: 10 }}> 
             {indexData}kg
@@ -536,6 +540,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e26a00',
     borderRadius: 20,
     overflow: 'hidden',
+    marginBottom: -40,
 
   },
   scrollViewContent: {
@@ -560,12 +565,14 @@ const styles = StyleSheet.create({
  
   decoratorContainer: {
     position: 'absolute',
-    top: 10,
+    top: 40,
     left: 10,
     right: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   decoratorText: {
-    color: 'white',
+    color: '#e26a00',
     fontSize: 12,
     fontWeight: 'bold',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',

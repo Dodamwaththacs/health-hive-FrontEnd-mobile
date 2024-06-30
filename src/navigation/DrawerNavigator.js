@@ -1,25 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import { Image } from "react-native";
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
+import { Image, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import Home from "./HomeBottomNavigator";
 import Scan from "../screens/Scan";
 import QR_Code from "../screens/QR_Code";
 import Notification from "../screens/Notification";
 import Setting from "../screens/Setting";
-import Help from "../screens/Help";
-import About from "../screens/About";
-import Logo from "../assets/logo.png";
+import Notes from "../screens/Notes";
 import SignOut from "../screens/SignOut";
 import axios from "axios";
 import { useEmail } from "../EmailContext";
-import { TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { AuthContext } from "../../App";
+import Logo from "../assets/logo.png";
+
+import { useNavigation } from "@react-navigation/native";
 
 const Drawer = createDrawerNavigator();
 
-function DrawerNaviagtor() {
+
+function CustomDrawerContent(props) {
+  
+  return (
+    <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContent}>
+      <View style={styles.header}>
+        <Image source={Logo} style={styles.logo} />
+        <Text style={styles.title}>Health Hive</Text>
+      </View>
+      <View style={styles.drawerItemsContainer}>
+        <DrawerItemList {...props} />
+      </View>
+      <View style={styles.bottomDrawerSection}>
+        <DrawerItem
+          label="Log Out"
+          icon={({  size }) => (
+            <Ionicons name="log-out-outline" color={'#0056B3'} size={size} />
+          )}
+          onPress={() => props.navigation.navigate('SignOut')}
+          labelStyle={styles.drawerItemLabel}
+        />
+      </View>
+    </DrawerContentScrollView>
+  );
+}
+
+function DrawerNavigator() {
   const [user, setUser] = useState(null);
   const { email } = useEmail();
   const navigation = useNavigation();
@@ -29,10 +55,8 @@ function DrawerNaviagtor() {
     const fetchUserData = async () => {
       try {
         const email = await SecureStore.getItemAsync("userEmail");
-
         const response = await axios.get(
           `http://192.168.3.43:33000/api/users/email/${email}`
-
         );
         setUser(response.data);
       } catch (error) {
@@ -48,9 +72,12 @@ function DrawerNaviagtor() {
     return null; // or some loading component
   }
 
+
+
   return (
     <Drawer.Navigator
       initialRouteName="Health Hive"
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerStyle: {
           backgroundColor: "#0056B3",
@@ -77,7 +104,7 @@ function DrawerNaviagtor() {
             <Image
               style={{
                 width: 50,
-                height: 52,
+                height: 50,
                 margin: 20,
                 marginRight: 20,
                 marginBottom: 30,
@@ -86,26 +113,142 @@ function DrawerNaviagtor() {
             />
           </TouchableOpacity>
         ),
+        drawerStyle: {
+          backgroundColor: "#fff",
+      
+        },
+        drawerLabelStyle: {
+          
+          fontSize: 16,
+          marginLeft: -16,
+
+        },
+        drawerActiveBackgroundColor: '#0056B3', //  blue background for active item
+        drawerActiveTintColor: '#fff', // white text color for active item
+        drawerInactiveTintColor: 'grey',
+
+        drawerItemStyle: {
+          marginVertical: 5,
+          borderRadius:20,
+        
+        },
+        
       }}
     >
-      <Drawer.Screen name="Health Hive" component={Home} />
-      <Drawer.Screen name="Scan" component={Scan} />
+      <Drawer.Screen 
+        name="Health Hive" 
+        component={Home}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Scan" 
+        component={Scan}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="scan-outline" color={color} size={size} />
+          ),
+        }}
+      />
       <Drawer.Screen
         name="My QR"
         component={QR_Code}
         initialParams={{ userId: user.id }}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="qr-code-outline" color={color} size={size} />
+          ),
+        }}
       />
       <Drawer.Screen
         name="Shared Files"
         component={Notification}
         initialParams={{ userId: user.id }}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="notifications-outline" color={color} size={size} />
+          ),
+        }}
       />
-      <Drawer.Screen name="Setting" component={Setting} />
-      <Drawer.Screen name="Help" component={Help} />
-      <Drawer.Screen name="About" component={About} />
-      <Drawer.Screen name="SignOut" component={SignOut} />
+      <Drawer.Screen 
+        name="Your Notes" 
+        component={Notes}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="document-text-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Setting" 
+        component={Setting}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="SignOut" 
+        component={SignOut}
+        options={{
+          drawerItemStyle: { display: 'none' }, // This hides it from the drawer list
+        }}
+      />
+
     </Drawer.Navigator>
   );
 }
 
-export default DrawerNaviagtor;
+const styles = StyleSheet.create({
+  drawerContent: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: '#E4E9F2',
+  },
+  logo: {
+    width: 32,
+    height: 32,
+    marginRight: 12,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#0056B3',
+  },
+  drawerItemsContainer: {
+    flex: 1,
+    paddingTop: 8,
+  },
+  bottomDrawerSection: {
+    marginBottom: 15,
+    borderTopColor: '#E4E9F2',
+    borderTopWidth: 2,
+    paddingTop: 15,
+  },
+  drawer: {
+    backgroundColor: '#FFFFFF',
+    width: 240,
+  },
+  drawerItemLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: -16,
+    color: '#0056B3',
+  },
+  drawerItem: {
+    borderRadius: 8,
+    marginHorizontal: 8,
+    marginVertical: 4,
+  },
+});
+
+export default DrawerNavigator;
