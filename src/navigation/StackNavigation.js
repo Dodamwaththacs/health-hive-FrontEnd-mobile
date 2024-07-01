@@ -13,6 +13,7 @@ import DocumentViewer from "../screens/Home/DocumentViewer";
 import Documents from "../screens/Home/documents/Documents";
 import File from "../screens/Home/documents/File";
 import LabFolder from "../screens/Home/documents/LabFolder";
+import About from "../screens/About";
 
 const Stack = createNativeStackNavigator();
 
@@ -96,6 +97,15 @@ function StackNavigation({ userToken }) {
               component={LabFolder}
               options={{ headerShown: false }}
             />
+            <Stack.Screen
+              name="About"
+              component={About}
+              options={{  title: "About Us",
+                headerStyle: { backgroundColor: "#0056B3" },
+                headerTintColor: "#fff",
+                headerTitleStyle: { fontWeight: 'bold' },
+              }}
+              />
           </>
         )}
       </Stack.Navigator>
