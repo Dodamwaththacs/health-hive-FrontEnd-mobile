@@ -10,10 +10,10 @@ import {
 } from "react-native";
 import Checkbox from "expo-checkbox";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 
 const ItemComponent = ({
   item,
-  fileOpen,
   filemodalVisible,
   setFileModalVisible,
   fileDownloadUri,
@@ -23,6 +23,7 @@ const ItemComponent = ({
   setSelectedItems,
 }) => {
   const [isSelected, setSelection] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (isSelected) {
@@ -32,15 +33,20 @@ const ItemComponent = ({
     }
   }, [isSelected]);
 
+  const openDocument = (hash) => {
+    navigation.navigate("DocumentViewer", { documentUri: hash });
+  };
+
   return (
     <View style={styles.itemContainer}>
       <View style={styles.icon}>
-        <TouchableOpacity onPress={() => fileOpen(item.hash)}>
+        <TouchableOpacity onPress={() => openDocument(item.hash)}>
           <Icon name="document-outline" size={50} color="#000" />
         </TouchableOpacity>
       </View>
       <View>
         <Text style={styles.fileName}>{item.fileName}</Text>
+        <Text style={styles.description}>{item.description}</Text>
       </View>
 
       {showCheckboxes && (
@@ -72,6 +78,9 @@ const styles = StyleSheet.create({
   fileName: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  description: {
+    fontSize: 14,
   },
 });
 

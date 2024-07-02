@@ -32,10 +32,8 @@ const LabFolder = ({ route }) => {
   useFocusEffect(
     useCallback(() => {
       const fetchDataFromOrigin = async () => {
-        console.log("focus effect");
         const email = await SecureStore.getItemAsync("userEmail");
         setEmail(email);
-        console.log("email :", email);
 
         try {
           const response = await axios.get(
@@ -111,20 +109,9 @@ const LabFolder = ({ route }) => {
 
       fetchDataFromOrigin();
 
-      // This return function is optional and will be called when the screen loses focus
-      return () => {
-        // Clean up any subscriptions or timers if needed
-      };
-    }, [folderName, folderModalVisible]) // Add any other dependencies here
+      return () => {};
+    }, [folderName, folderModalVisible])
   );
-
-  const fileOpen = (hash) => {
-    console.log(hash);
-
-    setFileDownloadUri("http://192.168.40.140:33000/api/ipfs/" + hash);
-
-    setFileModalVisible(true);
-  };
 
   const handleMove = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
@@ -165,7 +152,6 @@ const LabFolder = ({ route }) => {
   const renderItem = ({ item }) => (
     <ItemComponent
       item={item}
-      fileOpen={fileOpen}
       filemodalVisible={filemodalVisible}
       setFileModalVisible={setFileModalVisible}
       fileDownloadUri={fileDownloadUri}
@@ -198,7 +184,7 @@ const LabFolder = ({ route }) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />
-      {!showCheckboxes && (
+      {!showCheckboxes && data.length > 0 && (
         <Button
           title="Move file"
           onPress={() => setShowCheckboxes(!showCheckboxes)}
