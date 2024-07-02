@@ -19,11 +19,11 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 
 const FileScreen = ({ route }) => {
+  const { folderName } = route.params;
   const [fileUri, setFileUri] = useState(null);
   const [fileDownloadUri, setFileDownloadUri] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [filemodalVisible, setFileModalVisible] = useState(false);
-  const { folderName } = route.params;
   const [Description, setDescription] = useState("");
   const [FileName, setFileName] = useState("");
   const [data, setData] = useState([]);
@@ -36,7 +36,9 @@ const FileScreen = ({ route }) => {
     const response = await db.getAllAsync(
       `SELECT * FROM fileStorage WHERE folderName = "${folderName}" AND userEmail = "${email}" ;`
     );
+    const response1 = await db.getAllAsync(`SELECT * FROM fileStorage  ;`);
     console.log(response);
+    console.log("Full DB data", response1);
     setData(response);
     db.closeAsync();
   };
@@ -104,8 +106,7 @@ const FileScreen = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-
-        "http://192.168.3.43:33000/api/ipfs/upload",
+        "http://192.168.40.140:33000/api/ipfs/upload",
 
         formData,
         {
@@ -143,8 +144,7 @@ const FileScreen = ({ route }) => {
 
   const testConnection = async () => {
     try {
-
-      const response = await axios.get("http://192.168.3.43:33000/");
+      const response = await axios.get("http://192.168.40.140:33000/");
 
       Alert.alert("Connection Successful!");
       console.log(response.data);
@@ -200,17 +200,10 @@ const FileScreen = ({ route }) => {
             </View>
           )}
         </Modal>
-        <Modal animationType="slide" visible={filemodalVisible}>
-          <Image
-            source={{ uri: fileDownloadUri }}
-            style={{ width: "50%", height: "50%" }}
-          />
-          <Button onPress={() => setFileModalVisible(false)} title="Done" />
-        </Modal>
 
         {/* <Button onPress={databaseHandling} title="Create DB" /> */}
         {/* <Button onPress={databaseData} title="Data DB" /> */}
-        {/* <Button onPress={dropDatabase} title="Drop DB" /> */}
+        <Button onPress={dropDatabase} title="Drop DB" />
         {/* <Button onPress={tempDataEntry} title="Insert Data" /> */}
         {/* <Button onPress={testConnection} title="Test Connection" /> */}
       </View>

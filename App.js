@@ -46,11 +46,13 @@ export default function App() {
       let userToken;
       try {
         userToken = await SecureStore.getItemAsync("userToken");
+        console.log("userToken..", userToken);
+        email = await SecureStore.getItemAsync("userEmail");
+        console.log("email..", email);
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
         const responce = await axios.get(
-          "http://192.168.3.43:33000/api/hello"
-
+          "http://192.168.40.140:33000/api/hello"
         );
         if (responce.status === 200) {
           dispatch({ type: "RESTORE_TOKEN", token: userToken });
@@ -100,21 +102,24 @@ export default function App() {
       signIn: async (data, email) => {
         const token = data;
         const userEmail = email;
+        console.log("email..", userEmail);
+        console.log("token..", token);
         // console.log("App.js data..", data);
 
         // In a production app, we need to send some data (usually username, password) to server and get a token
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `SecureStore`
         // In the example, we'll use a dummy token
-        const responce = await SecureStore.setItemAsync("userToken", token);
-        const responce1 = await SecureStore.setItemAsync(
-          "userEmail",
-          userEmail
-        );
+        await SecureStore.setItemAsync("userToken", token);
+        await SecureStore.setItemAsync("userEmail", userEmail);
+
+        await SecureStore.getItemAsync("userEmail");
 
         dispatch({ type: "SIGN_IN", token: data });
       },
-      signOut: () => dispatch({ type: "SIGN_OUT" }),
+      signOut: () => {
+        dispatch({ type: "SIGN_OUT" });
+      },
       signUp: async (data) => {
         // In a production app, we need to send user data to server and get a token
         // We will also need to handle errors if sign up failed

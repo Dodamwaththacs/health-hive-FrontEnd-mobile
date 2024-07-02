@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Animated, ScrollView } from "react-native";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const GreetCard = () => {
   const [tips, setTips] = useState([]);
@@ -13,7 +13,7 @@ const GreetCard = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.3.43:33000/api/dailyTips?limit=5"
+          "http://192.168.40.140:33000/api/dailyTips?limit=5"
         );
         setTips(response.data);
       } catch (error) {
@@ -55,20 +55,34 @@ const GreetCard = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.headerContainer, {
-        backgroundColor: fadeAnim.interpolate({
-          inputRange: [0, 1],
-          outputRange: [nextTypeColor + '20', typeColor + '20']
-        })
-      }]}>
-        <Animated.View style={{
-          opacity: fadeAnim,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          <Icon name={getIconName(currentTip.type)} size={24} color={typeColor} style={styles.icon} />
-          <Text style={[styles.heading, { color: typeColor }]}>{currentTip.type}</Text>
+      <Animated.View
+        style={[
+          styles.headerContainer,
+          {
+            backgroundColor: fadeAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [nextTypeColor + "20", typeColor + "20"],
+            }),
+          },
+        ]}
+      >
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Icon
+            name={getIconName(currentTip.type)}
+            size={24}
+            color={typeColor}
+            style={styles.icon}
+          />
+          <Text style={[styles.heading, { color: typeColor }]}>
+            {currentTip.type}
+          </Text>
         </Animated.View>
       </Animated.View>
       <Animated.View style={[styles.card, { opacity: fadeAnim }]}>
@@ -111,19 +125,19 @@ const getTypeColor = (type) => {
 const styles = StyleSheet.create({
   container: {
     margin: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 15,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 10,
   },
   icon: {
@@ -132,7 +146,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 18,
     fontWeight: "bold",
-    textAlign: 'center',
+    textAlign: "center",
   },
   card: {
     height: 90,

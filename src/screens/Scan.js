@@ -45,9 +45,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-
-        `http://192.168.3.43:33000/api/users/email/${email}`
-
+        `http://192.168.40.140:33000/api/users/email/${email}`
       );
       setUser(response.data);
     } catch (error) {
@@ -65,9 +63,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-
-        `http://192.168.3.43:33000/api/users/${scannedUserId}`
-
+        `http://192.168.40.140:33000/api/users/${scannedUserId}`
       );
       const scannedUser = response.data;
 
@@ -98,8 +94,7 @@ const Scan = () => {
     console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
-
-        "http://192.168.3.43:33000/api/labRequests",
+        "http://192.168.40.140:33000/api/labRequests",
 
         {
           user: user.id,
@@ -121,9 +116,8 @@ const Scan = () => {
   const handleHealthReport = async () => {
     let response;
     try {
-
       const response = await axios.post(
-        "http://192.168.3.43:33000/api/labReportShares",
+        "http://192.168.40.140:33000/api/labReportShares",
 
         {
           doctor: scannedUserId,
@@ -167,7 +161,7 @@ const Scan = () => {
         console.log("selectedFiles", selectedFiles[i]);
 
         const response = await axios.post(
-          "http://192.168.3.43:33000/api/shareFiles",
+          "http://192.168.40.140:33000/api/shareFiles",
           {
             labReportShare: labReportSharesId,
             fileHash: selectedFiles[i],

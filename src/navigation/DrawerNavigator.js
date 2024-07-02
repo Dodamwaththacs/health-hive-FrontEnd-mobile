@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
-import { Image, View, Text, StyleSheet, TouchableOpacity ,Alert} from "react-native";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from "@react-navigation/drawer";
+import {
+  Image,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "./HomeBottomNavigator";
 import Scan from "../screens/Scan";
@@ -19,7 +31,6 @@ import { useNavigation } from "@react-navigation/native";
 
 const Drawer = createDrawerNavigator();
 
-
 function CustomDrawerContent(props) {
   const handleLogout = () => {
     Alert.alert(
@@ -29,21 +40,24 @@ function CustomDrawerContent(props) {
         {
           text: "NO",
           onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
+          style: "cancel",
         },
-        { 
-          text: "YES", 
+        {
+          text: "YES",
           onPress: () => {
             // Perform logout actions here
-            props.navigation.navigate('SignOut');
-          }
-        }
+            props.navigation.navigate("SignOut");
+          },
+        },
       ]
     );
   };
-  
+
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContent}>
+    <DrawerContentScrollView
+      {...props}
+      contentContainerStyle={styles.drawerContent}
+    >
       <View style={styles.header}>
         <Image source={Logo} style={styles.logo} />
         <Text style={styles.title}>Health Hive</Text>
@@ -54,8 +68,8 @@ function CustomDrawerContent(props) {
       <View style={styles.bottomDrawerSection}>
         <DrawerItem
           label="Log Out"
-          icon={({  size }) => (
-            <Ionicons name="log-out-outline" color={'#0056B3'} size={size} />
+          icon={({ size }) => (
+            <Ionicons name="log-out-outline" color={"#0056B3"} size={size} />
           )}
           onPress={handleLogout}
           labelStyle={styles.drawerItemLabel}
@@ -76,7 +90,7 @@ function DrawerNavigator() {
       try {
         const email = await SecureStore.getItemAsync("userEmail");
         const response = await axios.get(
-          `http://192.168.3.43:33000/api/users/email/${email}`
+          `http://192.168.40.140:33000/api/users/email/${email}`
         );
         setUser(response.data);
       } catch (error) {
@@ -91,8 +105,6 @@ function DrawerNavigator() {
   if (!user) {
     return null; // or some loading component
   }
-
-
 
   return (
     <Drawer.Navigator
@@ -135,28 +147,23 @@ function DrawerNavigator() {
         ),
         drawerStyle: {
           backgroundColor: "#fff",
-      
         },
         drawerLabelStyle: {
-          
           fontSize: 16,
           marginLeft: -16,
-
         },
-        drawerActiveBackgroundColor: '#0056B3', //  blue background for active item
-        drawerActiveTintColor: '#fff', // white text color for active item
-        drawerInactiveTintColor: 'grey',
+        drawerActiveBackgroundColor: "#0056B3", //  blue background for active item
+        drawerActiveTintColor: "#fff", // white text color for active item
+        drawerInactiveTintColor: "grey",
 
         drawerItemStyle: {
           marginVertical: 5,
-          borderRadius:20,
-        
+          borderRadius: 20,
         },
-        
       }}
     >
-      <Drawer.Screen 
-        name="Health Hive" 
+      <Drawer.Screen
+        name="Health Hive"
         component={Home}
         options={{
           drawerIcon: ({ color, size }) => (
@@ -164,8 +171,8 @@ function DrawerNavigator() {
           ),
         }}
       />
-      <Drawer.Screen 
-        name="Scan" 
+      <Drawer.Screen
+        name="Scan"
         component={Scan}
         options={{
           drawerIcon: ({ color, size }) => (
@@ -193,8 +200,8 @@ function DrawerNavigator() {
           ),
         }}
       />
-      <Drawer.Screen 
-        name="Your Notes" 
+      <Drawer.Screen
+        name="Your Notes"
         component={Notes}
         options={{
           drawerIcon: ({ color, size }) => (
@@ -202,8 +209,8 @@ function DrawerNavigator() {
           ),
         }}
       />
-      <Drawer.Screen 
-        name="Setting" 
+      <Drawer.Screen
+        name="Setting"
         component={Setting}
         options={{
           drawerIcon: ({ color, size }) => (
@@ -211,14 +218,13 @@ function DrawerNavigator() {
           ),
         }}
       />
-      <Drawer.Screen 
-        name="SignOut" 
+      <Drawer.Screen
+        name="SignOut"
         component={SignOut}
         options={{
-          drawerItemStyle: { display: 'none' }, // This hides it from the drawer list
+          drawerItemStyle: { display: "none" }, // This hides it from the drawer list
         }}
       />
-
     </Drawer.Navigator>
   );
 }
@@ -228,11 +234,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
     borderBottomWidth: 2,
-    borderBottomColor: '#E4E9F2',
+    borderBottomColor: "#E4E9F2",
   },
   logo: {
     width: 32,
@@ -241,8 +247,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0056B3',
+    fontWeight: "bold",
+    color: "#0056B3",
   },
   drawerItemsContainer: {
     flex: 1,
@@ -250,19 +256,19 @@ const styles = StyleSheet.create({
   },
   bottomDrawerSection: {
     marginBottom: 15,
-    borderTopColor: '#E4E9F2',
+    borderTopColor: "#E4E9F2",
     borderTopWidth: 2,
     paddingTop: 15,
   },
   drawer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     width: 240,
   },
   drawerItemLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     marginLeft: -16,
-    color: '#0056B3',
+    color: "#0056B3",
   },
   drawerItem: {
     borderRadius: 8,

@@ -48,13 +48,10 @@ const UserProfileCard = ({ user, onPress }) => {
   );
 };
 
-
 const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
-
-      `http://192.168.3.43:33000/api/users/email/${email}`
-
+      `http://192.168.40.140:33000/api/users/email/${email}`
     );
     return response.data;
   } catch (error) {
@@ -62,7 +59,6 @@ const fetchDataByEmail = async (email) => {
     return null;
   }
 };
-
 
 const formatDate = (dateString) => {
   const parsedDate = Date.parse(dateString);
@@ -96,7 +92,9 @@ const ListCard = ({ documents, user, navigation }) => {
       <View style={styles.itemContainer}>
         <Text style={styles.title}>{item.fileName}</Text>
         <Text style={styles.titledescription}>{item.description}</Text>
-        <Text style={styles.uploadDate}>Uploaded on: {formatDate(item.date)}</Text>
+        <Text style={styles.uploadDate}>
+          Uploaded on: {formatDate(item.date)}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -114,7 +112,6 @@ const ListCard = ({ documents, user, navigation }) => {
 
           <GreetCard />
 
-
           {user && <ChartsCard userId={user.id} />}
           <Text style={styles.textHeader}>Recent Uploads</Text>
         </>
@@ -131,7 +128,7 @@ const Dashboard = ({ navigation }) => {
   const [documents, setDocuments] = useState([]);
   const [user, setUser] = useState(null);
 
-  console.log("user:", user)
+  console.log("user:", user);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -164,7 +161,6 @@ const Dashboard = ({ navigation }) => {
   );
 
   useEffect(() => {
-   
     const fetchData = async () => {
       const email = await SecureStore.getItemAsync("userEmail");
 
@@ -203,7 +199,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 } ,
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
@@ -247,38 +243,33 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 } ,
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 5,
-  
   },
-itemContainer:{
-    marginRight:80,
-},
+  itemContainer: {
+    marginRight: 80,
+  },
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color:'black',
+    color: "black",
     marginLeft: 0,
   },
   titledescription: {
     fontSize: 16,
-    color:'black',
-  marginLeft: 0,
+    color: "black",
+    marginLeft: 0,
   },
   uploadDate: {
     fontSize: 14,
-    color:'black',
+    color: "black",
     marginLeft: 0,
   },
   listContainer: {
     paddingBottom: 20,
   },
- 
-   
-
-  
 });
 
 export default Dashboard;
