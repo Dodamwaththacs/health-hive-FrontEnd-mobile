@@ -127,7 +127,7 @@ const LabFolder = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.40.140:33000/api/ipfs/upload",
+        "http://192.168.115.140:33000/api/ipfs/upload",
 
         formData,
         {
@@ -176,6 +176,13 @@ const LabFolder = ({ route }) => {
     console.log("Database dropped successfully!");
   };
 
+  const databaseData = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(`SELECT * FROM fileStorage;`);
+    console.log("Database data:", response);
+    db.closeAsync();
+  };
+
   const renderItem = ({ item }) => (
     <ItemComponent
       item={item}
@@ -211,7 +218,7 @@ const LabFolder = ({ route }) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />
-      <Button title="Drop Database" onPress={dropDatabase} />
+      <Button title=" Database Data" onPress={databaseData} />
       {!showCheckboxes && data.length > 0 && (
         <Button
           title="Move file"

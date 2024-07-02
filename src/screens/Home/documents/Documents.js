@@ -24,7 +24,16 @@ const FolderCreator = () => {
   const [directories, setDirectories] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [renameModalVisible, setRenameModalVisible] = useState(false);
+  const [currentFolderToRename, setCurrentFolderToRename] = useState("");
+  const [newFolderName, setNewFolderName] = useState("");
   const labFolder = baseDir + "LabReports/";
+
+  const refreshEffect = () => {
+    setRefreshKey((oldKey) => oldKey + 1);
+    console.log("Refreshed");
+  };
 
   const createDirectory = async (folderName) => {
     const dirUri = `${baseDir}${folderName}`;
@@ -113,6 +122,12 @@ const FolderCreator = () => {
     updateDirectoryList();
   };
 
+  const getfiledata = async () => {
+    const oldDirUri = `${baseDir}`;
+    const info = await FileSystem.getInfoAsync(oldDirUri);
+    console.log(info);
+  };
+
   const renameDirectory = async (oldFolderName, newFolderName) => {
     const oldDirUri = `${baseDir}${oldFolderName}`;
     const newDirUri = `${baseDir}${newFolderName}`;
@@ -127,23 +142,46 @@ const FolderCreator = () => {
         console.log(
           `Directory renamed from ${oldFolderName} to ${newFolderName}`
         );
+
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        await db.execAsync(
+          `UPDATE folderData SET folderName = '${newFolderName}' WHERE folderName = '${oldFolderName}';`
+        );
+        await db.execAsync(`UPDATE fileStorage
+        SET folderName = '${newFolderName}'
+        WHERE folderName = '${oldFolderName}';`);
+
+        const response = await db.getAllAsync(`SELECT * FROM fileStorage;`);
+        const response2 = await db.getAllAsync(`SELECT * FROM folderData;`);
+        console.log("FIle storage data : ", response);
+        console.log("Folder data : ", response2);
       } else {
         console.log("Directory does not exist!");
       }
     } catch (error) {
       console.error("Error renaming directory:", error);
+    } finally {
+      refreshEffect();
     }
   };
 
   const updateDirectoryList = async () => {
     const dirs = await listDirectories();
-    setDirectories(dirs);
+    console.log("Directories:", dirs);
+
+    const sortedDirs = dirs.sort((a, b) => {
+      if (a === "LabReports") return -1;
+      if (b === "LabReports") return 1;
+      return a.localeCompare(b);
+    });
+
+    setDirectories(sortedDirs);
   };
 
   useEffect(() => {
     createBaseDirectory();
     updateDirectoryList();
-  }, []);
+  }, [refreshKey]);
 
   return (
     <View style={styles.container}>
@@ -159,7 +197,7 @@ const FolderCreator = () => {
             </TouchableOpacity>
             <Text style={styles.folderText}>{dir}</Text>
 
-            {dropdownOpen && (
+            {dropdownOpen && dir !== "LabReports" && (
               <View style={styles.popButtons}>
                 <TouchableOpacity onPress={() => deleteDirectory(dir)}>
                   <FontAwesome5
@@ -170,7 +208,7 @@ const FolderCreator = () => {
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => renameDirectory(dir, "newName")}
+                  onPress={() => renameDirectory(dir, "Test Folder")}
                 >
                   <FontAwesome5 name="edit" size={20} color="blue" />
                 </TouchableOpacity>
@@ -205,6 +243,8 @@ const FolderCreator = () => {
           </View>
         </View>
       </Modal>
+      <Button title="Get File Data" onPress={getfiledata} />
+      <Button title="List Directories" onPress={listDirectories} />
     </View>
   );
 };
