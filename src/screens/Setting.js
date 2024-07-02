@@ -13,7 +13,7 @@ const Setting = () => {
   };
 
   const handleHelpAndSupport = () => {
-    // Add logic for Help and Support
+    navigation.navigate('Help');
   };
 
   const handleAbout = () => {
@@ -33,7 +33,7 @@ const Setting = () => {
   return (
     <View style={styles.container}>
       {renderOption("Reset Your Password", "key-outline", handleResetPassword)}
-      {renderOption("Help and Support", "help-circle-outline", handleHelpAndSupport)}
+      {renderOption("Help & Support", "help-circle-outline", handleHelpAndSupport)}
       {renderOption("About", "information-circle-outline", handleAbout)}
     </View>
   );
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    color: 'gray',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
@@ -62,6 +63,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
+    color: 'gray',
   },
 });
 

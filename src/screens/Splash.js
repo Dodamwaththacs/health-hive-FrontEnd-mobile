@@ -41,12 +41,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24, 
     fontWeight: 'bold',
-    color: '#003366', 
+    color: '#0056B3', 
     marginBottom: 4, 
   },
   subtitle: {
     fontSize: 18, 
-    color: '#003366', 
+    color: '#0056B3', 
     marginBottom: 30, 
   },
   button: {
