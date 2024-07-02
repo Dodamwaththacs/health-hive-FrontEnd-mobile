@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f0f8ff',
     padding: 20,
+    
   },
   loadingContainer: {
     flex: 1,
@@ -94,9 +95,9 @@ const styles = StyleSheet.create({
   faqItem: {
     backgroundColor: 'white',
     borderRadius: 8,
-    padding: 16,
-    marginBottom: 0,
-    marginTop: 20,
+    padding: 20,
+    marginBottom: 40,
+    marginTop: -10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
