@@ -8,9 +8,12 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { Ionicons } from "@expo/vector-icons";
+
 import AddButton from "react-native-vector-icons/AntDesign";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
@@ -81,6 +84,7 @@ const FolderCreator = () => {
   };
 
   const handleCreateFolder = async () => {
+    setDropdownOpen(false);
     if (await createDirectory(folderName)) {
       updateDirectoryList();
     }
@@ -107,6 +111,32 @@ const FolderCreator = () => {
   };
 
   const deleteDirectory = async (folderName) => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(
+      `SELECT * FROM fileStorage WHERE folderName = '${folderName}';`
+    );
+    console.log("Files in folder: ", response);
+    if (response.length > 0) {
+      alert(`Folder is not empty! You can not delete ${folderName}.`);
+      return;
+    }
+
+    const confirmDelete = await new Promise((resolve) => {
+      Alert.alert(
+        "Confirm Delete",
+        `Are you sure you want to delete the folder "${folderName}"?`,
+        [
+          { text: "Cancel", onPress: () => resolve(false), style: "cancel" },
+          { text: "Yes", onPress: () => resolve(true) },
+        ],
+        { cancelable: false }
+      );
+    });
+
+    if (!confirmDelete) {
+      return;
+    }
+
     const dirUri = `${baseDir}${folderName}`;
     try {
       const info = await FileSystem.getInfoAsync(dirUri);
@@ -153,8 +183,11 @@ const FolderCreator = () => {
 
         const response = await db.getAllAsync(`SELECT * FROM fileStorage;`);
         const response2 = await db.getAllAsync(`SELECT * FROM folderData;`);
-        console.log("FIle storage data : ", response);
+        console.log("File storage data : ", response);
         console.log("Folder data : ", response2);
+
+        updateDirectoryList();
+        setRenameModalVisible(false);
       } else {
         console.log("Directory does not exist!");
       }
@@ -163,6 +196,12 @@ const FolderCreator = () => {
     } finally {
       refreshEffect();
     }
+  };
+
+  const handleRenamePress = (folderName) => {
+    setCurrentFolderToRename(folderName);
+    setNewFolderName(folderName);
+    setRenameModalVisible(true);
   };
 
   const updateDirectoryList = async () => {
@@ -207,9 +246,7 @@ const FolderCreator = () => {
                     color="red"
                   />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => renameDirectory(dir, "Test Folder")}
-                >
+                <TouchableOpacity onPress={() => handleRenamePress(dir)}>
                   <FontAwesome5 name="edit" size={20} color="blue" />
                 </TouchableOpacity>
               </View>
@@ -233,6 +270,12 @@ const FolderCreator = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => setModalVisible(false)}
+            >
+              <Ionicons name="close-circle" size={30} color="black" />
+            </TouchableOpacity>
             <TextInput
               style={styles.input}
               placeholder="Enter folder name"
@@ -243,8 +286,37 @@ const FolderCreator = () => {
           </View>
         </View>
       </Modal>
-      <Button title="Get File Data" onPress={getfiledata} />
-      <Button title="List Directories" onPress={listDirectories} />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={renameModalVisible}
+        onRequestClose={() => setRenameModalVisible(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter new folder name"
+              value={newFolderName}
+              onChangeText={setNewFolderName}
+            />
+            <View style={styles.modalButtons}>
+              <Button
+                title="Cancel"
+                onPress={() => setRenameModalVisible(false)}
+              />
+              <Button
+                title="Rename"
+                onPress={() =>
+                  renameDirectory(currentFolderToRename, newFolderName)
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {/* <Button title="Get File Data" onPress={getfiledata} />
+      <Button title="List Directories" onPress={listDirectories} /> */}
     </View>
   );
 };
@@ -316,6 +388,18 @@ const styles = StyleSheet.create({
     flex: 1, // Take up all available space
     marginLeft: 20, // Space between the icon and the text
     fontSize: 18,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 20,
+  },
+  closeBtn: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    padding: 10, // Add padding for easier pressing
   },
 });
 

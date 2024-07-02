@@ -35,6 +35,7 @@ const LabFolder = ({ route }) => {
   const [fileUri, setFileUri] = useState(null);
   const [FileName, setFileName] = useState("");
   const [Description, setDescription] = useState("");
+  const [dropDown, setDropDown] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -97,7 +98,9 @@ const LabFolder = ({ route }) => {
 
   const pickFile = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
-
+    if (result.canceled === true) {
+      return;
+    }
     const fileUri = result.assets[0].uri;
     const fileType = result.assets[0].mimeType;
     console.log("File type:", fileType);
@@ -127,7 +130,7 @@ const LabFolder = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.115.140:33000/api/ipfs/upload",
+        "http://192.168.4.140:33000/api/ipfs/upload",
 
         formData,
         {
@@ -179,7 +182,6 @@ const LabFolder = ({ route }) => {
   const databaseData = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response = await db.getAllAsync(`SELECT * FROM fileStorage;`);
-    console.log("Database data:", response);
     db.closeAsync();
   };
 
@@ -218,7 +220,6 @@ const LabFolder = ({ route }) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />
-      <Button title=" Database Data" onPress={databaseData} />
       {!showCheckboxes && data.length > 0 && (
         <Button
           title="Move file"

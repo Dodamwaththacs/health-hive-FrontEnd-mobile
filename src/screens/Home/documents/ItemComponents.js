@@ -11,6 +11,7 @@ import {
 import Checkbox from "expo-checkbox";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const ItemComponent = ({
   item,
@@ -48,6 +49,9 @@ const ItemComponent = ({
         <Text style={styles.fileName}>{item.fileName}</Text>
         <Text style={styles.description}>{item.description}</Text>
       </View>
+      <TouchableOpacity onPress={() => handleRenamePress(dir)}>
+        <FontAwesome5 name="edit" size={20} color="blue" />
+      </TouchableOpacity>
 
       {showCheckboxes && (
         <View>

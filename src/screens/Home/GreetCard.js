@@ -13,7 +13,7 @@ const GreetCard = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.115.140:33000/api/dailyTips?limit=5"
+          "http://192.168.4.140:33000/api/dailyTips?limit=5"
         );
         setTips(response.data);
       } catch (error) {
