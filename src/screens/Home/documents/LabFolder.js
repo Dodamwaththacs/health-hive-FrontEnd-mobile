@@ -31,7 +31,7 @@ const LabFolder = ({ route }) => {
       try {
         const response = await axios.get(
 
-          "http://192.168.3.43:33000/api/files/user/1"
+          "http://192.168.3.43:33000/api/files/user/2"
 
         );
         const originData = response.data;

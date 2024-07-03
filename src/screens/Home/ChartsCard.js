@@ -415,12 +415,7 @@ const ChartsCard = ({ userId }) => {
             value={height}
             onChangeText={setHeight}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Notes"
-            value={notes}
-            onChangeText={setNotes}
-          />
+         
           <View style={styles.buttonContainer}>
             <Button title="Submit" onPress={handleSubmit} />
             <Button title="Cancel" onPress={handleCancel} color="#FF6347" />
