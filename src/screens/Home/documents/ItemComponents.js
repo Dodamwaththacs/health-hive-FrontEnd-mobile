@@ -7,6 +7,7 @@ import {
   Modal,
   Image,
   Button,
+  TextInput,
 } from "react-native";
 import Checkbox from "expo-checkbox";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -27,6 +28,10 @@ const ItemComponent = ({
   dropDown,
 }) => {
   const [isSelected, setSelection] = useState(false);
+  const [id, setId] = useState(0);
+  const [fileName, setFileName] = useState("");
+  const [description, setDescription] = useState("");
+  const [renameModalVisible, setRenameModalVisible] = useState(false);
 
   const navigation = useNavigation();
 
@@ -43,14 +48,23 @@ const ItemComponent = ({
   };
 
   const handleRenamePress = async (id, fileName, description) => {
-    console.log("id..", id);
+    setId(id);
+    setFileName(fileName);
+    setDescription(description);
+    setDropDown(false);
+    setRenameModalVisible(true);
+  };
+
+  const handleRename = async () => {
+    console.log("handleRename..");
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response1 = await db.execAsync(
-      `UPDATE fileStorage SET fileName = "Bike", description = "Test Desciption" WHERE id = ${id};`
+      `UPDATE fileStorage SET fileName = "${fileName}", description = "${description}" WHERE id = ${id};`
     );
     console.log("response1..", response1);
-
     db.closeAsync();
+    setRenameModalVisible(false);
+    alert("File renamed successfully");
   };
 
   return (
@@ -85,6 +99,36 @@ const ItemComponent = ({
           style={{ width: "50%", height: "50%" }}
         />
         <Button onPress={() => setFileModalVisible(false)} title="Done" />
+      </Modal>
+      <Modal animationType="slide" visible={renameModalVisible}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text>File Name</Text>
+          <TextInput
+            style={{ borderWidth: 1, width: "80%" }}
+            value={fileName}
+            onChangeText={(text) => setFileName(text)}
+          />
+          <Text>Description</Text>
+          <TextInput
+            style={{ borderWidth: 1, width: "80%" }}
+            value={description}
+            onChangeText={(text) => setDescription(text)}
+          />
+          <Button
+            title="Save"
+            onPress={() => {
+              handleRename();
+            }}
+          />
+          <Button
+            title="Cancel"
+            onPress={() => {
+              setRenameModalVisible(false);
+            }}
+          />
+        </View>
       </Modal>
     </View>
   );

@@ -52,11 +52,8 @@ const LabFolder = ({ route }) => {
 
       fetchDataFromLocal();
 
-      // This return function is optional and will be called when the screen loses focus
-      return () => {
-        // Clean up any subscriptions or timers if needed
-      };
-    }, [folderName, folderModalVisible]) // Add any other dependencies here
+      return () => {};
+    }, [folderName, folderModalVisible, modalVisible])
   );
 
   const handleMove = async () => {
@@ -131,7 +128,7 @@ const LabFolder = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.190.140:33000/api/ipfs/upload",
+        "http://192.168.180.140:33000/api/ipfs/upload",
 
         formData,
         {
@@ -187,7 +184,8 @@ const LabFolder = ({ route }) => {
 
   const databaseData = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
-    const response = await db.getAllAsync(`SELECT * FROM fileStorage;`);
+    const response = await db.getAllAsync(`SELECT * FROM folderData;`);
+    console.log(response);
     db.closeAsync();
   };
 
@@ -300,6 +298,7 @@ const LabFolder = ({ route }) => {
           </View>
         )}
       </Modal>
+      {/* <Button title="DB drop" onPress={dropDatabase} /> */}
     </View>
   );
 };

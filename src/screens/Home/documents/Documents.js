@@ -143,6 +143,10 @@ const FolderCreator = () => {
       const info = await FileSystem.getInfoAsync(dirUri);
       if (info.exists) {
         await FileSystem.deleteAsync(dirUri, { idempotent: true });
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        await db.execAsync(
+          `DELETE FROM folderData WHERE folderName = '${folderName}';`
+        );
       } else {
         console.log("Directory does not exist!");
       }

@@ -51,7 +51,7 @@ const UserProfileCard = ({ user, onPress }) => {
 const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
-      `http://192.168.190.140:33000/api/users/email/${email}`
+      `http://192.168.180.140:33000/api/users/email/${email}`
     );
     return response.data;
   } catch (error) {
