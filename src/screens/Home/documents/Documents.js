@@ -26,11 +26,12 @@ const FolderCreator = () => {
   const [folderName, setFolderName] = useState("");
   const [directories, setDirectories] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const navigation = useNavigation();
   const [refreshKey, setRefreshKey] = useState(0);
   const [renameModalVisible, setRenameModalVisible] = useState(false);
   const [currentFolderToRename, setCurrentFolderToRename] = useState("");
   const [newFolderName, setNewFolderName] = useState("");
+  const navigation = useNavigation();
+
   const labFolder = baseDir + "LabReports/";
 
   const refreshEffect = () => {

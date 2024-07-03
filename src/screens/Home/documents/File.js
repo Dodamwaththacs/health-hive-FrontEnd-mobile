@@ -12,15 +12,16 @@ import {
   Image,
   TextInput,
   Alert,
+  Platform,
+  StatusBar,
 } from "react-native";
-import Checkbox from "expo-checkbox";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
 import * as SecureStore from "expo-secure-store";
 import ItemComponent from "./ItemComponents";
 import * as DocumentPicker from "expo-document-picker";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 
 const LabFolder = ({ route }) => {
   const { folderName } = route.params;
@@ -130,7 +131,7 @@ const LabFolder = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.4.140:33000/api/ipfs/upload",
+        "http://192.168.190.140:33000/api/ipfs/upload",
 
         formData,
         {
@@ -172,6 +173,11 @@ const LabFolder = ({ route }) => {
     setFileUri(null);
   };
 
+  const handlePress = () => {
+    setDropDown(!dropDown);
+    console.log("dropDown :", dropDown);
+  };
+
   const dropDatabase = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
     await db.execAsync(`DROP TABLE fileStorage;`);
@@ -195,6 +201,8 @@ const LabFolder = ({ route }) => {
       showCheckboxes={showCheckboxes}
       selectedItems={selectedItems}
       setSelectedItems={setSelectedItems}
+      setDropDown={setDropDown}
+      dropDown={dropDown}
     />
   );
 
@@ -211,7 +219,15 @@ const LabFolder = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.head}>{folderName}</Text>
+      <View style={styles.head_container}>
+        <Text style={styles.head}>{folderName}</Text>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => handlePress()}
+        >
+          <FontAwesome name="ellipsis-v" size={40} color="#000" />
+        </TouchableOpacity>
+      </View>
 
       {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
 
@@ -292,6 +308,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   itemContainer: {
     padding: 20,
@@ -305,6 +322,11 @@ const styles = StyleSheet.create({
   fileName: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  head_container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   head: {
     fontSize: 24,

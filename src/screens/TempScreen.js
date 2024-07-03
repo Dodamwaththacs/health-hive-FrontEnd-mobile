@@ -104,7 +104,7 @@ const FileScreen = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.4.140:33000/api/ipfs/upload",
+        "http://192.168.190.140:33000/api/ipfs/upload",
 
         formData,
         {

@@ -12,6 +12,7 @@ import Checkbox from "expo-checkbox";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import * as SQLite from "expo-sqlite";
 
 const ItemComponent = ({
   item,
@@ -22,8 +23,11 @@ const ItemComponent = ({
   showCheckboxes,
   selectedItems,
   setSelectedItems,
+  setDropDown,
+  dropDown,
 }) => {
   const [isSelected, setSelection] = useState(false);
+
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -38,23 +42,40 @@ const ItemComponent = ({
     navigation.navigate("DocumentViewer", { documentUri: hash });
   };
 
+  const handleRenamePress = async (id, fileName, description) => {
+    console.log("id..", id);
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response1 = await db.execAsync(
+      `UPDATE fileStorage SET fileName = "Bike", description = "Test Desciption" WHERE id = ${id};`
+    );
+    console.log("response1..", response1);
+
+    db.closeAsync();
+  };
+
   return (
     <View style={styles.itemContainer}>
       <View style={styles.icon}>
         <TouchableOpacity onPress={() => openDocument(item.hash)}>
-          <Icon name="document-outline" size={50} color="#000" />
+          <Icon name="document-outline" size={40} color="#000" />
         </TouchableOpacity>
       </View>
-      <View>
+      <View style={styles.textContainer}>
         <Text style={styles.fileName}>{item.fileName}</Text>
         <Text style={styles.description}>{item.description}</Text>
       </View>
-      <TouchableOpacity onPress={() => handleRenamePress(dir)}>
-        <FontAwesome5 name="edit" size={20} color="blue" />
-      </TouchableOpacity>
-
+      {dropDown && (
+        <TouchableOpacity
+          style={styles.editIcon}
+          onPress={() =>
+            handleRenamePress(item.id, item.fileName, item.description)
+          }
+        >
+          <FontAwesome5 name="edit" size={20} color="blue" />
+        </TouchableOpacity>
+      )}
       {showCheckboxes && (
-        <View>
+        <View style={styles.checkboxContainer}>
           <Checkbox value={isSelected} onValueChange={setSelection} />
         </View>
       )}
@@ -75,9 +96,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   icon: {
     marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
   },
   fileName: {
     fontSize: 18,
@@ -85,6 +111,12 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
+  },
+  editIcon: {
+    marginLeft: "auto",
+  },
+  checkboxContainer: {
+    marginLeft: 10,
   },
 });
 

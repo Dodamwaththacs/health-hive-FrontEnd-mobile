@@ -37,7 +37,7 @@ const LabFolder = ({ route }) => {
 
         try {
           const response = await axios.get(
-            "http://192.168.4.140:33000/api/files/user/2"
+            "http://192.168.190.140:33000/api/files/user/2"
           );
           const originData = response.data;
 
@@ -51,7 +51,7 @@ const LabFolder = ({ route }) => {
               );
               try {
                 await axios.delete(
-                  "http://192.168.4.140:33000/api/files/" + originData[i].id
+                  "http://192.168.190.140:33000/api/files/" + originData[i].id
                 );
               } catch (error) {
                 console.error("Error data delete : ", error);
@@ -60,7 +60,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
-                  "http://192.168.4.140:33000/api/labDataUploads/" +
+                  "http://192.168.190.140:33000/api/labDataUploads/" +
                     originData[i].labDataUploadId
                 );
               } catch (error) {
@@ -73,7 +73,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
-                  "http://192.168.4.140:33000/api/labRequests/" +
+                  "http://192.168.190.140:33000/api/labRequests/" +
                     originData[i].labRequestId
                 );
               } catch (error) {
