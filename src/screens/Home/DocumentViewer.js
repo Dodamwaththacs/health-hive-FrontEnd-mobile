@@ -19,8 +19,6 @@ const DocumentViewer = ({ route }) => {
   const [pdf, setPdf] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  console.log("Document URI:", documentUri);
-
   const handleClose = async () => {
     try {
       await FileSystem.deleteAsync(imageUri);
@@ -37,7 +35,7 @@ const DocumentViewer = ({ route }) => {
       setIsLoading(true);
 
       try {
-        const imageUrl = "http://192.168.3.43:33000/api/ipfs/" + documentUri;
+        const imageUrl = "http://13.202.67.81:33000/api/ipfs/" + documentUri;
 
         const fileUri = `${FileSystem.cacheDirectory} ${documentUri}.jpg`;
         console.log("Image URL:", imageUrl);

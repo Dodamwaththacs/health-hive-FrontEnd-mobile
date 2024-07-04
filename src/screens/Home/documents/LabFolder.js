@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+
 import {
   View,
   Text,
@@ -7,13 +9,14 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
-  Image,
+  Platform,
+  StatusBar,
 } from "react-native";
-import Checkbox from "expo-checkbox";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
-import { useEmail } from "../../../EmailContext";
+import * as SecureStore from "expo-secure-store";
+import ItemComponent from "./ItemComponents";
 
 const LabFolder = ({ route }) => {
   const { folderName } = route.params;
@@ -24,97 +27,93 @@ const LabFolder = ({ route }) => {
   const [fileDownloadUri, setFileDownloadUri] = useState(null);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  const { email } = useEmail();
+  const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    const fetchDataFromOringin = async () => {
-      try {
-        const response = await axios.get(
+  useFocusEffect(
+    useCallback(() => {
+      const fetchDataFromOrigin = async () => {
+        const email = await SecureStore.getItemAsync("userEmail");
+        setEmail(email);
 
           "http://192.168.3.43:33000/api/files/user/2"
 
-        );
-        const originData = response.data;
+        try {
+          const response = await axios.get(
+            "http://13.202.67.81:33000/api/files/user/2"
+          );
+          const originData = response.data;
 
-        const db = await SQLite.openDatabaseAsync("HealthHive");
+          const db = await SQLite.openDatabaseAsync("HealthHive");
 
-        for (let i = 0; i < originData.length; i++) {
-          console.log(originData[i]);
-          try {
-            await db.execAsync(
-              `INSERT INTO fileStorage (userEmail, fileName, folderName, description, hash) VALUES ('${email}','${originData[i].name}', '${folderName}', '${originData[i].filePath}', '${originData[i].fileHash}');`
-            );
+          for (let i = 0; i < originData.length; i++) {
+            console.log(originData[i]);
             try {
-              await axios.delete(
-
-                "http://192.168.3.43:33000/api/files/" + originData[i].id
-
+              await db.execAsync(
+                `INSERT INTO fileStorage (userEmail, fileName, folderName, description, hash) VALUES ('${email}','${originData[i].name}', '${folderName}', '${originData[i].filePath}', '${originData[i].fileHash}');`
               );
-            } catch (error) {
-              console.error("Error data delete : ", error);
-              console.error("files :", originData[i].id);
-            }
+              try {
+                await axios.delete(
+                  "http://13.202.67.81:33000/api/files/" + originData[i].id
+                );
+              } catch (error) {
+                console.error("Error data delete : ", error);
+                console.error("files :", originData[i].id);
+              }
 
-            try {
-              await axios.delete(
-
-                "http://192.168.3.43:33000/api/labDataUploads/" +
-
+              try {
+                await axios.delete(
+                  "http://13.202.67.81:33000/api/labDataUploads/" +
+                    originData[i].labDataUploadId
+                );
+              } catch (error) {
+                console.error("Error data delete : ", error);
+                console.error(
+                  "labDataUploads :",
                   originData[i].labDataUploadId
-              );
+                );
+              }
+
+              try {
+                await axios.delete(
+                  "http://13.202.67.81:33000/api/labRequests/" +
+                    originData[i].labRequestId
+                );
+              } catch (error) {
+                console.error("Error data delete : ", error);
+                console.error("labRequests :", originData[i].labRequestId);
+              }
             } catch (error) {
-              console.error("Error data delete : ", error);
-              console.error("labDataUploads :", originData[i].labDataUploadId);
+              console.error("Error data insert : ", error);
             }
-
-            try {
-              await axios.delete(
-
-                "http://192.168.3.43:33000/api/labRequests/" +
-
-                  originData[i].labRequestId
-              );
-            } catch (error) {
-              console.error("Error data delete : ", error);
-              console.error("labRequests :", originData[i].labRequestId);
-            }
-          } catch (error) {
-            console.error("Error data insert : ", error);
           }
-        }
 
-        const responseFinal = await db.getAllAsync(
+          const responseFinal = await db.getAllAsync(
+            `SELECT * FROM fileStorage WHERE folderName = "${folderName}"  ;`
+          );
+          console.log("inserted data response :", responseFinal);
+
+          console.log("Origin data fetched :", response.data);
+        } catch (error) {
+          console.error("Error fetching data: ", error);
+        } finally {
+          fetchDataFromLocal();
+        }
+      };
+
+      const fetchDataFromLocal = async () => {
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        const response = await db.getAllAsync(
           `SELECT * FROM fileStorage WHERE folderName = "${folderName}"  ;`
         );
-        console.log("inseted data responce :", responseFinal);
+        setData(response);
+        await db.closeAsync();
+      };
 
-        console.log("Origin data fetched :", response.data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      } finally {
-        fetchDataFromLocal();
-      }
-    };
+      fetchDataFromOrigin();
 
-    const fetchDataFromLocal = async () => {
-      const db = await SQLite.openDatabaseAsync("HealthHive");
-      const response = await db.getAllAsync(
-        `SELECT * FROM fileStorage WHERE folderName = "${folderName}"  ;`
-      );
-      setData(response);
-      await db.closeAsync();
-    };
-
-    fetchDataFromOringin();
-  }, []);
-
-  const fileOpen = (hash) => {
-    console.log(hash);
-
-    setFileDownloadUri("http://192.168.3.43:33000/api/ipfs/" + hash);
-
-    setFileModalVisible(true);
-  };
+      return () => {};
+    }, [folderName, folderModalVisible])
+  );
 
   const handleMove = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
@@ -155,7 +154,6 @@ const LabFolder = ({ route }) => {
   const renderItem = ({ item }) => (
     <ItemComponent
       item={item}
-      fileOpen={fileOpen}
       filemodalVisible={filemodalVisible}
       setFileModalVisible={setFileModalVisible}
       fileDownloadUri={fileDownloadUri}
@@ -188,7 +186,7 @@ const LabFolder = ({ route }) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />
-      {!showCheckboxes && (
+      {!showCheckboxes && data.length > 0 && (
         <Button
           title="Move file"
           onPress={() => setShowCheckboxes(!showCheckboxes)}
@@ -226,58 +224,11 @@ const LabFolder = ({ route }) => {
   );
 };
 
-const ItemComponent = ({
-  item,
-  fileOpen,
-  filemodalVisible,
-  setFileModalVisible,
-  fileDownloadUri,
-  setFileDownloadUri,
-  showCheckboxes,
-  selectedItems,
-  setSelectedItems,
-}) => {
-  const [isSelected, setSelection] = useState(false);
-
-  useEffect(() => {
-    if (isSelected) {
-      setSelectedItems((prevItems) => [...prevItems, item.id]);
-    } else {
-      setSelectedItems((prevItems) => prevItems.filter((id) => id !== item.id));
-    }
-  }, [isSelected]);
-
-  return (
-    <View style={styles.itemContainer}>
-      <View style={styles.icon}>
-        <TouchableOpacity onPress={() => fileOpen(item.hash)}>
-          <Icon name="document-outline" size={50} color="#000" />
-        </TouchableOpacity>
-      </View>
-      <View>
-        <Text style={styles.fileName}>{item.fileName}</Text>
-      </View>
-
-      {showCheckboxes && (
-        <View>
-          <Checkbox value={isSelected} onValueChange={setSelection} />
-        </View>
-      )}
-      <Modal animationType="slide" visible={filemodalVisible}>
-        <Image
-          source={{ uri: fileDownloadUri }}
-          style={{ width: "50%", height: "50%" }}
-        />
-        <Button onPress={() => setFileModalVisible(false)} title="Done" />
-      </Modal>
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   itemContainer: {
     padding: 20,

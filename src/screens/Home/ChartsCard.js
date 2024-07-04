@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
-import GestureRecognizer from 'react-native-swipe-gestures';
+import GestureRecognizer from "react-native-swipe-gestures";
 import {
   View,
   Text,
@@ -15,8 +15,15 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
-import { Svg, Circle, Line, Text as SvgText, Rect, Path } from 'react-native-svg';
-import moment from 'moment';
+import {
+  Svg,
+  Circle,
+  Line,
+  Text as SvgText,
+  Rect,
+  Path,
+} from "react-native-svg";
+import moment from "moment";
 
 const ChartsCard = ({ userId }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,36 +33,35 @@ const ChartsCard = ({ userId }) => {
   const [userData, setUserData] = useState([]);
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState("");
-  const [currentView, setCurrentView] = useState('bmi'); // State to toggle between views
+  const [currentView, setCurrentView] = useState("bmi"); // State to toggle between views
   const [hasEntryToday, setHasEntryToday] = useState(false);
-
 
   const calculateMonthlyAverageWeight = () => {
     const currentMonth = moment().month();
     const currentYear = moment().year();
-    const thisMonthData = userData.filter(data => {
+    const thisMonthData = userData.filter((data) => {
       const dataDate = moment(data.date);
-      return dataDate.month() === currentMonth && dataDate.year() === currentYear;
+      return (
+        dataDate.month() === currentMonth && dataDate.year() === currentYear
+      );
     });
-    
-    if (thisMonthData.length === 0) return 'N/A';
+
+    if (thisMonthData.length === 0) return "N/A";
     const sum = thisMonthData.reduce((acc, data) => acc + data.weight, 0);
     return (sum / thisMonthData.length).toFixed(2);
   };
 
   const getLastUpdatedWeight = () => {
-    if (userData.length === 0) return { weight: 'N/A', date: 'N/A' };
+    if (userData.length === 0) return { weight: "N/A", date: "N/A" };
     const lastEntry = userData[userData.length - 1];
     return {
       weight: lastEntry.weight.toFixed(2),
-      date: moment(lastEntry.date).format('MMM DD')
+      date: moment(lastEntry.date).format("MMM DD"),
     };
   };
 
   const monthlyAverageWeight = calculateMonthlyAverageWeight();
   const lastUpdatedWeight = getLastUpdatedWeight();
-  
-  
 
   const handleAddButtonPress = () => {
     if (hasEntryToday) {
@@ -82,9 +88,18 @@ const ChartsCard = ({ userId }) => {
         {
           text: "OK",
           onPress: async () => {
-            const data = { weight, height, notes, user: userId, date: new Date() };
+            const data = {
+              weight,
+              height,
+              notes,
+              user: userId,
+              date: new Date(),
+            };
             try {
-              await axios.post('http://192.168.3.43:33000/api/healthData', data);
+              await axios.post(
+                "http://13.202.67.81:33000/api/healthData",
+                data
+              );
               setModalVisible(false);
               fetchUserData();
             } catch (error) {
@@ -102,23 +117,27 @@ const ChartsCard = ({ userId }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`http://192.168.3.43:33000/api/healthData/userId/${userId}`);
-      
+      const response = await axios.get(
+        `http://13.202.67.81:33000/api/healthData/userId/${userId}`
+      );
 
-      const userData = response.data.map(data => ({
+      const userData = response.data.map((data) => ({
         ...data,
         date: moment(data.date),
-        weight: parseFloat(data.weight)
+        weight: parseFloat(data.weight),
       }));
-        
 
       // Check if there is an entry for today
-      const today = moment().startOf('day');
-      const entryToday = userData.some(data => moment(data.date).isSame(today, 'day'));
+      const today = moment().startOf("day");
+      const entryToday = userData.some((data) =>
+        moment(data.date).isSame(today, "day")
+      );
       setHasEntryToday(entryToday);
 
       setUserData(userData);
-      const profileResponse = await axios.get(`http://192.168.3.43:33000/api/users/${userId}`);
+      const profileResponse = await axios.get(
+        `http://13.202.67.81:33000/api/users/${userId}`
+      );
       setDateOfBirth(profileResponse.data.dateOfBirth);
       setGender(profileResponse.data.gender);
     } catch (error) {
@@ -157,35 +176,51 @@ const ChartsCard = ({ userId }) => {
     let targetWeight = 0;
     if (bmi < 18.5) {
       targetWeight = 18.5 * heightInMeters * heightInMeters;
-      return `Gain ${(targetWeight - weight).toFixed(2)} kg to reach a normal weight.`;
+      return `Gain ${(targetWeight - weight).toFixed(
+        2
+      )} kg to reach a normal weight.`;
     }
     if (bmi >= 25) {
       targetWeight = 24.9 * heightInMeters * heightInMeters;
-      return `Lose ${(weight - targetWeight).toFixed(2)} kg to reach a normal weight.`;
+      return `Lose ${(weight - targetWeight).toFixed(
+        2
+      )} kg to reach a normal weight.`;
     }
     return "Your weight is normal.";
   };
 
-  const calculateAge = dateOfBirth => {
-    return moment().diff(moment(dateOfBirth), 'years');
+  const calculateAge = (dateOfBirth) => {
+    return moment().diff(moment(dateOfBirth), "years");
   };
 
-  const chartData = userData.map(data => {
+  const chartData = userData.map((data) => {
     return data.weight ? parseFloat(data.weight) : 0;
   });
 
   const defaultData = {
-    labels: userData.length > 0 ? userData.map(data => moment(data.date).format('MMM DD')) : ['No data available'],
-    datasets: [{
-      data: chartData.length > 0 ? chartData : [0]
-    }],
+    labels:
+      userData.length > 0
+        ? userData.map((data) => moment(data.date).format("MMM DD"))
+        : ["No data available"],
+    datasets: [
+      {
+        data: chartData.length > 0 ? chartData : [0],
+      },
+    ],
   };
 
   const latestData = userData[userData.length - 1] || {};
-  const latestBMI = chartData.length > 0 ? calculateBMI(latestData.weight, latestData.height) : 0;
+  const latestBMI =
+    chartData.length > 0
+      ? calculateBMI(latestData.weight, latestData.height)
+      : 0;
   const age = calculateAge(dateOfBirth);
   const bmiCategory = getBMICategory(latestBMI, age, gender);
-  const weightChangeSuggestion = getWeightChangeSuggestion(latestBMI, latestData.height, latestData.weight);
+  const weightChangeSuggestion = getWeightChangeSuggestion(
+    latestBMI,
+    latestData.height,
+    latestData.weight
+  );
 
   const GaugeChart = ({ value, Category }) => {
     const gaugeSize = 280;
@@ -206,20 +241,29 @@ const ChartsCard = ({ userId }) => {
     const arrowEnd = polarToCartesian(radius, radius, arrowLength, arrowAngle);
 
     const sections = [
-      { color: '#00BFFF', from: 0, to: 18.5, label: 'Underweight' },
-      { color: '#32CD32', from: 18.5, to: 25, label: 'Normal' },
-      { color: '#FFA500', from: 25, to: 30, label: 'Overweight' },
-      { color: '#FF4500', from: 30, to: 40, label: 'Obesity' },
+      { color: "#00BFFF", from: 0, to: 18.5, label: "Underweight" },
+      { color: "#32CD32", from: 18.5, to: 25, label: "Normal" },
+      { color: "#FFA500", from: 25, to: 30, label: "Overweight" },
+      { color: "#FF4500", from: 30, to: 40, label: "Obesity" },
     ];
 
     const describeArc = (x, y, radius, startAngle, endAngle) => {
       const start = polarToCartesian(x, y, radius, endAngle);
       const end = polarToCartesian(x, y, radius, startAngle);
-      const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
       const d = [
-        'M', start.x, start.y,
-        'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y,
-      ].join(' ');
+        "M",
+        start.x,
+        start.y,
+        "A",
+        radius,
+        radius,
+        0,
+        largeArcFlag,
+        0,
+        end.x,
+        end.y,
+      ].join(" ");
       return d;
     };
 
@@ -238,7 +282,13 @@ const ChartsCard = ({ userId }) => {
           {sections.map((section, index) => (
             <Path
               key={index}
-              d={describeArc(radius, radius, radius - strokeWidth / 2, (section.from / 40) * 180, (section.to / 40) * 180)}
+              d={describeArc(
+                radius,
+                radius,
+                radius - strokeWidth / 2,
+                (section.from / 40) * 180,
+                (section.to / 40) * 180
+              )}
               stroke={section.color}
               strokeWidth={strokeWidth}
               fill="none"
@@ -276,7 +326,6 @@ const ChartsCard = ({ userId }) => {
           >
             {getSectionLabel(value)}
           </SvgText>
-
         </Svg>
       </View>
     );
@@ -288,11 +337,11 @@ const ChartsCard = ({ userId }) => {
   };
 
   const onSwipeLeft = () => {
-    if (currentView === 'bmi') setCurrentView('history');
+    if (currentView === "bmi") setCurrentView("history");
   };
 
   const onSwipeRight = () => {
-    if (currentView === 'history') setCurrentView('bmi');
+    if (currentView === "history") setCurrentView("bmi");
   };
 
   return (
@@ -302,89 +351,100 @@ const ChartsCard = ({ userId }) => {
       config={config}
       style={styles.container}
     >
-      {currentView === 'bmi' ? (
+      {currentView === "bmi" ? (
         <View style={styles.containerGaugeChart}>
           <Text style={styles.textHeader}>Your BMI</Text>
 
           <GaugeChart value={latestBMI} category={bmiCategory} />
           <Text style={styles.bmiText}>{weightChangeSuggestion}</Text>
-
         </View>
-      ) : <View style={styles.containerGaugeChart}>
-      {/* <Text style={styles.textHeader}>Weight Chart</Text> */}
-      <View style={styles.decoratorContainer}>
-            <Text style={styles.decoratorText}>Average: {monthlyAverageWeight} kg</Text>
+      ) : (
+        <View style={styles.containerGaugeChart}>
+          {/* <Text style={styles.textHeader}>Weight Chart</Text> */}
+          <View style={styles.decoratorContainer}>
+            <Text style={styles.decoratorText}>
+              Average: {monthlyAverageWeight} kg
+            </Text>
             <Text style={styles.decoratorText}>
               Today, {lastUpdatedWeight.date}: {lastUpdatedWeight.weight} kg
             </Text>
           </View>
-      <View style={styles.chartBackground}>
-        <ScrollView horizontal contentContainerStyle={styles.scrollViewContent}>
-        <LineChart
-      data={defaultData}
-      width={Dimensions.get('window').width * 1.5 - 40} // Adjusted width
-      height={220} // Adjusted height
-      chartConfig={{
-        backgroundColor: "#e26a00",
-        backgroundGradientFrom: "#fb8c00",
-        backgroundGradientTo: "#ffa726",
-        decimalPlaces: 2,
-        padding: 12,
-      
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        style: {
-          borderRadius: 16,
-          padding: 10,
-        },
-        propsForDots: {
-          r: "6",
-          strokeWidth: "3", // Reduced stroke width
-          stroke: "#ffa726",
-        },
-        yAxisLabel: '',
-        yAxisSuffix: 'kg',
-        yAxisInterval: 10, // Changed from 20 to create more steps
-        paddingTop: 30,
-      }}
-      bezier
-      style={{
-        marginVertical: 0,
-        borderRadius: 16,
-        marginBottom: 10,
-      }}
-      withVerticalLabels={true}
-      withHorizontalLabels={true}
-      segments={4}
+          <View style={styles.chartBackground}>
+            <ScrollView
+              horizontal
+              contentContainerStyle={styles.scrollViewContent}
+            >
+              <LineChart
+                data={defaultData}
+                width={Dimensions.get("window").width * 1.5 - 40} // Adjusted width
+                height={220} // Adjusted height
+                chartConfig={{
+                  backgroundColor: "#e26a00",
+                  backgroundGradientFrom: "#fb8c00",
+                  backgroundGradientTo: "#ffa726",
+                  decimalPlaces: 2,
+                  padding: 12,
 
-
-      
-  
-         
-        
-    
-      renderDotContent={({ x, y, index, indexData }) => (
-        <View key={index} style={{
-          position: 'absolute',
-          top: y - 10,
-          left: x - 16,
-          backgroundColor: 'white',
-          borderRadius: 10, // Reduced border radius
-          padding: 2,
-        }}>
-          <Text style={{ color: '#ffa726', fontWeight: 'bold', fontSize: 10 }}> 
-            {indexData}kg
-          </Text>
+                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                  labelColor: (opacity = 1) =>
+                    `rgba(255, 255, 255, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                    padding: 10,
+                  },
+                  propsForDots: {
+                    r: "6",
+                    strokeWidth: "3", // Reduced stroke width
+                    stroke: "#ffa726",
+                  },
+                  yAxisLabel: "",
+                  yAxisSuffix: "kg",
+                  yAxisInterval: 10, // Changed from 20 to create more steps
+                  paddingTop: 30,
+                }}
+                bezier
+                style={{
+                  marginVertical: 0,
+                  borderRadius: 16,
+                  marginBottom: 10,
+                }}
+                withVerticalLabels={true}
+                withHorizontalLabels={true}
+                segments={4}
+                renderDotContent={({ x, y, index, indexData }) => (
+                  <View
+                    key={index}
+                    style={{
+                      position: "absolute",
+                      top: y - 10,
+                      left: x - 16,
+                      backgroundColor: "white",
+                      borderRadius: 10, // Reduced border radius
+                      padding: 2,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#ffa726",
+                        fontWeight: "bold",
+                        fontSize: 10,
+                      }}
+                    >
+                      {indexData}kg
+                    </Text>
+                  </View>
+                )}
+              />
+            </ScrollView>
+          </View>
         </View>
       )}
-    />
-        </ScrollView>
-      </View>
-    </View>}
 
       <View style={styles.dotContainer}>
-        <View style={[styles.dot, currentView === 'bmi' && styles.activeDot]} />
-        <View style={[styles.dot, currentView === 'history' && styles.activeDot]} />
+        <View style={[styles.dot, currentView === "bmi" && styles.activeDot]} />
+        <View
+          style={[styles.dot, currentView === "history" && styles.activeDot]}
+        />
       </View>
 
       <TouchableOpacity style={styles.addButton} onPress={handleAddButtonPress}>
@@ -431,12 +491,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     marginTop: 5,
-
   },
   textHeader: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 10,
   },
   infoText: {
@@ -445,14 +504,14 @@ const styles = StyleSheet.create({
 
   bmiText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginVertical: 5,
   },
   addButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 300,
     right: 20,
-    backgroundColor: '#0056B3',
+    backgroundColor: "#0056B3",
     borderRadius: 50,
     padding: 10,
     elevation: 5,
@@ -466,15 +525,15 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5
+    elevation: 5,
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 10,
@@ -484,13 +543,13 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   containerGaugeChart: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 20,
     borderRadius: 20,
@@ -502,8 +561,8 @@ const styles = StyleSheet.create({
     height: 310,
   },
   GaugeChart: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginVertical: 5,
     padding: 10,
   },
@@ -514,63 +573,62 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   dotContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginVertical: 10,
   },
   dot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
     marginHorizontal: 5,
   },
   activeDot: {
-    backgroundColor: '#0056B3',
+    backgroundColor: "#0056B3",
   },
   chartBackground: {
-    position: 'relative',
-    width: '100%',
+    position: "relative",
+    width: "100%",
     height: 220,
-    backgroundColor: '#e26a00',
+    backgroundColor: "#e26a00",
     borderRadius: 20,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: -40,
-
   },
   scrollViewContent: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   chart: {
     marginVertical: 0,
     borderRadius: 16,
-    marginLeft: 0,// Adjust to align with static y-axis
+    marginLeft: 0, // Adjust to align with static y-axis
   },
   yAxis: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     bottom: 0,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingLeft: 10,
   },
   yAxisLabel: {
     color: "#fff",
   },
- 
+
   decoratorContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     left: 10,
     right: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   decoratorText: {
-    color: '#e26a00',
+    color: "#e26a00",
     fontSize: 12,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    fontWeight: "bold",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },

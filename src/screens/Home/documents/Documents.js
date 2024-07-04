@@ -5,16 +5,20 @@ import {
   Button,
   Text,
   ScrollView,
+  FlatList,
   StyleSheet,
   Modal,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { Ionicons } from "@expo/vector-icons";
 import AddButton from "react-native-vector-icons/AntDesign";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
 import * as SQLite from "expo-sqlite";
+import * as SecureStore from "expo-secure-store";
 
 const baseDir = `${FileSystem.documentDirectory}HealthHive/`;
 
@@ -23,55 +27,60 @@ const FolderCreator = () => {
   const [folderName, setFolderName] = useState("");
   const [directories, setDirectories] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [renameModalVisible, setRenameModalVisible] = useState(false);
+  const [currentFolderToRename, setCurrentFolderToRename] = useState("");
+  const [newFolderName, setNewFolderName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const navigation = useNavigation();
-  const labFolder = baseDir + "LabReports/";
+
+  useEffect(() => {
+    getEmail();
+    updateDirectoryList();
+  }, [refreshKey]);
+
+  const getEmail = async () => {
+    const email = await SecureStore.getItemAsync("userEmail");
+    setUserEmail(email);
+  };
+
+  const refreshEffect = () => {
+    setRefreshKey((oldKey) => oldKey + 1);
+    console.log("Refreshed");
+  };
 
   const createDirectory = async (folderName) => {
-    const dirUri = `${baseDir}${folderName}`;
-    console.log(dirUri);
+    console.log(userEmail, "asxasda");
+    const db = await SQLite.openDatabaseAsync("HealthHive");
     try {
-      const info = await FileSystem.getInfoAsync(dirUri);
-      if (!info.exists) {
-        await FileSystem.makeDirectoryAsync(dirUri, { intermediates: true });
-        const db = await SQLite.openDatabaseAsync("HealthHive");
-        await db.execAsync(
-          `INSERT INTO folderData (folderName) VALUES ('${folderName}');`
-        );
-        db.closeAsync();
-
-        return true;
-      } else {
-        console.log("Directory already exists!");
+      const response = await db.getAllAsync(
+        "SELECT * FROM folderData WHERE folderName = ? AND userEmail = ?;",
+        [folderName, userEmail]
+      );
+      if (response.length > 0) {
+        alert("Folder already exists!");
         return false;
       }
+      await db.execAsync(
+        `INSERT INTO folderData (folderName, userEmail, createdAt) VALUES ("${folderName}", "${userEmail}", CURRENT_TIMESTAMP);`
+      );
+      console.log("Folder created");
     } catch (error) {
       console.error("Error creating directory:", error);
       return false;
+    } finally {
+      db.closeAsync();
     }
+
+    return true;
   };
 
   const handlePress = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const createBaseDirectory = async () => {
-    try {
-      const info = await FileSystem.getInfoAsync(baseDir);
-      if (!info.exists) {
-        await FileSystem.makeDirectoryAsync(baseDir, { intermediates: true });
-        createDirectory("LabReports");
-        const db = await SQLite.openDatabaseAsync("HealthHive");
-        await db.execAsync(
-          `INSERT INTO folderData (folderName) VALUES ('LabReports');`
-        );
-        db.closeAsync();
-      }
-    } catch (error) {
-      console.error("Error creating base directory:", error);
-    }
-  };
-
   const handleCreateFolder = async () => {
+    setDropdownOpen(false);
     if (await createDirectory(folderName)) {
       updateDirectoryList();
     }
@@ -80,7 +89,7 @@ const FolderCreator = () => {
   };
 
   const handleNavigation = (name) => {
-    if (name == "LabReports") {
+    if (name == "Lab Reports") {
       navigation.navigate("LabFolder", { folderName: name });
     } else {
       navigation.navigate("File", { folderName: name });
@@ -89,8 +98,14 @@ const FolderCreator = () => {
 
   const listDirectories = async () => {
     try {
-      const result = await FileSystem.readDirectoryAsync(baseDir);
-      return result;
+      const email = await SecureStore.getItemAsync("userEmail");
+      const db = await SQLite.openDatabaseAsync("HealthHive");
+      const response = await db.getAllAsync(
+        `SELECT * FROM folderData WHERE userEmail ='${email}' ;`
+      );
+      const folderNames = response.map((item) => item.folderName);
+      db.closeAsync();
+      return folderNames;
     } catch (error) {
       console.error("Failed to read directory:", error);
       return [];
@@ -98,19 +113,49 @@ const FolderCreator = () => {
   };
 
   const deleteDirectory = async (folderName) => {
-    const dirUri = `${baseDir}${folderName}`;
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(
+      `SELECT * FROM fileStorage WHERE folderName = '${folderName}' AND userEmail = "${userEmail}";`
+    );
+    if (response.length > 0) {
+      alert(`Folder is not empty! You can not delete ${folderName}.`);
+      return;
+    }
+
+    const confirmDelete = await new Promise((resolve) => {
+      Alert.alert(
+        "Confirm Delete",
+        `Are you sure you want to delete the folder "${folderName}"?`,
+        [
+          { text: "Cancel", onPress: () => resolve(false), style: "cancel" },
+          { text: "Yes", onPress: () => resolve(true) },
+        ],
+        { cancelable: false }
+      );
+    });
+
+    if (!confirmDelete) {
+      return;
+    }
+
     try {
-      const info = await FileSystem.getInfoAsync(dirUri);
-      if (info.exists) {
-        await FileSystem.deleteAsync(dirUri, { idempotent: true });
-      } else {
-        console.log("Directory does not exist!");
-      }
+      console.log("Deleting directory:", folderName);
+      await db.execAsync(
+        `DELETE FROM folderData WHERE folderName = '${folderName}' AND userEmail = "${userEmail}";`
+      );
     } catch (error) {
       console.error("Error deleting directory:", error);
+    } finally {
+      setDropdownOpen(false);
+      updateDirectoryList();
+      db.closeAsync();
     }
-    setDropdownOpen(false);
-    updateDirectoryList();
+  };
+
+  const getfiledata = async () => {
+    const oldDirUri = `${baseDir}`;
+    const info = await FileSystem.getInfoAsync(oldDirUri);
+    console.log(info);
   };
 
   const renameDirectory = async (oldFolderName, newFolderName) => {
@@ -127,23 +172,67 @@ const FolderCreator = () => {
         console.log(
           `Directory renamed from ${oldFolderName} to ${newFolderName}`
         );
+
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        await db.execAsync(
+          `UPDATE folderData SET folderName = '${newFolderName}' WHERE folderName = '${oldFolderName}';`
+        );
+        await db.execAsync(`UPDATE fileStorage
+        SET folderName = '${newFolderName}'
+        WHERE folderName = '${oldFolderName}';`);
+
+        const response = await db.getAllAsync(`SELECT * FROM fileStorage;`);
+        const response2 = await db.getAllAsync(`SELECT * FROM folderData;`);
+        console.log("File storage data : ", response);
+        console.log("Folder data : ", response2);
+
+        updateDirectoryList();
+        setRenameModalVisible(false);
       } else {
         console.log("Directory does not exist!");
       }
     } catch (error) {
       console.error("Error renaming directory:", error);
+    } finally {
+      setDropdownOpen(false);
+      refreshEffect();
     }
+  };
+
+  const handleRenamePress = (folderName) => {
+    setCurrentFolderToRename(folderName);
+    setNewFolderName(folderName);
+    setRenameModalVisible(true);
   };
 
   const updateDirectoryList = async () => {
     const dirs = await listDirectories();
-    setDirectories(dirs);
+    const sortedDirs = dirs.sort((a, b) => {
+      if (a === "Lab Reports") return -1;
+      if (b === "Lab Reports") return 1;
+      return a.localeCompare(b);
+    });
+
+    setDirectories(sortedDirs);
   };
 
-  useEffect(() => {
-    createBaseDirectory();
-    updateDirectoryList();
-  }, []);
+  const dropDB = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    await db.execAsync(`DROP TABLE folderData;`);
+    await db.execAsync(`DROP TABLE fileStorage;`);
+    db.closeAsync();
+    console.log("Database dropped");
+  };
+
+  const tempDataEntry = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    await db.execAsync(`
+                      INSERT INTO folderData (folderName, userEmail, createdAt) VALUES
+                      ('Lab Reports', 'adam@gmail.com', CURRENT_TIMESTAMP);
+                      
+    `);
+    db.closeAsync();
+  };
 
   return (
     <View style={styles.container}>
@@ -151,15 +240,17 @@ const FolderCreator = () => {
         <Icon name="ellipsis-v" size={40} color="#000" />
       </TouchableOpacity>
 
-      <ScrollView style={styles.directoryList}>
-        {directories.map((dir, index) => (
-          <View key={index} style={styles.directoryItem}>
+      <FlatList
+        data={directories}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item: dir, index }) => (
+          <View style={styles.directoryItem}>
             <TouchableOpacity onPress={() => handleNavigation(dir)}>
               <Icon name="folder" size={40} color="#000" />
             </TouchableOpacity>
             <Text style={styles.folderText}>{dir}</Text>
 
-            {dropdownOpen && (
+            {dropdownOpen && dir !== "Lab Reports" && (
               <View style={styles.popButtons}>
                 <TouchableOpacity onPress={() => deleteDirectory(dir)}>
                   <FontAwesome5
@@ -169,16 +260,15 @@ const FolderCreator = () => {
                     color="red"
                   />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => renameDirectory(dir, "newName")}
-                >
+                <TouchableOpacity onPress={() => handleRenamePress(dir)}>
                   <FontAwesome5 name="edit" size={20} color="blue" />
                 </TouchableOpacity>
               </View>
             )}
           </View>
-        ))}
-      </ScrollView>
+        )}
+        style={styles.directoryList}
+      />
 
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
@@ -195,6 +285,12 @@ const FolderCreator = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => setModalVisible(false)}
+            >
+              <Ionicons name="close-circle" size={30} color="black" />
+            </TouchableOpacity>
             <TextInput
               style={styles.input}
               placeholder="Enter folder name"
@@ -205,6 +301,38 @@ const FolderCreator = () => {
           </View>
         </View>
       </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={renameModalVisible}
+        onRequestClose={() => setRenameModalVisible(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter new folder name"
+              value={newFolderName}
+              onChangeText={setNewFolderName}
+            />
+            <View style={styles.modalButtons}>
+              <Button
+                title="Cancel"
+                onPress={() => setRenameModalVisible(false)}
+              />
+              <Button
+                title="Rename"
+                onPress={() =>
+                  renameDirectory(currentFolderToRename, newFolderName)
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {/* <Button title="Get File Data" onPress={getfiledata} />
+      <Button title="List Directories" onPress={listDirectories} /> */}
+      {/* <Button title="Temp data DB" onPress={tempDataEntry} /> */}
     </View>
   );
 };
@@ -276,6 +404,18 @@ const styles = StyleSheet.create({
     flex: 1, // Take up all available space
     marginLeft: 20, // Space between the icon and the text
     fontSize: 18,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 20,
+  },
+  closeBtn: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    padding: 10, // Add padding for easier pressing
   },
 });
 

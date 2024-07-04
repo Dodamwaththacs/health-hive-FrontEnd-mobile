@@ -1,62 +1,104 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+
 import {
   View,
   Text,
   StyleSheet,
   Button,
+  FlatList,
+  TouchableOpacity,
+  Modal,
   Image,
   TextInput,
-  TouchableOpacity,
   Alert,
-  Modal,
-  FlatList,
+  Platform,
+  StatusBar,
 } from "react-native";
-import * as SQLite from "expo-sqlite";
-import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import * as SQLite from "expo-sqlite";
 import * as SecureStore from "expo-secure-store";
+import ItemComponent from "./ItemComponents";
+import * as DocumentPicker from "expo-document-picker";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 
-const FileScreen = ({ route }) => {
-  const [fileUri, setFileUri] = useState(null);
-  const [fileDownloadUri, setFileDownloadUri] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [filemodalVisible, setFileModalVisible] = useState(false);
+const LabFolder = ({ route }) => {
   const { folderName } = route.params;
-  const [Description, setDescription] = useState("");
-  const [FileName, setFileName] = useState("");
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState(data);
-  const navigation = useNavigation();
-
-  const fetchData = async () => {
-    const email = await SecureStore.getItemAsync("userEmail");
-    const db = await SQLite.openDatabaseAsync("HealthHive");
-    const response = await db.getAllAsync(
-      `SELECT * FROM fileStorage WHERE folderName = "${folderName}" AND userEmail = "${email}" ;`
-    );
-    console.log(response);
-    setData(response);
-    db.closeAsync();
-  };
+  const [folderData, setFolderData] = useState([]);
+  const [filemodalVisible, setFileModalVisible] = useState(false);
+  const [folderModalVisible, setFolderModalVisible] = useState(false);
+  const [fileDownloadUri, setFileDownloadUri] = useState(null);
+  const [showCheckboxes, setShowCheckboxes] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [fileUri, setFileUri] = useState(null);
+  const [FileName, setFileName] = useState("");
+  const [Description, setDescription] = useState("");
+  const [dropDown, setDropDown] = useState(false);
 
   useFocusEffect(
-    React.useCallback(() => {
-      fetchData();
-    }, [])
+    useCallback(() => {
+      const fetchDataFromLocal = async () => {
+        const email = await SecureStore.getItemAsync("userEmail");
+        const db = await SQLite.openDatabaseAsync("HealthHive");
+        const response = await db.getAllAsync(
+          `SELECT * FROM fileStorage WHERE folderName = "${folderName}" AND userEmail = "${email}" ;`
+        );
+        setData(response);
+        await db.closeAsync();
+      };
+
+      fetchDataFromLocal();
+
+      return () => {};
+    }, [folderName, folderModalVisible, modalVisible])
   );
 
-  const filterByFileName = (text) => {
-    const filtered = data.filter((item) =>
-      item.fileName.toLowerCase().includes(text.toLowerCase())
+  const handleMove = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(
+      `SELECT folderName
+      FROM folderData
+      WHERE folderName NOT IN ('LabReports', '${folderName}')
+      ORDER BY folderName ASC;`
     );
-    setFilteredData(filtered);
+    await db.closeAsync();
+    setFolderData(response);
+    console.log("folder data :", response);
+    setFolderModalVisible(true);
+
+    console.log("inseted data responce :", response);
+    setShowCheckboxes(false);
+  };
+
+  const alterTable = async (moveFolderName) => {
+    console.log("moveFolderName :", moveFolderName);
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    console.log("selectedItems :", selectedItems);
+    console.log("moveFolderName :", moveFolderName);
+    try {
+      for (let i = 0; i < selectedItems.length; i++) {
+        await db.runAsync(
+          `UPDATE fileStorage SET folderName = "${moveFolderName}" WHERE id = ${selectedItems[i]} ;`
+        );
+      }
+      alert("Files moved successfully!");
+    } catch (error) {
+      console.error("Error data update : ", error);
+    } finally {
+      await db.closeAsync();
+      setSelectedItems([]);
+      setFolderModalVisible(false);
+    }
   };
 
   const pickFile = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
-
+    if (result.canceled === true) {
+      return;
+    }
     const fileUri = result.assets[0].uri;
     const fileType = result.assets[0].mimeType;
     console.log("File type:", fileType);
@@ -76,24 +118,6 @@ const FileScreen = ({ route }) => {
     console.log(result);
   };
 
-  const openDocument = (hash) => {
-    navigation.navigate("DocumentViewer", { documentUri: hash });
-  };
-
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <View style={styles.icon}>
-        <TouchableOpacity onPress={() => openDocument(item.hash)}>
-          <Icon name="document-outline" size={50} color="#000" />
-        </TouchableOpacity>
-      </View>
-      <View>
-        <Text style={styles.fileName}>{item.fileName}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-      </View>
-    </View>
-  );
-
   const fileUpload = async () => {
     try {
       const formData = new FormData();
@@ -104,8 +128,7 @@ const FileScreen = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-
-        "http://192.168.3.43:33000/api/ipfs/upload",
+        "http://13.202.67.81:33000/api/ipfs/upload",
 
         formData,
         {
@@ -130,7 +153,6 @@ const FileScreen = ({ route }) => {
       setDescription("");
 
       // Fetch the updated data
-      fetchData();
     } catch (error) {
       console.error("Error uploading file:", error);
       setModalVisible(false);
@@ -141,17 +163,16 @@ const FileScreen = ({ route }) => {
     }
   };
 
-  const testConnection = async () => {
-    try {
+  const handleClose = async () => {
+    setModalVisible(false);
+    setFileName("");
+    setDescription("");
+    setFileUri(null);
+  };
 
-      const response = await axios.get("http://192.168.3.43:33000/");
-
-      Alert.alert("Connection Successful!");
-      console.log(response.data);
-    } catch (error) {
-      Alert.alert("Connection Failed!");
-      console.error(error);
-    }
+  const handlePress = () => {
+    setDropDown(!dropDown);
+    console.log("dropDown :", dropDown);
   };
 
   const dropDatabase = async () => {
@@ -161,59 +182,123 @@ const FileScreen = ({ route }) => {
     console.log("Database dropped successfully!");
   };
 
+  const databaseData = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(`SELECT * FROM folderData;`);
+    console.log(response);
+    db.closeAsync();
+  };
+
+  const renderItem = ({ item }) => (
+    <ItemComponent
+      item={item}
+      filemodalVisible={filemodalVisible}
+      setFileModalVisible={setFileModalVisible}
+      fileDownloadUri={fileDownloadUri}
+      setFileDownloadUri={setFileDownloadUri}
+      showCheckboxes={showCheckboxes}
+      selectedItems={selectedItems}
+      setSelectedItems={setSelectedItems}
+      setDropDown={setDropDown}
+      dropDown={dropDown}
+    />
+  );
+
+  const renderFolderItem = ({ item }) => (
+    <View style={styles.item}>
+      <TouchableOpacity
+        style={styles.touchable}
+        onPress={() => alterTable(item.folderName)}
+      >
+        <Text style={styles.title}>{item.folderName}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.head_container}>
         <Text style={styles.head}>{folderName}</Text>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => handlePress()}
+        >
+          <FontAwesome name="ellipsis-v" size={40} color="#000" />
+        </TouchableOpacity>
+      </View>
 
-        {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
+      {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
 
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+      />
+      {!showCheckboxes && data.length > 0 && (
+        <Button
+          title="Move file"
+          onPress={() => setShowCheckboxes(!showCheckboxes)}
         />
+      )}
+      {selectedItems.length > 0 && showCheckboxes && (
+        <Button title="done" onPress={handleMove} />
+      )}
 
-        <Modal animationType="slide" visible={modalVisible}>
-          {fileUri && (
-            <View style={styles.container_2}>
-              <Image
-                source={{ uri: fileUri }}
-                style={{ width: "50%", height: "50%" }}
-              />
-              <TextInput
-                style={styles.Inputs}
-                onChangeText={setFileName}
-                value={FileName}
-                placeholder="File Name"
-              />
-              <TextInput
-                style={styles.Inputs}
-                onChangeText={setDescription}
-                value={Description}
-                placeholder="Description"
-              />
-
-              <TouchableOpacity style={styles.button} onPress={fileUpload}>
-                <Text style={styles.buttonText}>Upload</Text>
+      <Modal animationType="slide" visible={folderModalVisible} transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.moveFolderHeader}>
+              <Text>Select folder you want to move</Text>
+              <TouchableOpacity>
+                <Icon
+                  name="close"
+                  size={30}
+                  color={"blue"}
+                  onPress={() =>
+                    setFolderModalVisible(false) && setSelectedItems(null)
+                  }
+                />
               </TouchableOpacity>
             </View>
-          )}
-        </Modal>
-        <Modal animationType="slide" visible={filemodalVisible}>
-          <Image
-            source={{ uri: fileDownloadUri }}
-            style={{ width: "50%", height: "50%" }}
-          />
-          <Button onPress={() => setFileModalVisible(false)} title="Done" />
-        </Modal>
+            <FlatList
+              data={folderData}
+              renderItem={renderFolderItem}
+              keyExtractor={(item) => item.folderName}
+            />
+          </View>
+        </View>
+      </Modal>
+      <Modal animationType="slide" visible={modalVisible}>
+        {fileUri && (
+          <View style={styles.container_2}>
+            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+              <Ionicons name="close-circle" size={30} color="black" />
+            </TouchableOpacity>
 
-        {/* <Button onPress={databaseHandling} title="Create DB" /> */}
-        {/* <Button onPress={databaseData} title="Data DB" /> */}
-        {/* <Button onPress={dropDatabase} title="Drop DB" /> */}
-        {/* <Button onPress={tempDataEntry} title="Insert Data" /> */}
-        {/* <Button onPress={testConnection} title="Test Connection" /> */}
-      </View>
+            <Image
+              source={{ uri: fileUri }}
+              style={{ width: "50%", height: "50%" }}
+            />
+            <TextInput
+              style={styles.Inputs}
+              onChangeText={setFileName}
+              value={FileName}
+              placeholder="File Name"
+            />
+            <TextInput
+              style={styles.Inputs}
+              onChangeText={setDescription}
+              value={Description}
+              placeholder="Description"
+            />
+
+            <TouchableOpacity style={styles.button} onPress={fileUpload}>
+              <Text style={styles.buttonText}>Upload</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </Modal>
+      {/* <Button title="DB drop" onPress={dropDatabase} /> */}
     </View>
   );
 };
@@ -222,12 +307,71 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    marginBottom: 80,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  itemContainer: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    flexDirection: "row",
+  },
+  icon: {
+    marginRight: 10,
+  },
+  fileName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  head_container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   head: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  head2: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+
+  moveFolderHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    // other styles...
+  },
+  item: {
+    marginTop: 10,
+    backgroundColor: "#f9f9f9",
+    padding: 5,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    elevation: 4, // Add some elevation for a subtle shadow effect
+  },
+  touchable: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    height: "30%", // Adjust the height as per your requirement
   },
   container_2: {
     alignItems: "center",
@@ -252,28 +396,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#fff",
   },
-  itemContainer: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    flexDirection: "row",
-  },
-  icon: {
-    marginRight: 10,
-  },
-  fileName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  description: {
-    fontSize: 14,
-  },
-  folderName: {
-    fontSize: 14,
-  },
-  hash: {
-    fontSize: 12,
+
+  closeButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
   },
 });
 
-export default FileScreen;
+export default LabFolder;
