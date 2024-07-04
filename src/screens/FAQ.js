@@ -1,16 +1,30 @@
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import {
+  ScrollView,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const FAQItem = ({ question, answer }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <View style={styles.faqItem}>
-      <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)} style={styles.questionContainer}>
+      <TouchableOpacity
+        onPress={() => setIsExpanded(!isExpanded)}
+        style={styles.questionContainer}
+      >
         <Text style={styles.question}>{question}</Text>
-        <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} color="#0056B3" />
+        <Ionicons
+          name={isExpanded ? "chevron-up" : "chevron-down"}
+          size={24}
+          color="#0056B3"
+        />
       </TouchableOpacity>
       {isExpanded && <Text style={styles.answer}>{answer}</Text>}
     </View>
@@ -25,7 +39,7 @@ const FAQ = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://192.168.3.43:33000/api/faqs");
+        const response = await axios.get("http://13.202.67.81:33000/api/faqs");
         console.log("Response data:", response.data);
         setFaqs(response.data);
       } catch (error) {
@@ -49,7 +63,9 @@ const FAQ = () => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Error loading FAQs. Please try again later.</Text>
+        <Text style={styles.errorText}>
+          Error loading FAQs. Please try again later.
+        </Text>
       </View>
     );
   }
@@ -74,50 +90,49 @@ const FAQ = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f8ff',
+    backgroundColor: "#f0f8ff",
     padding: 20,
-    
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 18,
   },
   faqItem: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 8,
     padding: 20,
     marginBottom: 40,
     marginTop: -10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   questionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   question: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0056B3',
+    fontWeight: "bold",
+    color: "#0056B3",
     flex: 1,
   },
   answer: {
     fontSize: 16,
-    color: 'gray',
+    color: "gray",
     marginTop: 8,
     lineHeight: 24,
   },
