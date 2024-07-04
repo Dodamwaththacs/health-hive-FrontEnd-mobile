@@ -152,9 +152,11 @@ const FolderCreator = () => {
       }
     } catch (error) {
       console.error("Error deleting directory:", error);
+    } finally {
+      setDropdownOpen(false);
+      updateDirectoryList();
+      db.closeAsync();
     }
-    setDropdownOpen(false);
-    updateDirectoryList();
   };
 
   const getfiledata = async () => {
@@ -199,6 +201,7 @@ const FolderCreator = () => {
     } catch (error) {
       console.error("Error renaming directory:", error);
     } finally {
+      setDropdownOpen(false);
       refreshEffect();
     }
   };

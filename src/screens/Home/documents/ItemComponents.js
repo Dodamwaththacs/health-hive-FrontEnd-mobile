@@ -101,33 +101,27 @@ const ItemComponent = ({
         <Button onPress={() => setFileModalVisible(false)} title="Done" />
       </Modal>
       <Modal animationType="slide" visible={renameModalVisible}>
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text>File Name</Text>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Rename File</Text>
           <TextInput
-            style={{ borderWidth: 1, width: "80%" }}
+            style={styles.modalInput}
             value={fileName}
             onChangeText={(text) => setFileName(text)}
           />
-          <Text>Description</Text>
+          <Text style={styles.modalLabel}>Description</Text>
           <TextInput
-            style={{ borderWidth: 1, width: "80%" }}
+            style={styles.modalInput}
             value={description}
             onChangeText={(text) => setDescription(text)}
           />
-          <Button
-            title="Save"
-            onPress={() => {
-              handleRename();
-            }}
-          />
-          <Button
-            title="Cancel"
-            onPress={() => {
-              setRenameModalVisible(false);
-            }}
-          />
+          <View style={styles.modalButtonContainer}>
+            <Button title="Save" onPress={handleRename} />
+            <Button
+              title="Cancel"
+              onPress={() => setRenameModalVisible(false)}
+              color="#ff5c5c"
+            />
+          </View>
         </View>
       </Modal>
     </View>
@@ -142,6 +136,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    marginVertical: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 2,
   },
   icon: {
     marginRight: 10,
@@ -152,15 +154,55 @@ const styles = StyleSheet.create({
   fileName: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#333",
   },
   description: {
     fontSize: 14,
+    color: "#666",
   },
   editIcon: {
     marginLeft: "auto",
   },
   checkboxContainer: {
     marginLeft: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  modalLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    width: "80%",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  modalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    marginTop: 20,
   },
 });
 

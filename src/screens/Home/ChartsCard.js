@@ -97,7 +97,7 @@ const ChartsCard = ({ userId }) => {
             };
             try {
               await axios.post(
-                "http://192.168.180.140:33000/api/healthData",
+                "http://13.202.67.81:33000/api/healthData",
                 data
               );
               setModalVisible(false);
@@ -118,7 +118,7 @@ const ChartsCard = ({ userId }) => {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.180.140:33000/api/healthData/userId/${userId}`
+        `http://13.202.67.81:33000/api/healthData/userId/${userId}`
       );
 
       const userData = response.data.map((data) => ({
@@ -136,7 +136,7 @@ const ChartsCard = ({ userId }) => {
 
       setUserData(userData);
       const profileResponse = await axios.get(
-        `http://192.168.180.140:33000/api/users/${userId}`
+        `http://13.202.67.81:33000/api/users/${userId}`
       );
       setDateOfBirth(profileResponse.data.dateOfBirth);
       setGender(profileResponse.data.gender);

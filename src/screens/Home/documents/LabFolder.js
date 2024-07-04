@@ -9,9 +9,9 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
-  Image,
+  Platform,
+  StatusBar,
 } from "react-native";
-import Checkbox from "expo-checkbox";
 import axios from "axios";
 import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
@@ -37,7 +37,7 @@ const LabFolder = ({ route }) => {
 
         try {
           const response = await axios.get(
-            "http://192.168.180.140:33000/api/files/user/2"
+            "http://13.202.67.81:33000/api/files/user/2"
           );
           const originData = response.data;
 
@@ -51,7 +51,7 @@ const LabFolder = ({ route }) => {
               );
               try {
                 await axios.delete(
-                  "http://192.168.180.140:33000/api/files/" + originData[i].id
+                  "http://13.202.67.81:33000/api/files/" + originData[i].id
                 );
               } catch (error) {
                 console.error("Error data delete : ", error);
@@ -60,7 +60,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
-                  "http://192.168.180.140:33000/api/labDataUploads/" +
+                  "http://13.202.67.81:33000/api/labDataUploads/" +
                     originData[i].labDataUploadId
                 );
               } catch (error) {
@@ -73,7 +73,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
-                  "http://192.168.180.140:33000/api/labRequests/" +
+                  "http://13.202.67.81:33000/api/labRequests/" +
                     originData[i].labRequestId
                 );
               } catch (error) {
@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   itemContainer: {
     padding: 20,
