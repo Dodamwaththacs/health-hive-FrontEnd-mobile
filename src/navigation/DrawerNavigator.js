@@ -203,6 +203,7 @@ function DrawerNavigator() {
       <Drawer.Screen
         name="Your Notes"
         component={Notes}
+        initialParams={{ userId: user.id }}
         options={{
           drawerIcon: ({ color, size }) => (
             <Ionicons name="document-text-outline" color={color} size={size} />
