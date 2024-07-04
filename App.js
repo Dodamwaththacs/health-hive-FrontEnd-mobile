@@ -70,18 +70,25 @@ export default function App() {
       const db = await SQLite.openDatabaseAsync("HealthHive");
       try {
         await db.execAsync(
-          `CREATE TABLE IF NOT EXISTS fileStorage (
-        id INTEGER PRIMARY KEY NOT NULL,
-        userEmail TEXT NOT NULL,
-        fileName TEXT NOT NULL,
-        folderName TEXT NOT NULL,
-        description TEXT NOT NULL,
-        hash TEXT NOT NULL,
-        date DATE DEFAULT CURRENT_TIMESTAMP
-      );
-      CREATE TABLE IF NOT EXISTS folderData (
-      id INTEGER PRIMARY KEY NOT NULL,
-      folderName TEXT NOT NULL);
+          `
+          CREATE TABLE IF NOT EXISTS folderData (
+          id INTEGER PRIMARY KEY NOT NULL,
+          folderName TEXT NOT NULL,
+          userEmail TEXT NOT NULL,
+          createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE(folderName, userEmail)
+          );
+
+          CREATE TABLE IF NOT EXISTS fileStorage (
+          id INTEGER PRIMARY KEY NOT NULL,
+          userEmail TEXT NOT NULL,
+          fileName TEXT NOT NULL,
+          folderName TEXT NOT NULL,
+          description TEXT NOT NULL,
+          hash TEXT NOT NULL,
+          date DATE DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (folderName, userEmail) REFERENCES folderData(folderName, userEmail)
+          );
       `
         );
       } catch (e) {

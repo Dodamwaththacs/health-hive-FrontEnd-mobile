@@ -5,6 +5,7 @@ import {
   Button,
   Text,
   ScrollView,
+  FlatList,
   StyleSheet,
   Modal,
   TouchableOpacity,
@@ -94,7 +95,7 @@ const FolderCreator = () => {
   };
 
   const handleNavigation = (name) => {
-    if (name == "LabReports") {
+    if (name == "Lab Reports") {
       navigation.navigate("LabFolder", { folderName: name });
     } else {
       navigation.navigate("File", { folderName: name });
@@ -103,8 +104,16 @@ const FolderCreator = () => {
 
   const listDirectories = async () => {
     try {
+      const db = await SQLite.openDatabaseAsync("HealthHive");
+      const response = await db.getAllAsync(`SELECT * FROM folderData;`);
+
       const result = await FileSystem.readDirectoryAsync(baseDir);
-      return result;
+
+      // Extract only the folderName values from the response
+      const folderNames = response.map((item) => item.folderName);
+
+      db.closeAsync();
+      return folderNames;
     } catch (error) {
       console.error("Failed to read directory:", error);
       return [];
@@ -214,15 +223,36 @@ const FolderCreator = () => {
 
   const updateDirectoryList = async () => {
     const dirs = await listDirectories();
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(`SELECT * FROM folderData;`);
+    console.log("Folder data from database: ", response);
     console.log("Directories:", dirs);
 
     const sortedDirs = dirs.sort((a, b) => {
-      if (a === "LabReports") return -1;
-      if (b === "LabReports") return 1;
+      if (a === "Lab Reports") return -1;
+      if (b === "Lab Reports") return 1;
       return a.localeCompare(b);
     });
 
     setDirectories(sortedDirs);
+  };
+
+  const dropDB = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    await db.execAsync(`DROP TABLE folderData;`);
+    await db.execAsync(`DROP TABLE fileStorage;`);
+    db.closeAsync();
+    console.log("Database dropped");
+  };
+
+  const tempDataEntry = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    await db.execAsync(`
+                      INSERT INTO folderData (folderName, userEmail, createdAt) VALUES
+                      ('Lab Reports', 'adam@gmail.com', CURRENT_TIMESTAMP);
+                      
+    `);
+    db.closeAsync();
   };
 
   useEffect(() => {
@@ -236,9 +266,11 @@ const FolderCreator = () => {
         <Icon name="ellipsis-v" size={40} color="#000" />
       </TouchableOpacity>
 
-      <ScrollView style={styles.directoryList}>
-        {directories.map((dir, index) => (
-          <View key={index} style={styles.directoryItem}>
+      <FlatList
+        data={directories}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item: dir, index }) => (
+          <View style={styles.directoryItem}>
             <TouchableOpacity onPress={() => handleNavigation(dir)}>
               <Icon name="folder" size={40} color="#000" />
             </TouchableOpacity>
@@ -260,8 +292,9 @@ const FolderCreator = () => {
               </View>
             )}
           </View>
-        ))}
-      </ScrollView>
+        )}
+        style={styles.directoryList}
+      />
 
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
@@ -325,6 +358,7 @@ const FolderCreator = () => {
       </Modal>
       {/* <Button title="Get File Data" onPress={getfiledata} />
       <Button title="List Directories" onPress={listDirectories} /> */}
+      <Button title="Temp data DB" onPress={tempDataEntry} />
     </View>
   );
 };
