@@ -2,12 +2,11 @@ import React from "react";
 import { View, Text, Button } from "react-native";
 import * as SQLite from "expo-sqlite";
 import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
 import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
 
 function ManageFiles() {
-  const databaseData = async () => {
+  const handleExport = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const folderDataResponse = await db.getAllAsync(
       `SELECT * FROM folderData WHERE folderName NOT IN ('Lab Reports');`
@@ -20,21 +19,14 @@ function ManageFiles() {
       fileStorage: fileStorageResponse,
     };
     const combinedJson = JSON.stringify(combinedData, null, 2);
-    console.log("json full", combinedData);
-    const jsonString = JSON.stringify(combinedData);
-    const escapedJsonString = jsonString
-      .replace(/\\/g, "\\\\")
-      .replace(/"/g, '\\"');
-    console.log("json escaped", escapedJsonString);
 
     const combinedDataPath = `${FileSystem.documentDirectory}healthHiveUserFile.json`;
     await FileSystem.writeAsStringAsync(combinedDataPath, combinedJson);
     db.closeAsync();
-    // await shareFile(combinedDataPath);
     const apiPayload = {
       to: "chamikasandun3131@gmail.com",
-      subject: "string",
-      text: "string",
+      subject: "Helath Hive Data Backup",
+      text: "This is the backup of your data. Please keep this file safe. Do not share this file with anyone!.\n This file is encrypted and can only be decrypted by Health Hive. Use Import option in Manage Files to import this file.",
       jsonContent: combinedJson,
     };
 
@@ -47,21 +39,7 @@ function ManageFiles() {
     } catch (e) {
       console.log(e);
     }
-    alert("Data has been saved to local storage.");
-  };
-
-  const shareFile = async (filePath) => {
-    if (!(await Sharing.isAvailableAsync())) {
-      alert("Sharing is not available on this device");
-      return;
-    }
-
-    try {
-      await Sharing.shareAsync(filePath);
-    } catch (error) {
-      console.error("Error sharing file:", error);
-      alert("An error occurred while sharing the file");
-    }
+    alert("Data exported successfully!");
   };
 
   const handleImport = async () => {
@@ -71,9 +49,7 @@ function ManageFiles() {
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/json",
       });
-      console.log("result", result.assets[0].name);
-      if (result.assets[0].name === "combinedData.json") {
-        console.log("result", result);
+      if (result.assets[0].name === "healthhive_backup.json") {
         const fileContents = await FileSystem.readAsStringAsync(
           result.assets[0].uri
         );
@@ -84,7 +60,16 @@ function ManageFiles() {
 
           for (let i = 0; i < folderData.length; i++) {
             const folder = folderData[i];
-            console.log("folder", folder);
+
+            const responce = await db.getAllAsync(
+              `SELECT * FROM folderData WHERE folderName="${folder.folderName}" AND userEmail = "${folder.userEmail}";`
+            );
+            console.log("import responce", responce);
+            if (responce.length > 0) {
+              console.log("This Folder already Exsists : ", folder.folderName);
+              continue;
+            }
+            console.log("after folderData if");
             await db.execAsync(
               `INSERT INTO folderData (folderName, userEmail, createdAt) VALUES ("${folder.folderName}", "${folder.userEmail}", "${folder.createdAt}");`
             );
@@ -97,12 +82,19 @@ function ManageFiles() {
 
           for (let i = 0; i < fileStorage.length; i++) {
             const folder = fileStorage[i];
-            console.log("folder", folder);
+
+            const responce = await db.getAllAsync(
+              `SELECT * FROM fileStorage WHERE userEmail = "${folder.userEmail}" AND fileName = "${folder.fileName}";`
+            );
+            if (responce.length > 0) {
+              console.log("This File already Exsists : ", folder.fileName);
+              continue;
+            }
+            console.log("after fileStorage if");
             await db.execAsync(
               `INSERT INTO fileStorage (userEmail, fileName, folderName, description, hash, date) VALUES ("${folder.userEmail}", "${folder.fileName}", "${folder.folderName}", "${folder.description}", "${folder.hash}", "${folder.date}");`
             );
           }
-          console.log("Data imported successfully!");
         } catch (e) {
           console.log(e);
         }
@@ -132,7 +124,7 @@ function ManageFiles() {
   return (
     <View>
       <Text>ManageFiles</Text>
-      <Button title="Database Data and Share" onPress={databaseData} />
+      <Button title="Export" onPress={handleExport} />
       <Button title="Import" onPress={handleImport} />
       <Button title="Drop Tables" onPress={dropTables} />
     </View>
