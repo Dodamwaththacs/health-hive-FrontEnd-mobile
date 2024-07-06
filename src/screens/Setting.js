@@ -2,22 +2,27 @@ import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Linking } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 const Setting = () => {
   const navigation = useNavigation();
 
   const handleResetPassword = () => {
-    const url = "https://lemur-6.cloud-iam.com/auth/realms/teamnova/account/#/account-security/signing-in";
+    const url =
+      "https://lemur-6.cloud-iam.com/auth/realms/teamnova/account/#/account-security/signing-in";
     Linking.openURL(url);
   };
 
   const handleHelpAndSupport = () => {
-    navigation.navigate('Help');
+    navigation.navigate("Help");
   };
 
   const handleAbout = () => {
-    navigation.navigate('About');
+    navigation.navigate("About");
+  };
+
+  const manageFiles = () => {
+    navigation.navigate("ManageFiles");
   };
 
   const renderOption = (title, iconName, onPress) => (
@@ -33,7 +38,12 @@ const Setting = () => {
   return (
     <View style={styles.container}>
       {renderOption("Reset Your Password", "key-outline", handleResetPassword)}
-      {renderOption("Help & Support", "help-circle-outline", handleHelpAndSupport)}
+      {renderOption("Manage Your Files", "document-outline", manageFiles)}
+      {renderOption(
+        "Help & Support",
+        "help-circle-outline",
+        handleHelpAndSupport
+      )}
       {renderOption("About", "information-circle-outline", handleAbout)}
     </View>
   );
@@ -41,29 +51,29 @@ const Setting = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   option: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    color: 'gray',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    color: "gray",
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: "#e0e0e0",
     marginTop: 10,
   },
   leftContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   icon: {
     marginRight: 15,
   },
   optionText: {
     fontSize: 16,
-    color: 'gray',
+    color: "gray",
   },
 });
 

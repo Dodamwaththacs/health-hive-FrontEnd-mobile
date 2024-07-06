@@ -5,9 +5,6 @@ import StackNavigation from "./src/navigation/StackNavigation";
 import * as SQLite from "expo-sqlite";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import SignOut from "./src/screens/SignOut";
-import Document from "./src/screens/Home/documents/Documents";
-import TempScreen from "./src/screens/TempScreen";
 export const AuthContext = React.createContext();
 
 export default function App() {

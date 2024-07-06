@@ -61,7 +61,7 @@ const LabFolder = ({ route }) => {
     const response = await db.getAllAsync(
       `SELECT folderName
       FROM folderData
-      WHERE folderName NOT IN ('LabReports', '${folderName}')
+      WHERE folderName NOT IN ('Lab Reports', '${folderName}')
       ORDER BY folderName ASC;`
     );
     await db.closeAsync();

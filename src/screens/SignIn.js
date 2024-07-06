@@ -9,25 +9,21 @@ import {
   Alert,
   Linking,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import { useEmail } from "../EmailContext";
 import { AuthContext } from "../../App";
+import * as SQlite from "expo-sqlite";
 
 const Signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const navigation = useNavigation();
   const { setEmail: setEmailContext } = useEmail();
   const { signIn } = React.useContext(AuthContext);
 
   const handleSignIn = async () => {
-    console.log("email..", email);
-    console.log("password..", password);
     try {
-      console.log("fetching user data..");
       const body = new URLSearchParams({
         grant_type: "password",
         client_id: "Health-Hive-Client",
@@ -35,10 +31,7 @@ const Signin = () => {
         password: password,
       });
 
-      console.log("body..");
-
       const response = await axios.post(
-
         "https://lemur-6.cloud-iam.com/auth/realms/teamnova/protocol/openid-connect/token",
 
         body.toString(),
@@ -53,15 +46,23 @@ const Signin = () => {
       signIn(data.access_token, email);
 
       if (response.status === 200) {
-        console.log("Login successful..");
+        const db = await SQlite.openDatabaseAsync("HealthHive");
+        const response = await db.getAllAsync(
+          `SELECT * FROM folderData WHERE userEmail = ? AND folderName = ?`,
+          [email, "Lab Reports"]
+        );
+
+        if (response.length === 0) {
+          db.execAsync(
+            `INSERT INTO folderData (folderName, userEmail) VALUES ('Lab Reports', '${email}');`
+          );
+        }
+        db.closeAsync();
         setEmailContext(email);
         const token = data.access_token;
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-        // navigation.navigate("DrawerNavigator");
       } else {
-        console.log("Login failed..");
         Alert.alert(
           "Login failed1",
           response.data.message || "Something went wrong. Please try again."
@@ -69,11 +70,16 @@ const Signin = () => {
       }
     } catch (error) {
       if (error.response) {
-        const errorMessage = error.response.data.message || "Please check your credentials and try again.";
+        const errorMessage =
+          error.response.data.message ||
+          "Please check your credentials and try again.";
         Alert.alert("Login failed..", errorMessage);
       } else {
         // Server is unreachable or backend issue
-        Alert.alert("Server Error", "Unable to connect to the server. Please try again later.");
+        Alert.alert(
+          "Server Error",
+          "Unable to connect to the server. Please try again later."
+        );
       }
     }
   };
@@ -82,7 +88,7 @@ const Signin = () => {
     const url =
       "https://lemur-6.cloud-iam.com/auth/realms/teamnova/login-actions/reset-credentials";
     Linking.openURL(url);
-  };
+  };
 
   return (
     <View style={styles.container}>

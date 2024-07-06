@@ -35,7 +35,7 @@ const LabFolder = ({ route }) => {
         const email = await SecureStore.getItemAsync("userEmail");
         setEmail(email);
 
-          "http://192.168.3.43:33000/api/files/user/2"
+        ("http://13.202.67.81:33000/api/files/user/2");
 
         try {
           const response = await axios.get(
