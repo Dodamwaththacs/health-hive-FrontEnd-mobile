@@ -35,10 +35,9 @@ const LabFolder = ({ route }) => {
         const email = await SecureStore.getItemAsync("userEmail");
         setEmail(email);
 
-        ("http://13.202.67.81:33000/api/files/user/2");
-
         try {
           const response = await axios.get(
+
             "http://192.168.3.43:33000/api/files/user/2"
           );
           const originData = response.data;
@@ -53,6 +52,7 @@ const LabFolder = ({ route }) => {
               );
               try {
                 await axios.delete(
+
                   "http://192.168.3.43:33000/api/files/" + originData[i].id
                 );
               } catch (error) {
@@ -62,6 +62,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
+
                   "http://192.168.3.43:33000/api/labDataUploads/" +
                     originData[i].labDataUploadId
                 );
@@ -75,6 +76,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
+
                   "http://192.168.3.43:33000/api/labRequests/" +
                     originData[i].labRequestId
                 );
@@ -117,12 +119,10 @@ const LabFolder = ({ route }) => {
 
   const handleMove = async () => {
     const db = await SQLite.openDatabaseAsync("HealthHive");
-    const response = await db.getAllAsync(
-      `SELECT  folderName
-      FROM folderData
-      WHERE folderName <> 'LabReports'
-      ORDER BY folderName ASC;`
-    );
+    const response = await db.getAllAsync(`SELECT folderName
+        FROM folderData
+        WHERE folderName NOT IN ('Lab Reports', '${folderName}') AND userEmail = "${email}"
+        ORDER BY folderName ASC;`);
     await db.closeAsync();
     setFolderData(response);
     console.log("folder data :", response);
@@ -149,6 +149,16 @@ const LabFolder = ({ route }) => {
       setSelectedItems([]);
       setFolderModalVisible(false);
     }
+  };
+
+  const database = async () => {
+    const db = await SQLite.openDatabaseAsync("HealthHive");
+    const response = await db.getAllAsync(`SELECT folderName
+      FROM folderData
+      WHERE folderName NOT IN ('Lab Reports', '${folderName}')
+      ORDER BY folderName ASC;`);
+    console.log("database data :", response);
+    await db.closeAsync();
   };
 
   const renderItem = ({ item }) => (
@@ -220,6 +230,7 @@ const LabFolder = ({ route }) => {
           </View>
         </View>
       </Modal>
+      <Button title="DB" onPress={database} />
     </View>
   );
 };

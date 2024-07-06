@@ -45,6 +45,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
+
         `http://192.168.3.43:33000/api/users/email/${email}`
       );
       setUser(response.data);
@@ -63,6 +64,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
+
         `http://192.168.3.43:33000/api/users/${scannedUserId}`
       );
       const scannedUser = response.data;
@@ -94,6 +96,7 @@ const Scan = () => {
     console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
+
         "http://192.168.3.43:33000/api/labRequests",
 
         {
@@ -117,6 +120,7 @@ const Scan = () => {
     let response;
     try {
       const response = await axios.post(
+
         "http://192.168.3.43:33000/api/labReportShares",
 
         {
@@ -161,6 +165,7 @@ const Scan = () => {
         console.log("selectedFiles", selectedFiles[i]);
 
         const response = await axios.post(
+
           "http://192.168.3.43:33000/api/shareFiles",
           {
             labReportShare: labReportSharesId,

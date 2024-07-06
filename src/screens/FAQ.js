@@ -39,7 +39,9 @@ const FAQ = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://13.202.67.81:33000/api/faqs");
+        const response = await axios.get(
+          "http://192.168.178.140:33000/api/faqs"
+        );
         console.log("Response data:", response.data);
         setFaqs(response.data);
       } catch (error) {

@@ -97,6 +97,7 @@ const ChartsCard = ({ userId }) => {
             };
             try {
               await axios.post(
+
                 "http://192.168.3.43:33000/api/healthData",
                 data
               );
@@ -118,6 +119,7 @@ const ChartsCard = ({ userId }) => {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
+
         `http://192.168.3.43:33000/api/healthData/userId/${userId}`
       );
 
@@ -136,6 +138,7 @@ const ChartsCard = ({ userId }) => {
 
       setUserData(userData);
       const profileResponse = await axios.get(
+
         `http://192.168.3.43:33000/api/users/${userId}`
       );
       setDateOfBirth(profileResponse.data.dateOfBirth);
@@ -475,7 +478,7 @@ const ChartsCard = ({ userId }) => {
             value={height}
             onChangeText={setHeight}
           />
-         
+
           <View style={styles.buttonContainer}>
             <Button title="Submit" onPress={handleSubmit} />
             <Button title="Cancel" onPress={handleCancel} color="#FF6347" />
