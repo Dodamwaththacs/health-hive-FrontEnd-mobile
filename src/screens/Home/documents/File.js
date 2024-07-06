@@ -57,11 +57,12 @@ const LabFolder = ({ route }) => {
   );
 
   const handleMove = async () => {
+    const email = await SecureStore.getItemAsync("userEmail");
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response = await db.getAllAsync(
       `SELECT folderName
       FROM folderData
-      WHERE folderName NOT IN ('Lab Reports', '${folderName}')
+      WHERE folderName NOT IN ('Lab Reports', '${folderName}')"
       ORDER BY folderName ASC;`
     );
     await db.closeAsync();
@@ -298,7 +299,7 @@ const LabFolder = ({ route }) => {
           </View>
         )}
       </Modal>
-      {/* <Button title="DB drop" onPress={dropDatabase} /> */}
+      {/* <Button title="DB drop" onPress={DatabaseData} /> */}
     </View>
   );
 };

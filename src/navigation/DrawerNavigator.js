@@ -90,7 +90,7 @@ function DrawerNavigator() {
       try {
         const email = await SecureStore.getItemAsync("userEmail");
         const response = await axios.get(
-          `http://13.202.67.81:33000/api/users/email/${email}`
+          `http://192.168.178.140:33000/api/users/email/${email}`
         );
         setUser(response.data);
       } catch (error) {
