@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
 
   modalTagline: {
-    fontSize: 16,
+    fontSize: 18,
     textAlign: 'center',
     marginBottom: 20,
     color: 'gray',
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   modalSubtitle: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
     marginTop: 15,
     marginBottom: 10,
@@ -125,14 +125,14 @@ const styles = StyleSheet.create({
     
   },
   modalText: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
     lineHeight: 26,
     textAlign: 'center',
     color: 'gray',
   },
   modalText1: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
     lineHeight: 26,
     textAlign: 'center',
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title1: {
-    fontSize: 20, 
+    fontSize: 25, 
     fontWeight: 'bold',
     color: '#0056B3', 
     marginBottom: -4, 
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   subtitle1: {
-    fontSize: 14, 
+    fontSize: 16, 
     color: '#0056B3', 
     marginBottom: 10,
     paddingBottom: -20,

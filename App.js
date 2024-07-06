@@ -48,9 +48,8 @@ export default function App() {
         console.log("email..", email);
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
-        const responce = await axios.get(
-          "http://192.168.178.140:33000/api/hello"
-        );
+
+        const responce = await axios.get("http://192.168.3.43:33000/api/hello");
         if (responce.status === 200) {
           dispatch({ type: "RESTORE_TOKEN", token: userToken });
         } else {
