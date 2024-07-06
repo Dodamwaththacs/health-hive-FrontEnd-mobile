@@ -14,6 +14,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import * as SQLite from "expo-sqlite";
 import { useNavigation } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 
 const SearchBar = () => {
   const [searchText, setSearchText] = useState("");
@@ -24,10 +25,11 @@ const SearchBar = () => {
 
   useEffect(() => {
     const databaseData = async () => {
+      const email = await SecureStore.getItemAsync("userEmail");
       if (searchText !== "") {
         const db = await SQLite.openDatabaseAsync("HealthHive");
         const response = await db.getAllAsync(
-          `SELECT * FROM fileStorage WHERE fileName LIKE "%${searchText}%" ORDER BY fileName ASC LIMIT 5 ;`
+          `SELECT * FROM fileStorage WHERE fileName LIKE "%${searchText}%" AND userEmail = "${email}"ORDER BY fileName ASC LIMIT 5 ;`
         );
         db.closeAsync();
         setSearchResults(response);

@@ -4,15 +4,17 @@ import * as SQLite from "expo-sqlite";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 
 function ManageFiles() {
   const handleExport = async () => {
+    const email = await SecureStore.getItemAsync("userEmail");
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const folderDataResponse = await db.getAllAsync(
-      `SELECT * FROM folderData WHERE folderName NOT IN ('Lab Reports');`
+      `SELECT * FROM folderData WHERE folderName NOT IN ('Lab Reports') AND userEmail = "${email}";`
     );
     const fileStorageResponse = await db.getAllAsync(
-      `SELECT * FROM fileStorage;`
+      `SELECT * FROM fileStorage WHERE userEmail = "${email}";`
     );
     const combinedData = {
       folderData: folderDataResponse,
@@ -24,7 +26,7 @@ function ManageFiles() {
     await FileSystem.writeAsStringAsync(combinedDataPath, combinedJson);
     db.closeAsync();
     const apiPayload = {
-      to: "chamikasandun3131@gmail.com",
+      to: `${email}`,
       subject: "Helath Hive Data Backup",
       text: "This is the backup of your data. Please keep this file safe. Do not share this file with anyone!.\n This file is encrypted and can only be decrypted by Health Hive. Use Import option in Manage Files to import this file.",
       jsonContent: combinedJson,
@@ -32,7 +34,7 @@ function ManageFiles() {
 
     try {
       const responce = await axios.post(
-        "http://192.168.196.140:33000/api/email/send",
+        "http://192.168.178.140:33000/api/email/send",
         apiPayload
       );
       console.log("responce", responce);
@@ -123,10 +125,8 @@ function ManageFiles() {
 
   return (
     <View>
-      <Text>ManageFiles</Text>
       <Button title="Export" onPress={handleExport} />
       <Button title="Import" onPress={handleImport} />
-      <Button title="Drop Tables" onPress={dropTables} />
     </View>
   );
 }

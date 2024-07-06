@@ -39,8 +39,7 @@ const UserProfile = ({ route, navigation }) => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-
-          `http://192.168.3.43:33000/api/users/${user.id}`
+          `http://192.168.178.140:33000/api/users/${user.id}`
         );
         const fetchedUser = response.data;
         setUser(fetchedUser);
@@ -99,8 +98,7 @@ const UserProfile = ({ route, navigation }) => {
         const downloadURL = await getDownloadURL(storageRef);
         setProfilePicUri(downloadURL);
 
-
-        await axios.put(`http://192.168.3.43:33000/api/users/${user.id}`, {
+        await axios.put(`http://192.168.178.140:33000/api/users/${user.id}`, {
           ...user,
           profilePictureUrl: downloadURL,
         });
@@ -121,8 +119,7 @@ const UserProfile = ({ route, navigation }) => {
 
         setProfilePicUri(null);
 
-
-        await axios.put(`http://192.168.3.43:33000/api/users/${user.id}`, {
+        await axios.put(`http://192.168.178.140:33000/api/users/${user.id}`, {
           ...user,
           profilePictureUrl: null,
         });
@@ -153,8 +150,7 @@ const UserProfile = ({ route, navigation }) => {
     };
     try {
       const response = await axios.put(
-
-        `http://192.168.3.43:33000/api/users/${user.id}`,
+        `http://192.168.178.140:33000/api/users/${user.id}`,
         updatedUser
       );
       setUser(updatedUser);
