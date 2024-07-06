@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     title: {
-      fontSize: 24,
+      fontSize: 25,
       fontWeight: 'bold',
       marginBottom: 20,
       textAlign: 'center',
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       flexWrap: 'wrap',
       justifyContent: 'space-around',
-      marginTop: 90,
+      marginTop: 50,
     },
     button: {
       width: '40%',
@@ -78,8 +78,8 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     instructionText: {
-        fontSize: 14,
-        marginTop: 30,
+        fontSize: 18,
+        marginTop: 20,
         flexDirection: 'column',
         justifyContent: 'space-between',
         textAlign: 'center',

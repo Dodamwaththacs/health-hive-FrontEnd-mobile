@@ -45,7 +45,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-        `http://13.202.67.81:33000/api/users/email/${email}`
+        `http://192.168.3.43:33000/api/users/email/${email}`
       );
       setUser(response.data);
     } catch (error) {
@@ -63,7 +63,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-        `http://13.202.67.81:33000/api/users/${scannedUserId}`
+        `http://192.168.3.43:33000/api/users/${scannedUserId}`
       );
       const scannedUser = response.data;
 
@@ -94,7 +94,7 @@ const Scan = () => {
     console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
-        "http://13.202.67.81:33000/api/labRequests",
+        "http://192.168.3.43:33000/api/labRequests",
 
         {
           user: user.id,
@@ -117,7 +117,7 @@ const Scan = () => {
     let response;
     try {
       const response = await axios.post(
-        "http://13.202.67.81:33000/api/labReportShares",
+        "http://192.168.3.43:33000/api/labReportShares",
 
         {
           doctor: scannedUserId,
@@ -161,7 +161,7 @@ const Scan = () => {
         console.log("selectedFiles", selectedFiles[i]);
 
         const response = await axios.post(
-          "http://13.202.67.81:33000/api/shareFiles",
+          "http://192.168.3.43:33000/api/shareFiles",
           {
             labReportShare: labReportSharesId,
             fileHash: selectedFiles[i],
@@ -229,128 +229,138 @@ const Scan = () => {
 
   return (
     <View style={styles.container}>
-      {isScannerActive ? (
-        <View style={styles.scannerWrapper}>
-          <View style={styles.scannerContainer}>
-            <BarCodeScanner
-              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-              style={StyleSheet.absoluteFillObject}
-            />
-            <View style={styles.overlay} />
+      <Image source={require("../assets/background.png")} style={styles.backgroundImage} />
+      <View style={styles.overlayContainer}>
+        <Text style={styles.titleText}>Scan QR Code</Text>
+        <Text style={styles.descriptionText}>
+          Scan the QR code of the laboratory to request your lab test, or if you want to share your report with another user, scan their QR code.
+        </Text>
+        {isScannerActive ? (
+          <View style={styles.scannerWrapper}>
+            <View style={styles.scannerContainer}>
+              <BarCodeScanner
+                onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                style={StyleSheet.absoluteFillObject}
+              />
+              <View style={styles.overlay} />
+            </View>
+            <View style={styles.cancelButtonContainer}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={resetScanner}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.cancelButtonContainer}>
+        ) : (
+          <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={resetScanner}
+              style={styles.button}
+              onPress={() => {
+                setScanType("labRequest");
+                setScanned(false);
+                setIsScannerActive(true);
+              }}
             >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+              <View style={styles.buttonContent}>
+                <Image
+                  source={require("../assets/labrequests.png")}
+                  style={styles.buttonImage}
+                />
+                <Text style={styles.buttonText}>Lab Request</Text>
+              </View>
             </TouchableOpacity>
-          </View>
-        </View>
-      ) : (
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setScanType("labRequest");
-              setScanned(false);
-              setIsScannerActive(true);
-            }}
-          >
-            <View style={styles.buttonContent}>
-              <Image
-                source={require("../assets/labrequests.png")}
-                style={styles.buttonImage}
-              />
-              <Text style={styles.buttonText}>Lab Request</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setScanType("healthReport");
-              setScanned(false);
-              setIsScannerActive(true);
-            }}
-          >
-            <View style={styles.buttonContent}>
-              <Image
-                source={require("../assets/sharereports.png")}
-                style={styles.buttonImage}
-              />
-              <Text style={styles.buttonText}>
-                Share your{"\n"}Health Reports
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      )}
-      <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="slide"
-        statusBarTranslucent={true} // Ensure modal covers the status bar
-        onRequestClose={handleCancel} // Handle the back button on Android
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Enter description:</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={setDescription}
-              value={description}
-            />
-            <View style={styles.horizontalButtons}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.modalButtonText}>Submit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleCancel}
-              >
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-      <Modal
-        visible={isFileModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsFileModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Files:</Text>
-            {files.map((file, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleFileSelect(file.hash)}
-                style={[
-                  styles.fileContainer,
-                  selectedFiles.includes(file.hash) &&
-                    styles.selectedFileContainer,
-                ]}
-              >
-                <Text style={styles.fileName}>File Name: {file.fileName}</Text>
-                <Text style={styles.fileText}>
-                  Description: {file.description}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                setScanType("healthReport");
+                setScanned(false);
+                setIsScannerActive(true);
+              }}
+            >
+              <View style={styles.buttonContent}>
+                <Image
+                  source={require("../assets/sharereports.png")}
+                  style={styles.buttonImage}
+                />
+                <Text style={styles.buttonText}>
+                  Share your{"\n"}Health Reports
                 </Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => fileUpload()}
-            >
-              <Text style={styles.modalButtonText}>Done</Text>
+              </View>
             </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+        )}
+        <Modal
+          visible={isModalVisible}
+          animationType="slide"
+          transparent={true}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Enter Description</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Enter description"
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleCancel}
+                >
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleSubmit}
+                >
+                  <Text style={styles.modalButtonText}>Submit</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          visible={isFileModalVisible}
+          animationType="slide"
+          transparent={true}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Select Files to Share</Text>
+              {files.map((file) => (
+                <TouchableOpacity
+                  key={file.id}
+                  style={[
+                    styles.fileItem,
+                    selectedFiles.includes(file.fileName) &&
+                      styles.fileItemSelected,
+                  ]}
+                  onPress={() => handleFileSelect(file.fileName)}
+                >
+                  <Text style={styles.fileItemText}>{file.fileName}</Text>
+                </TouchableOpacity>
+              ))}
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => setIsFileModalVisible(false)}
+                >
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={fileUpload}
+                >
+                  <Text style={styles.modalButtonText}>Submit</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
     </View>
   );
 };
@@ -358,165 +368,145 @@ const Scan = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  backgroundImage: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+  },
+  overlayContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    padding: 16,
   },
-
+  titleText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#1921E4",
+    marginBottom: 20,
+  },
+  descriptionText: {
+    fontSize: 16,
+    color: "#000000",
+    textAlign: "center",
+    marginBottom: 30,
+  },
   scannerWrapper: {
     flex: 1,
-    width: "100%",
-    height: "90%",
-    alignItems: "center",
     justifyContent: "center",
-    position: "absolute",
-    backgroundColor: "#fff",
-    top: 0,
-    bottom: 2,
+    alignItems: "center",
   },
   scannerContainer: {
-    width: "75%",
-    height: "82%",
-    borderRadius: 10,
+    width: "100%",
+    height: "50%",
+    borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#fff",
-    position: "relative",
-  },
-  scanner: {
-    flex: 1,
+    marginBottom: 20,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "white",
+    borderColor: "rgba(255, 255, 255, 0.6)",
+    borderWidth: 2,
+    borderRadius: 16,
   },
   cancelButtonContainer: {
-    position: "absolute",
-    bottom: 20,
-    width: "100%",
     alignItems: "center",
-    marginBottom: -45,
+  },
+  cancelButton: {
+    backgroundColor: "#1921E4",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  cancelButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
   },
   buttonContainer: {
-    flexDirection: "column",
-    justifyContent: "space-around",
-    width: "90%",
-    marginTop: -310,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
   },
   button: {
-    height: 100,
-    backgroundColor: "#ADD8E6",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 5,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 2 },
+    flex: 1,
+    marginHorizontal: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
     shadowOpacity: 0.3,
-    shadowRadius: 2,
-    marginTop: 30,
+    shadowRadius: 4,
     elevation: 5,
   },
   buttonContent: {
-    flexDirection: "row",
     alignItems: "center",
-  },
-  imageContainer: {
-    width: 50,
-    height: 50,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
-    borderRadius: 10,
+    paddingVertical: 20,
   },
   buttonImage: {
-    width: 60,
-    height: 60,
-    marginRight: 20,
-    marginLeft: -90,
+    width: 50,
+    height: 50,
+    marginBottom: 10,
   },
   buttonText: {
-    color: "#003366",
-    fontWeight: "bold",
-
-    fontSize: 17,
-    marginLeft: 10,
+    fontSize: 16,
+    textAlign: "center",
   },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  modalView: {
-    width: "80%",
+  modalContent: {
+    backgroundColor: "#FFFFFF",
     padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    alignItems: "center",
+    borderRadius: 16,
+    width: "80%",
   },
-  modalText: {
+  modalTitle: {
     fontSize: 18,
+    fontWeight: "bold",
     marginBottom: 10,
-    color: "gray",
   },
-  input: {
-    width: "100%",
+  modalInput: {
     height: 40,
-    borderColor: "gray",
+    borderColor: "#CCCCCC",
     borderWidth: 1,
+    borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 10,
-    borderRadius: 5,
+    marginBottom: 20,
   },
-  horizontalButtons: {
+  modalButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
   },
   modalButton: {
-    backgroundColor: "#ADD8E6",
-    padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    marginHorizontal: 5,
-    width: "45%", // Adjust width to maintain horizontal alignment
-    height: 40, // Adjust the height to fit the button size
-  },
-  modalButtonText: {
-    color: "gray",
-    fontSize: 16,
-  },
-  cancelButton: {
+    flex: 1,
     backgroundColor: "#1921E4",
     padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
+    borderRadius: 8,
     marginHorizontal: 5,
-    width: "25%", // Adjust width to maintain horizontal alignment
+    alignItems: "center",
   },
-  cancelButtonText: {
-    color: "white",
+  modalButtonText: {
+    color: "#FFFFFF",
     fontSize: 16,
   },
-  fileContainer: {
-    marginBottom: 10,
+  fileItem: {
     padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 5,
+    backgroundColor: "#F0F0F0",
+    borderRadius: 8,
+    marginBottom: 10,
   },
-  fileName: {
+  fileItemSelected: {
+    backgroundColor: "#D0D0D0",
+  },
+  fileItemText: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  fileText: {
-    color: "#333",
-  },
-  selectedFileContainer: {
-    backgroundColor: "#00FFFF", // Highlight color for selected files
   },
 });
 

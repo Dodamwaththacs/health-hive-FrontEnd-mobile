@@ -1,27 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Linking } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Linking, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios';
 
 const ContactUs = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [question, setQuestion] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = async () => {
-    try {
-      await axios.post('https://your-api-url/api/contact', {
-        name,
-        email,
-        question,
-      });
-      setSubmitted(true);
-    } catch (error) {
-      console.error('Error submitting the form:', error);
-    }
-  };
-
   const openLink = (url) => {
     Linking.openURL(url).catch((err) => console.error("Couldn't load page", err));
   };
@@ -30,150 +11,101 @@ const ContactUs = () => {
     Linking.openURL('mailto:support@healthhive.com').catch((err) => console.error("Couldn't send email", err));
   };
 
-  if (submitted) {
-    return (
-      <View style={styles.confirmationContainer}>
-        <Text style={styles.confirmationText}>Thank you for your question! We'll get back to you within 24 hours.</Text>
-      </View>
-    );
-  }
+  const callPhoneNumber = () => {
+    Linking.openURL('tel:+1234567890').catch((err) => console.error("Couldn't make call", err));
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Contact Us</Text>
-      <Text style={styles.description}>If you have any questions or need further assistance, feel free to contact us through the following channels:</Text>
-      
-      <View style={styles.socialMediaContainer}>
-        <TouchableOpacity onPress={() => openLink('https://facebook.com/HealthHive')} style={styles.socialMediaButton}>
-          <Ionicons name="logo-facebook" size={24} color="#0056B3" />
-          <Text style={styles.socialMediaText}>Facebook</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => openLink('https://twitter.com/HealthHive')} style={styles.socialMediaButton}>
-          <Ionicons name="logo-twitter" size={24} color="#0056B3" />
-          <Text style={styles.socialMediaText}>Twitter</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => openLink('https://instagram.com/HealthHive')} style={styles.socialMediaButton}>
-          <Ionicons name="logo-instagram" size={24} color="#0056B3" />
-          <Text style={styles.socialMediaText}>Instagram</Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.header}>Contact Us</Text>
+        <Text style={styles.description}>If you have any questions or need further assistance, feel free to contact us through the following...</Text>
+        
+        <View style={styles.socialMediaContainer}>
+          <TouchableOpacity onPress={() => openLink('https://facebook.com/HealthHive')} style={styles.socialMediaButton}>
+            <Ionicons name="logo-facebook" size={28} color="#1877F2" />
+            <Text style={styles.socialMediaText}>Facebook</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => openLink('https://twitter.com/HealthHive')} style={styles.socialMediaButton}>
+            <Ionicons name="logo-twitter" size={28} color="#1DA1F2" />
+            <Text style={styles.socialMediaText}>Twitter</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => openLink('https://instagram.com/HealthHive')} style={styles.socialMediaButton}>
+            <Ionicons name="logo-instagram" size={28} color="#E4405F" />
+            <Text style={styles.socialMediaText}>Instagram</Text>
+          </TouchableOpacity>
+        </View>
 
-      <TouchableOpacity onPress={sendEmail} style={styles.contactButton}>
-        <Ionicons name="mail" size={24} color="#0056B3" />
-        <Text style={styles.contactText}>support@healthhive.com</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={sendEmail} style={styles.contactButton}>
+          <Ionicons name="mail" size={24} color="#FFFFFF" />
+          <Text style={styles.contactText}>support@healthhive.com</Text>
+        </TouchableOpacity>
 
-      <Text style={styles.formHeader}>Ask Us a Question</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Your Name"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Your Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        placeholder="Your Question"
-        value={question}
-        onChangeText={setQuestion}
-        multiline
-      />
-      <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-        <Text style={styles.submitButtonText}>Submit</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity onPress={callPhoneNumber} style={styles.contactButton}>
+          <Ionicons name="call" size={24} color="#FFFFFF" />
+          <Text style={styles.contactText}>+1 (234) 567-890</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F0F8FF',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f0f8ff',
     padding: 20,
-  },
-  confirmationContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  confirmationText: {
-    fontSize: 18,
-    color: '#0056B3',
-    textAlign: 'center',
   },
   header: {
-    fontSize: 24,
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#0056B3',
-    marginBottom: 20,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   description: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#333',
-    marginBottom: 20,
+    marginBottom: 24,
+    lineHeight: 24,
+    color: 'gray',
+    textAlign: 'center',
   },
   socialMediaContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 20,
+    marginBottom: 32,
   },
   socialMediaButton: {
-    flexDirection: 'row',
     alignItems: 'center',
+    padding: 12,
   },
   socialMediaText: {
     fontSize: 16,
     color: '#0056B3',
-    marginLeft: 8,
+    marginTop: 8,
   },
   contactButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-  },
-  contactText: {
-    fontSize: 16,
-    color: '#0056B3',
-    marginLeft: 8,
-  },
-  formHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0056B3',
-    marginBottom: 10,
-  },
-  input: {
-    backgroundColor: 'white',
-    borderRadius: 8,
+    backgroundColor: '#0056B3',
+    borderRadius: 12,
     padding: 16,
-    marginBottom: 10,
-    fontSize: 16,
+    marginBottom: 16,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
   },
-  textArea: {
-    height: 100,
-  },
-  submitButton: {
-    backgroundColor: '#0056B3',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+  contactText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    marginLeft: 12,
+    fontWeight: '500',
   },
 });
 

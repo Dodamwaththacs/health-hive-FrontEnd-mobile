@@ -90,7 +90,7 @@ function DrawerNavigator() {
       try {
         const email = await SecureStore.getItemAsync("userEmail");
         const response = await axios.get(
-          `http://13.202.67.81:33000/api/users/email/${email}`
+          `http://192.168.3.43:33000/api/users/email/${email}`
         );
         setUser(response.data);
       } catch (error) {
@@ -200,7 +200,7 @@ function DrawerNavigator() {
           ),
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Your Notes"
         component={Notes}
         initialParams={{ userId: user.id }}
@@ -209,7 +209,7 @@ function DrawerNavigator() {
             <Ionicons name="document-text-outline" color={color} size={size} />
           ),
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="Setting"
         component={Setting}
