@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, SafeAreaView, Alert } from "react-native";
-import axios from 'axios';
-import { Ionicons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  SafeAreaView,
+  Alert,
+} from "react-native";
+import axios from "axios";
+import { Ionicons } from "@expo/vector-icons";
 
 const Notes = ({ route }) => {
   const { userId } = route.params;
   const [notes, setNotes] = useState([]);
-  const [noteText, setNoteText] = useState('');
+  const [noteText, setNoteText] = useState("");
   const [editingNoteId, setEditingNoteId] = useState(null);
 
   useEffect(() => {
@@ -15,9 +24,11 @@ const Notes = ({ route }) => {
 
   const fetchNotes = async () => {
     try {
-      const response = await axios.get(`http://192.168.3.43:33000/api/notess/userId/${userId}`);
+      const response = await axios.get(
+        `http://192.168.178.140:33000/api/notess/userId/${userId}`
+      );
       console.log("API response:", response.data);
-      const validNotes = response.data.filter(note => note && note.id);
+      const validNotes = response.data.filter((note) => note && note.id);
       setNotes(validNotes);
       console.log("Fetched notes:", validNotes);
     } catch (error) {
@@ -39,15 +50,19 @@ const Notes = ({ route }) => {
     const newNote = {
       user: userId,
       notes: noteText,
-      date: new Date()
+      date: new Date(),
     };
     try {
-      const response = await axios.post('http://192.168.3.43:33000/api/notess', newNote);
-      const createdNote = typeof response.data === 'number'
-        ? { ...newNote, id: response.data }
-        : response.data;
-      setNotes(prevNotes => [...prevNotes, createdNote]);
-      setNoteText('');
+      const response = await axios.post(
+        "http://192.168.178.140:33000/api/notess",
+        newNote
+      );
+      const createdNote =
+        typeof response.data === "number"
+          ? { ...newNote, id: response.data }
+          : response.data;
+      setNotes((prevNotes) => [...prevNotes, createdNote]);
+      setNoteText("");
       Alert.alert("Success", "Your note has been added successfully.");
     } catch (error) {
       console.error("Error adding note:", error);
@@ -60,14 +75,19 @@ const Notes = ({ route }) => {
       id: editingNoteId,
       notes: noteText,
       user: userId,
-      date: new Date()
+      date: new Date(),
     };
     try {
-      await axios.put(`http://192.168.3.43:33000/api/notess/${editingNoteId}`, updatedNote);
-      setNotes(prevNotes => prevNotes.map(note => 
-        note.id === editingNoteId ? updatedNote : note
-      ));
-      setNoteText('');
+      await axios.put(
+        `http://192.168.178.140:33000/api/notess/${editingNoteId}`,
+        updatedNote
+      );
+      setNotes((prevNotes) =>
+        prevNotes.map((note) =>
+          note.id === editingNoteId ? updatedNote : note
+        )
+      );
+      setNoteText("");
       setEditingNoteId(null);
       Alert.alert("Success", "Your note has been edited successfully.");
     } catch (error) {
@@ -78,8 +98,8 @@ const Notes = ({ route }) => {
 
   const deleteNote = async (noteId) => {
     try {
-      await axios.delete(`http://192.168.3.43:33000/api/notess/${noteId}`);
-      const updatedNotes = notes.filter(note => note.id !== noteId);
+      await axios.delete(`http://192.168.178.140:33000/api/notess/${noteId}`);
+      const updatedNotes = notes.filter((note) => note.id !== noteId);
       setNotes(updatedNotes);
       Alert.alert("Note Deleted", "Your note has been deleted successfully.");
     } catch (error) {
@@ -89,7 +109,7 @@ const Notes = ({ route }) => {
   };
 
   const renderNoteItem = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.noteItem}
       onPress={() => {
         setNoteText(item.notes);
@@ -97,10 +117,19 @@ const Notes = ({ route }) => {
       }}
     >
       <View style={styles.noteHeader}>
-        <View style={[styles.categoryIndicator, { backgroundColor: getCategoryColor(item.category) }]} />
-        <Text style={styles.noteText} numberOfLines={2}>{item.notes}</Text>
+        <View
+          style={[
+            styles.categoryIndicator,
+            { backgroundColor: getCategoryColor(item.category) },
+          ]}
+        />
+        <Text style={styles.noteText} numberOfLines={2}>
+          {item.notes}
+        </Text>
       </View>
-      <Text style={styles.noteDate}>Date: {new Date(item.date).toLocaleString()}</Text>
+      <Text style={styles.noteDate}>
+        Date: {new Date(item.date).toLocaleString()}
+      </Text>
       <View style={styles.noteActions}>
         <TouchableOpacity onPress={() => deleteNote(item.id)}>
           <Ionicons name="trash" size={24} color="red" />
@@ -111,10 +140,10 @@ const Notes = ({ route }) => {
 
   const getCategoryColor = (category) => {
     const colors = {
-      Health: '#FF9800',
-      Important: '#F44336',
-      Schedule: '#2196F3',
-      Default: '#9C27B0'
+      Health: "#FF9800",
+      Important: "#F44336",
+      Schedule: "#2196F3",
+      Default: "#9C27B0",
     };
     return colors[category] || colors.Default;
   };
@@ -141,8 +170,15 @@ const Notes = ({ route }) => {
           onChangeText={setNoteText}
           multiline
         />
-        <TouchableOpacity style={styles.addButton} onPress={handleNoteSubmission}>
-          <Ionicons name={editingNoteId ? "checkmark" : "add"} size={24} color="#FFF" />
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={handleNoteSubmission}
+        >
+          <Ionicons
+            name={editingNoteId ? "checkmark" : "add"}
+            size={24}
+            color="#FFF"
+          />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -155,11 +191,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
   },
   title: {
     fontSize: 24,
@@ -169,15 +205,15 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   noteItem: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
     elevation: 2,
   },
   noteHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   categoryIndicator: {
@@ -192,18 +228,18 @@ const styles = StyleSheet.create({
   },
   noteDate: {
     fontSize: 12,
-    color: '#757575',
+    color: "#757575",
   },
   noteActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     marginTop: 8,
   },
   inputContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 16,
-    backgroundColor: '#FFF',
-    alignItems: 'center',
+    backgroundColor: "#FFF",
+    alignItems: "center",
   },
   input: {
     flex: 1,
@@ -215,12 +251,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   addButton: {
-    backgroundColor: '#9C27B0',
+    backgroundColor: "#9C27B0",
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

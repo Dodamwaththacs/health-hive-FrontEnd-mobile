@@ -5,9 +5,6 @@ import StackNavigation from "./src/navigation/StackNavigation";
 import * as SQLite from "expo-sqlite";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-import SignOut from "./src/screens/SignOut";
-import Document from "./src/screens/Home/documents/Documents";
-import TempScreen from "./src/screens/TempScreen";
 export const AuthContext = React.createContext();
 
 export default function App() {
@@ -51,7 +48,10 @@ export default function App() {
         console.log("email..", email);
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
-        const responce = await axios.get("http://192.168.3.43:33000/api/hello");
+
+        const responce = await axios.get(
+          "http://192.168.178.140:33000/api/hello"
+        );
         if (responce.status === 200) {
           dispatch({ type: "RESTORE_TOKEN", token: userToken });
         } else {

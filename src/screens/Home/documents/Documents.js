@@ -159,21 +159,15 @@ const FolderCreator = () => {
   };
 
   const renameDirectory = async (oldFolderName, newFolderName) => {
-    const oldDirUri = `${baseDir}${oldFolderName}`;
-    const newDirUri = `${baseDir}${newFolderName}`;
-
     try {
-      const info = await FileSystem.getInfoAsync(oldDirUri);
-      if (info.exists) {
-        await FileSystem.moveAsync({
-          from: oldDirUri,
-          to: newDirUri,
-        });
-        console.log(
-          `Directory renamed from ${oldFolderName} to ${newFolderName}`
-        );
+      const db = await SQLite.openDatabaseAsync("HealthHive");
+      const response = await db.getAllAsync(
+        `SELECT * FROM folderData WHERE folderName = '${newFolderName}' AND userEmail = "${userEmail}";`
+      );
+      console.log("Response: ", response);
+      console.log("lengh: ", response.length);
 
-        const db = await SQLite.openDatabaseAsync("HealthHive");
+      if (response.length === 0) {
         await db.execAsync(
           `UPDATE folderData SET folderName = '${newFolderName}' WHERE folderName = '${oldFolderName}';`
         );
@@ -185,11 +179,12 @@ const FolderCreator = () => {
         const response2 = await db.getAllAsync(`SELECT * FROM folderData;`);
         console.log("File storage data : ", response);
         console.log("Folder data : ", response2);
+        console.log("Folder renamed");
 
         updateDirectoryList();
         setRenameModalVisible(false);
       } else {
-        console.log("Directory does not exist!");
+        alert("Folder already exists!");
       }
     } catch (error) {
       console.error("Error renaming directory:", error);

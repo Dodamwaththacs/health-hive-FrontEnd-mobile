@@ -15,10 +15,10 @@ import File from "../screens/Home/documents/File";
 import LabFolder from "../screens/Home/documents/LabFolder";
 import About from "../screens/About";
 import Help from "../screens/Help";
-import HowItWorks from '../screens/HowItWorks';
-import FAQ from '../screens/FAQ';
-import ContactUs from '../screens/ContactUs';
-
+import HowItWorks from "../screens/HowItWorks";
+import FAQ from "../screens/FAQ";
+import ContactUs from "../screens/ContactUs";
+import ManageFiles from "../screens/ManageFiles";
 const Stack = createNativeStackNavigator();
 
 function StackNavigation({ userToken }) {
@@ -73,7 +73,7 @@ function StackNavigation({ userToken }) {
                 title: "Your Profile",
                 headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
-                headerTitleStyle: { fontWeight: 'bold' },
+                headerTitleStyle: { fontWeight: "bold" },
               }}
             />
             <Stack.Screen
@@ -104,48 +104,63 @@ function StackNavigation({ userToken }) {
             <Stack.Screen
               name="About"
               component={About}
-              options={{  title: "About Us",
+              options={{
+                title: "About Us",
                 headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
-                headerTitleStyle: { fontWeight: 'bold' },
+                headerTitleStyle: { fontWeight: "bold" },
               }}
-              />
-               <Stack.Screen
+            />
+            <Stack.Screen
               name="Help"
               component={Help}
-              options={{  title: "Help & Support",
+              options={{
+                title: "Help & Support",
                 headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
-                headerTitleStyle: { fontWeight: 'bold' },
+                headerTitleStyle: { fontWeight: "bold" },
               }}
-              />
-              <Stack.Screen
+            />
+            <Stack.Screen
               name="HowItWorks"
               component={HowItWorks}
-              options={{  title: "How It Works",
+              options={{
+                title: "How It Works",
                 headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
-                headerTitleStyle: { fontWeight: 'bold' },
+                headerTitleStyle: { fontWeight: "bold" },
               }}
-              />
-                <Stack.Screen
+            />
+            <Stack.Screen
               name="FAQ"
               component={FAQ}
-                options={{  title: "FAQ",
+              options={{
+                title: "FAQ",
                 headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
-                headerTitleStyle: { fontWeight: 'bold' },
+                headerTitleStyle: { fontWeight: "bold" },
               }}
-              />
-                <Stack.Screen
+            />
+            <Stack.Screen
               name="ContactUs"
               component={ContactUs}
-              options={{  title: "Contact Us",
+              options={{
+                title: "Contact Us",
                 headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
-                headerTitleStyle: { fontWeight: 'bold' },
+                headerTitleStyle: { fontWeight: "bold" },
               }}
-              />
+            />
+            <Stack.Screen
+              name="ManageFiles"
+              component={ManageFiles}
+              options={{
+                title: "Manage Files",
+                headerStyle: { backgroundColor: "#0056B3" },
+                headerTintColor: "#fff",
+                headerTitleStyle: { fontWeight: "bold" },
+              }}
+            />
           </>
         )}
       </Stack.Navigator>

@@ -57,11 +57,12 @@ const LabFolder = ({ route }) => {
   );
 
   const handleMove = async () => {
+    const email = await SecureStore.getItemAsync("userEmail");
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response = await db.getAllAsync(
       `SELECT folderName
       FROM folderData
-      WHERE folderName NOT IN ('LabReports', '${folderName}')
+      WHERE folderName NOT IN ('Lab Reports', '${folderName}') AND userEmail = '${email}'
       ORDER BY folderName ASC;`
     );
     await db.closeAsync();
@@ -128,7 +129,7 @@ const LabFolder = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.3.43:33000/api/ipfs/upload",
+        "http://192.168.178.140:33000/api/ipfs/upload",
 
         formData,
         {
@@ -298,7 +299,7 @@ const LabFolder = ({ route }) => {
           </View>
         )}
       </Modal>
-      {/* <Button title="DB drop" onPress={dropDatabase} /> */}
+      {/* <Button title="DB drop" onPress={DatabaseData} /> */}
     </View>
   );
 };
