@@ -37,12 +37,12 @@ const ContactUs = () => {
         </View>
 
         <TouchableOpacity onPress={sendEmail} style={styles.contactButton}>
-          <Ionicons name="mail" size={24} color="#FFFFFF" />
+          <Ionicons name="mail" size={24} color="#003366" />
           <Text style={styles.contactText}>support@healthhive.com</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={callPhoneNumber} style={styles.contactButton}>
-          <Ionicons name="call" size={24} color="#FFFFFF" />
+          <Ionicons name="call" size={24} color="#003366" />
           <Text style={styles.contactText}>+1 (234) 567-890</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -62,14 +62,15 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 25,
     fontWeight: 'bold',
-    color: '#0056B3',
-    marginBottom: 16,
+    color: '#003366',
+    marginBottom: 30,
     textAlign: 'center',
+    marginTop: 40,
   },
   description: {
     fontSize: 18,
     color: '#333',
-    marginBottom: 24,
+    marginBottom: 30,
     lineHeight: 24,
     color: 'gray',
     textAlign: 'center',
@@ -85,13 +86,13 @@ const styles = StyleSheet.create({
   },
   socialMediaText: {
     fontSize: 16,
-    color: '#0056B3',
+    color: '#003366',
     marginTop: 8,
   },
   contactButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0056B3',
+    backgroundColor: '#ADD8E6',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: 18,
-    color: '#FFFFFF',
+    color: '#003366',
     marginLeft: 12,
     fontWeight: '500',
   },

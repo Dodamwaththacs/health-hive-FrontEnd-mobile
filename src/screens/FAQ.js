@@ -10,7 +10,7 @@ const FAQItem = ({ question, answer }) => {
     <View style={styles.faqItem}>
       <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)} style={styles.questionContainer}>
         <Text style={styles.question}>{question}</Text>
-        <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} color="#0056B3" />
+        <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} color="#003366" />
       </TouchableOpacity>
       {isExpanded && <Text style={styles.answer}>{answer}</Text>}
     </View>
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0056B3',
+    color: '#003366',
     flex: 1,
   },
   answer: {

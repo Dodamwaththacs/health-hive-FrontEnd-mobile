@@ -20,7 +20,7 @@ const Help = () => {
           style={styles.button} 
           onPress={() => navigation.navigate('HowItWorks')}
         >
-          <Ionicons name="information-circle-outline" size={40} color="white" />
+          <Ionicons name="information-circle-outline" size={40} color="#003366" />
           <Text style={styles.buttonText}>How it Works</Text>
         </TouchableOpacity>
         
@@ -28,7 +28,7 @@ const Help = () => {
           style={styles.button} 
           onPress={() => navigation.navigate('FAQ')}
         >
-          <Ionicons name="help-circle-outline" size={40} color="white" />
+          <Ionicons name="help-circle-outline" size={40} color="#003366" />
           <Text style={styles.buttonText}>FAQ</Text>
         </TouchableOpacity>
         
@@ -36,7 +36,7 @@ const Help = () => {
           style={styles.button} 
           onPress={() => navigation.navigate('ContactUs')}
         >
-          <Ionicons name="call-outline" size={40} color="white" />
+          <Ionicons name="call-outline" size={40} color="#003366" />
           <Text style={styles.buttonText}>Contact Us</Text>
         </TouchableOpacity>
       </View>
@@ -48,14 +48,15 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       padding: 20,
-      backgroundColor: '#fff',
+      backgroundColor: '#f0f8ff',
     },
     title: {
       fontSize: 25,
       fontWeight: 'bold',
       marginBottom: 20,
       textAlign: 'center',
-      color: '#0056B3',
+      marginTop: 40,
+      color: '#003366',
     },
     buttonContainer: {
       flexDirection: 'row',
@@ -66,14 +67,14 @@ const styles = StyleSheet.create({
     button: {
       width: '40%',
         height: 100,
-      backgroundColor: '#0056B3',
+      backgroundColor: '#ADD8E6',
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 10,
       marginBottom: 30,
     },
     buttonText: {
-      color: 'white',
+      color: '#003366',
       fontSize: 16,
       fontWeight: 'bold',
     },
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
         textAlign: 'center',
-        color: 'gray',
+        color: '#003366',
       },
   });
 

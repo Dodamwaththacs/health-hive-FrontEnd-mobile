@@ -9,12 +9,14 @@ import {
   Modal,
   TouchableOpacity,
   Image,
+  ImageBackground,
 } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import axios from "axios";
 import { useEmail } from "../EmailContext";
 import * as SecureStore from "expo-secure-store";
 import * as SQLite from "expo-sqlite";
+import { Ionicons } from "@expo/vector-icons";
 
 const Scan = () => {
   const [hasPermission, setHasPermission] = useState(false);
@@ -248,41 +250,49 @@ const Scan = () => {
           </View>
         </View>
       ) : (
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setScanType("labRequest");
-              setScanned(false);
-              setIsScannerActive(true);
-            }}
-          >
-            <View style={styles.buttonContent}>
-              <Image
-                source={require("../assets/labrequests.png")}
-                style={styles.buttonImage}
-              />
+        <View style={styles.mainContainer}>
+          <View style={styles.upperContent}>
+          <ImageBackground
+            source={require("../assets/background-QR.png")}
+            style={styles.containerImage}
+          />
+
+           <View style={styles.textContent}>
+
+          <Text style={styles.title}>Scan QR Code</Text>
+          <Text style={styles.description}>
+            To connect with our registered lab, scan the lab's QR code. {'\n'} {'\n'}To share
+            your reports with a registered user, scan their QR code.
+          </Text>
+          </View>
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                setScanType("labRequest");
+                setScanned(false);
+                setIsScannerActive(true);
+              }}
+            >
+              <Ionicons name="flask-outline" size={24} color="#003366" />
               <Text style={styles.buttonText}>Lab Request</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              setScanType("healthReport");
-              setScanned(false);
-              setIsScannerActive(true);
-            }}
-          >
-            <View style={styles.buttonContent}>
-              <Image
-                source={require("../assets/sharereports.png")}
-                style={styles.buttonImage}
-              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                setScanType("healthReport");
+                setScanned(false);
+                setIsScannerActive(true);
+              }}
+            >
+              <Ionicons name="share-outline" size={24} color="#003366" />
               <Text style={styles.buttonText}>
                 Share your{"\n"}Health Reports
               </Text>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
       <Modal
@@ -362,6 +372,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
+  title: {
+    fontSize: 25,
+    fontWeight: "bold",
+    color: "#003366",
+    marginBottom: 20,
+    marginTop: 0,
+    paddingTop:130,
+    paddingLeft:70,
+    marginLeft: 0,
+  },
+  description: {
+    fontSize: 18
+    ,
+    color: "#003366",
+    textAlign: "right",
+    marginBottom: 0,
+    paddingRight:30,
+    marginRight:150,
+    marginTop: 0,
+  },
 
   scannerWrapper: {
     flex: 1,
@@ -399,51 +429,38 @@ const styles = StyleSheet.create({
     marginBottom: -45,
   },
   buttonContainer: {
-    flexDirection: "column",
-    justifyContent: "space-around",
-    width: "90%",
-    marginTop: -310,
+    width: "100%",
   },
   button: {
-    height: 100,
+    height: 70,
+    width: 350,
+    marginLeft: 0,
+    marginBottom: 30,
     backgroundColor: "#ADD8E6",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    margin: 5,
     shadowColor: "black",
+    flexDirection: "row",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    marginTop: 30,
     elevation: 5,
   },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  imageContainer: {
-    width: 50,
-    height: 50,
-    backgroundColor: "#fff",
+  mainContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
-    borderRadius: 10,
+    backgroundColor: "#fff",
   },
-  buttonImage: {
-    width: 60,
-    height: 60,
-    marginRight: 20,
-    marginLeft: -90,
-  },
+
   buttonText: {
     color: "#003366",
     fontWeight: "bold",
-
-    fontSize: 17,
+    fontSize: 16,
     marginLeft: 10,
   },
+
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -517,6 +534,21 @@ const styles = StyleSheet.create({
   },
   selectedFileContainer: {
     backgroundColor: "#00FFFF", // Highlight color for selected files
+  },
+  containerImage: {
+    flex: 1,
+    width: 300,
+    height: 300,
+   marginBottom:100,
+    marginRight: 300,
+    marginTop:-50,
+  },
+  textContent:{
+    flexDirection:"colomn",
+  },
+  upperContent:{
+   flexDirection:"row",
+   marginBottom:80,
   },
 });
 

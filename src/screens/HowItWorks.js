@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 const Section = ({ title, content, iconName }) => (
   <View style={styles.section}>
     <View style={styles.sectionHeader}>
-      <Ionicons name={iconName} size={24} color="#0056B3" style={styles.icon} />
+      <Ionicons name={iconName} size={24} color="#003366" style={styles.icon} />
       <Text style={styles.sectionTitle}>{title}</Text>
     </View>
     <Text style={styles.sectionContent}>{content}</Text>
@@ -84,9 +84,10 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0056B3',
+    color: '#003366',
     marginLeft: 10,
     textAlign: 'center',
+    marginTop:40,
   },
   section: {
   
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#0056B3',
+    color: '#003366',
   },
   sectionContent: {
     fontSize: 16,

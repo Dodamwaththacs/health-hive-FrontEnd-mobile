@@ -23,10 +23,10 @@ const Setting = () => {
   const renderOption = (title, iconName, onPress) => (
     <TouchableOpacity style={styles.option} onPress={onPress}>
       <View style={styles.leftContent}>
-        <Ionicons name={iconName} size={24} color="#555" style={styles.icon} />
+        <Ionicons name={iconName} size={24} color="#003366" style={styles.icon} />
         <Text style={styles.optionText}>{title}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={24} color="#888" />
+      <Ionicons name="chevron-forward" size={24} color="#003366" />
     </TouchableOpacity>
   );
 
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    color: 'gray',
+    color: '#003366',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
-    color: 'gray',
+    color: '#003366',
   },
 });
 
