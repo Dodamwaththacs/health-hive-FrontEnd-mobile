@@ -50,7 +50,9 @@ export default function App() {
         axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
 
         const responce = await axios.get(
-          "http://192.168.3.43:33000/api/hello"
+
+          "http://13.202.67.81:10000/usermgtapi/api/hello"
+ 
         );
         if (responce.status === 200) {
           dispatch({ type: "RESTORE_TOKEN", token: userToken });

@@ -34,7 +34,9 @@ function ManageFiles() {
 
     try {
       const responce = await axios.post(
-        "http://192.168.3.43:33000/api/email/send",
+
+        "http://13.202.67.81:10000/usermgtapi/api/email/send",
+
         apiPayload
       );
       console.log("responce", responce);

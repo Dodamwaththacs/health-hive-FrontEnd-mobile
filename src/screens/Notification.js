@@ -13,11 +13,16 @@ const Notification = ({ route }) => {
     console.log("userId", userId);
     axios
 
-      .get(`http://192.168.3.43:33000/api/shareFiles/user/${userId}`, {
-        headers: {
-          accept: "application/json",
-        },
-      })
+
+      .get(
+        `http://13.202.67.81:10000/usermgtapi/api/shareFiles/user/${userId}`,
+        {
+          headers: {
+            accept: "application/json",
+          },
+        }
+      )
+
       .then((response) => {
         setFiles(response.data);
         console.log("notification", response.data);

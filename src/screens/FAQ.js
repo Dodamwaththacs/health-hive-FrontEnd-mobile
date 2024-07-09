@@ -20,7 +20,11 @@ const FAQItem = ({ question, answer }) => {
         style={styles.questionContainer}
       >
         <Text style={styles.question}>{question}</Text>
-        <Ionicons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={24} color="#003366" />
+        <Ionicons
+          name={isExpanded ? "chevron-up" : "chevron-down"}
+          size={24}
+          color="#003366"
+        />
       </TouchableOpacity>
       {isExpanded && <Text style={styles.answer}>{answer}</Text>}
     </View>
@@ -36,7 +40,9 @@ const FAQ = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.3.43:33000/api/faqs"
+
+          "http://13.202.67.81:10000/usermgtapi/api/faqs"
+
         );
         console.log("Response data:", response.data);
         setFaqs(response.data);
@@ -124,8 +130,8 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#003366',
+    fontWeight: "bold",
+    color: "#003366",
     flex: 1,
   },
   answer: {
