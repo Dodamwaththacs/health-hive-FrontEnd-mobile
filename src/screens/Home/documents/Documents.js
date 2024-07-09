@@ -13,8 +13,7 @@ import {
 } from "react-native";
 import * as FileSystem from "expo-file-system";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { Ionicons } from "@expo/vector-icons";
-import AddButton from "react-native-vector-icons/AntDesign";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
 import * as SQLite from "expo-sqlite";
@@ -232,7 +231,7 @@ const FolderCreator = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handlePress} style={styles.editButton}>
-        <Icon name="ellipsis-v" size={40} color="#000" />
+        <Ionicons name="ellipsis-horizontal-sharp" size={40} color="black" />
       </TouchableOpacity>
 
       <FlatList
@@ -244,6 +243,7 @@ const FolderCreator = () => {
               <Icon name="folder" size={40} color="#000" />
             </TouchableOpacity>
             <Text style={styles.folderText}>{dir}</Text>
+            <Text></Text>
 
             {dropdownOpen && dir !== "Lab Reports" && (
               <View style={styles.popButtons}>
@@ -269,7 +269,7 @@ const FolderCreator = () => {
         onPress={() => setModalVisible(true)}
         style={styles.plusButton}
       >
-        <AddButton name="pluscircleo" color={"blue"} size={60} />
+        <MaterialIcons name="create-new-folder" color={"black"} size={60} />
       </TouchableOpacity>
 
       <Modal
@@ -325,9 +325,6 @@ const FolderCreator = () => {
           </View>
         </View>
       </Modal>
-      {/* <Button title="Get File Data" onPress={getfiledata} />
-      <Button title="List Directories" onPress={listDirectories} /> */}
-      {/* <Button title="Temp data DB" onPress={tempDataEntry} /> */}
     </View>
   );
 };
@@ -337,12 +334,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     padding: 20,
-    marginTop: 40, // need to remove
-    marginRight: 20, // need to remove
+    marginTop: 10, // need to remove
+    marginRight: 5, // need to remove
   },
   editButton: {
     alignSelf: "flex-end",
     position: "absolute",
+    paddingRight: 20,
   },
   popButtons: {
     flexDirection: "row",
@@ -351,6 +349,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   directoryList: {
+    marginTop: 20,
     width: "100%",
     maxHeight: "90%",
     flex: 1,
@@ -393,7 +392,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
-    width: "100%", // Ensure full width is used
+    width: "100%",
+    borderRadius: 5,
+    marginVertical: 5,
+    backgroundColor: "#f9f9f9",
+    elevation: 5,
   },
   folderText: {
     flex: 1, // Take up all available space

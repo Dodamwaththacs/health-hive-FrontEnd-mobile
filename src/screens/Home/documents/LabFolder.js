@@ -17,7 +17,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
 import * as SecureStore from "expo-secure-store";
 import ItemComponent from "./ItemComponents";
-import { FontAwesome } from "@expo/vector-icons";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 
 const LabFolder = ({ route }) => {
   const { folderName } = route.params;
@@ -191,64 +191,93 @@ const LabFolder = ({ route }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.head}>{folderName}</Text>
-      <TouchableOpacity style={styles.editButton} onPress={() => handlePress()}>
-        <FontAwesome name="ellipsis-v" size={40} color="#000" />
-      </TouchableOpacity>
-      <Text style={styles.head2}>
-        Here you can find all the documents related to the lab.
-      </Text>
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-      />
-      {!showCheckboxes && data.length > 0 && (
-        <Button
-          title="Move file"
-          onPress={() => setShowCheckboxes(!showCheckboxes)}
-        />
-      )}
-      {selectedItems.length > 0 && showCheckboxes && (
-        <Button title="done" onPress={handleMove} />
-      )}
-
-      <Modal animationType="slide" visible={folderModalVisible} transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <View style={styles.moveFolderHeader}>
-              <Text>Select folder you want to move</Text>
-              <TouchableOpacity>
-                <Icon
-                  name="close"
-                  size={30}
-                  color={"blue"}
-                  onPress={() =>
-                    setFolderModalVisible(false) && setSelectedItems(null)
-                  }
-                />
-              </TouchableOpacity>
+    <View style={styles.view}>
+      <View style={styles.headContainer}>
+        <Text style={styles.head}>{folderName}</Text>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => handlePress()}
+        >
+          <Ionicons name="ellipsis-horizontal-sharp" size={40} color="#ffff" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.container}>
+        <View style={styles.noticeContainer}>
+          <View style={styles.noticeContent}>
+            <View style={styles.iconContainer}>
+              <AntDesign name="exclamationcircle" size={24} color="#ffffff" />
             </View>
-            <FlatList
-              data={folderData}
-              renderItem={renderFolderItem}
-              keyExtractor={(item) => item.folderName}
-            />
+            <Text style={styles.noticeText}>
+              Here you can find all the documents related to the lab.
+            </Text>
           </View>
         </View>
-      </Modal>
-      {/* <Button title="DB" onPress={database} /> */}
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
+        {!showCheckboxes && data.length > 0 && (
+          <Button
+            title="Move file"
+            onPress={() => setShowCheckboxes(!showCheckboxes)}
+          />
+        )}
+        {selectedItems.length > 0 && showCheckboxes && (
+          <Button title="done" onPress={handleMove} />
+        )}
+
+        <Modal animationType="slide" visible={folderModalVisible} transparent>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.moveFolderHeader}>
+                <Text>Select folder you want to move</Text>
+                <TouchableOpacity>
+                  <Icon
+                    name="close"
+                    size={30}
+                    color={"blue"}
+                    onPress={() =>
+                      setFolderModalVisible(false) && setSelectedItems(null)
+                    }
+                  />
+                </TouchableOpacity>
+              </View>
+              <FlatList
+                data={folderData}
+                renderItem={renderFolderItem}
+                keyExtractor={(item) => item.folderName}
+              />
+            </View>
+          </View>
+        </Modal>
+        {/* <Button title="DB" onPress={database} /> */}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  view: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+  },
+  headContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#0056B3",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
   container: {
     flex: 1,
     padding: 10,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
+
   itemContainer: {
     padding: 20,
     borderBottomWidth: 1,
@@ -266,12 +295,39 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "white",
   },
-  head2: {
-    fontSize: 18,
-    marginBottom: 10,
+  noticeContainer: {
+    marginBottom: 20,
+    borderRadius: 50,
+    overflow: "hidden",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-
+  noticeContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    backgroundColor: "#FF3B30",
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  noticeText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#ffffff",
+  },
   moveFolderHeader: {
     flexDirection: "row",
     justifyContent: "space-between",

@@ -217,141 +217,177 @@ const LabFolder = ({ route }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.head_container}>
+    <View style={styles.view}>
+      <View style={styles.headContainer}>
         <Text style={styles.head}>{folderName}</Text>
         <TouchableOpacity
           style={styles.editButton}
           onPress={() => handlePress()}
         >
-          <FontAwesome name="ellipsis-v" size={40} color="#000" />
+          <Ionicons
+            name="ellipsis-horizontal-sharp"
+            size={40}
+            color="#ffffff"
+          />
         </TouchableOpacity>
       </View>
-
-      {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
-
-      <FlatList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-      />
-      {!showCheckboxes && data.length > 0 && (
-        <Button
-          title="Move file"
-          onPress={() => setShowCheckboxes(!showCheckboxes)}
+      <View style={styles.container}>
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
         />
-      )}
-      {selectedItems.length > 0 && showCheckboxes && (
-        <Button title="done" onPress={handleMove} />
-      )}
+        {!fileUri && <Button onPress={pickFile} title="Pick a file" />}
 
-      <Modal animationType="slide" visible={folderModalVisible} transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <View style={styles.moveFolderHeader}>
-              <Text>Select folder you want to move</Text>
-              <TouchableOpacity>
-                <Icon
-                  name="close"
-                  size={30}
-                  color={"blue"}
-                  onPress={() =>
-                    setFolderModalVisible(false) && setSelectedItems(null)
-                  }
-                />
+        {!showCheckboxes && data.length > 0 && (
+          <Button
+            title="Move file"
+            onPress={() => setShowCheckboxes(!showCheckboxes)}
+          />
+        )}
+        {selectedItems.length > 0 && showCheckboxes && (
+          <Button title="done" onPress={handleMove} />
+        )}
+
+        <Modal animationType="slide" visible={folderModalVisible} transparent>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.moveFolderHeader}>
+                <Text>Select folder you want to move</Text>
+                <TouchableOpacity>
+                  <Icon
+                    name="close"
+                    size={30}
+                    color={"blue"}
+                    onPress={() =>
+                      setFolderModalVisible(false) && setSelectedItems(null)
+                    }
+                  />
+                </TouchableOpacity>
+              </View>
+              <FlatList
+                data={folderData}
+                renderItem={renderFolderItem}
+                keyExtractor={(item) => item.folderName}
+              />
+            </View>
+          </View>
+        </Modal>
+        <Modal animationType="slide" visible={modalVisible}>
+          {fileUri && (
+            <View style={styles.container_2}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={handleClose}
+              >
+                <Ionicons name="close-circle" size={30} color="black" />
+              </TouchableOpacity>
+
+              <Image
+                source={{ uri: fileUri }}
+                style={{ width: "50%", height: "50%" }}
+              />
+              <TextInput
+                style={styles.Inputs}
+                onChangeText={setFileName}
+                value={FileName}
+                placeholder="File Name"
+              />
+              <TextInput
+                style={styles.Inputs}
+                onChangeText={setDescription}
+                value={Description}
+                placeholder="Description"
+              />
+
+              <TouchableOpacity style={styles.button} onPress={fileUpload}>
+                <Text style={styles.buttonText}>Upload</Text>
               </TouchableOpacity>
             </View>
-            <FlatList
-              data={folderData}
-              renderItem={renderFolderItem}
-              keyExtractor={(item) => item.folderName}
-            />
-          </View>
-        </View>
-      </Modal>
-      <Modal animationType="slide" visible={modalVisible}>
-        {fileUri && (
-          <View style={styles.container_2}>
-            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-              <Ionicons name="close-circle" size={30} color="black" />
-            </TouchableOpacity>
-
-            <Image
-              source={{ uri: fileUri }}
-              style={{ width: "50%", height: "50%" }}
-            />
-            <TextInput
-              style={styles.Inputs}
-              onChangeText={setFileName}
-              value={FileName}
-              placeholder="File Name"
-            />
-            <TextInput
-              style={styles.Inputs}
-              onChangeText={setDescription}
-              value={Description}
-              placeholder="Description"
-            />
-
-            <TouchableOpacity style={styles.button} onPress={fileUpload}>
-              <Text style={styles.buttonText}>Upload</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </Modal>
-      {/* <Button title="DB drop" onPress={DatabaseData} /> */}
+          )}
+        </Modal>
+        {/* <Button title="DB drop" onPress={DatabaseData} /> */}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  view: {
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+  },
+  headContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#0056B3",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
   container: {
     flex: 1,
-    padding: 10,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    padding: 16,
+    backgroundColor: "#f5f5f5",
   },
   itemContainer: {
-    padding: 20,
+    padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: "#e0e0e0",
     flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    marginBottom: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   icon: {
-    marginRight: 10,
+    marginRight: 16,
   },
   fileName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333333",
   },
-  head_container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
+
   head: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "white",
   },
   head2: {
     fontSize: 18,
-    marginBottom: 10,
+    color: "#34495e",
+    marginBottom: 12,
   },
-
   moveFolderHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // other styles...
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
   },
   item: {
-    marginTop: 10,
-    backgroundColor: "#f9f9f9",
-    padding: 5,
-    marginVertical: 8,
+    marginTop: 8,
+    backgroundColor: "#ffffff",
+    padding: 12,
+    marginVertical: 6,
     marginHorizontal: 16,
     borderRadius: 8,
-    elevation: 4, // Add some elevation for a subtle shadow effect
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   touchable: {
     flex: 1,
@@ -359,49 +395,63 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#2c3e50",
   },
   modalContainer: {
     flex: 1,
     justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: "#ffffff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
-    height: "30%", // Adjust the height as per your requirement
+    padding: 24,
+    height: "40%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
   },
   container_2: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#ffffff",
+    padding: 24,
   },
   Inputs: {
-    height: 40,
-    margin: 12,
+    height: 48,
+    marginVertical: 12,
     borderWidth: 1,
-    borderRadius: 20,
+    borderColor: "#bdc3c7",
+    borderRadius: 24,
     paddingLeft: 20,
     width: "100%",
+    fontSize: 16,
+    color: "#34495e",
   },
   button: {
     alignItems: "center",
-    backgroundColor: "#0000ff",
-    padding: 10,
-    borderRadius: 20,
-    width: "50%",
+    backgroundColor: "#3498db",
+    padding: 14,
+    borderRadius: 24,
+    width: "60%",
+    marginTop: 20,
   },
   buttonText: {
-    fontSize: 20,
-    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#ffffff",
   },
-
   closeButton: {
     position: "absolute",
-    top: 20,
-    right: 20,
+    top: 24,
+    right: 24,
+    zIndex: 1,
   },
 });
 
