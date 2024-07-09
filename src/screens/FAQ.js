@@ -36,7 +36,7 @@ const FAQ = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.178.140:33000/api/faqs"
+          "http://192.168.3.43:33000/api/faqs"
         );
         console.log("Response data:", response.data);
         setFaqs(response.data);
