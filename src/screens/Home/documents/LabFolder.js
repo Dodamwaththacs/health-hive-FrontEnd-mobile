@@ -17,6 +17,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import * as SQLite from "expo-sqlite";
 import * as SecureStore from "expo-secure-store";
 import ItemComponent from "./ItemComponents";
+import { FontAwesome } from "@expo/vector-icons";
 
 const LabFolder = ({ route }) => {
   const { folderName } = route.params;
@@ -28,6 +29,7 @@ const LabFolder = ({ route }) => {
   const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [email, setEmail] = useState("");
+  const [dropDown, setDropDown] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -37,7 +39,7 @@ const LabFolder = ({ route }) => {
 
         try {
           const response = await axios.get(
-            "http://192.168.178.140:33000/api/files/user/2"
+            "http://13.202.67.81:10000/usermgtapi/api/files/user/16"
           );
           const originData = response.data;
 
@@ -51,7 +53,8 @@ const LabFolder = ({ route }) => {
               );
               try {
                 await axios.delete(
-                  "http://192.168.178.140:33000/api/files/" + originData[i].id
+                  "http://13.202.67.81:10000/usermgtapi/api/files/" +
+                    originData[i].id
                 );
               } catch (error) {
                 console.error("Error data delete : ", error);
@@ -60,7 +63,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
-                  "http://192.168.178.140:33000/api/labDataUploads/" +
+                  "http://13.202.67.81:10000/usermgtapi/api/labDataUploads/" +
                     originData[i].labDataUploadId
                 );
               } catch (error) {
@@ -73,7 +76,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
-                  "http://192.168.178.140:33000/api/labRequests/" +
+                  "http://13.202.67.81:10000/usermgtapi/api/labRequests/" +
                     originData[i].labRequestId
                 );
               } catch (error) {
@@ -92,7 +95,7 @@ const LabFolder = ({ route }) => {
 
           console.log("Origin data fetched :", response.data);
         } catch (error) {
-          console.error("Error fetching data: ", error);
+          console.log(" no data fetched from origin : ");
         } finally {
           fetchDataFromLocal();
         }
@@ -157,6 +160,10 @@ const LabFolder = ({ route }) => {
     await db.closeAsync();
   };
 
+  const handlePress = () => {
+    setDropDown(!dropDown);
+  };
+
   const renderItem = ({ item }) => (
     <ItemComponent
       item={item}
@@ -167,6 +174,8 @@ const LabFolder = ({ route }) => {
       showCheckboxes={showCheckboxes}
       selectedItems={selectedItems}
       setSelectedItems={setSelectedItems}
+      dropDown={dropDown}
+      setDropDown={setDropDown}
     />
   );
 
@@ -184,6 +193,9 @@ const LabFolder = ({ route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.head}>{folderName}</Text>
+      <TouchableOpacity style={styles.editButton} onPress={() => handlePress()}>
+        <FontAwesome name="ellipsis-v" size={40} color="#000" />
+      </TouchableOpacity>
       <Text style={styles.head2}>
         Here you can find all the documents related to the lab.
       </Text>
@@ -226,7 +238,7 @@ const LabFolder = ({ route }) => {
           </View>
         </View>
       </Modal>
-      <Button title="DB" onPress={database} />
+      {/* <Button title="DB" onPress={database} /> */}
     </View>
   );
 };

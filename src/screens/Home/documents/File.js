@@ -129,7 +129,7 @@ const LabFolder = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-        "http://192.168.178.140:33000/api/ipfs/upload",
+        "http://13.202.67.81:10000/usermgtapi/api/ipfs/upload",
 
         formData,
         {

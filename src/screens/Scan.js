@@ -47,7 +47,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.178.140:33000/api/users/email/${email}`
+        `http://13.202.67.81:10000/usermgtapi/api/users/email/${email}`
       );
       setUser(response.data);
     } catch (error) {
@@ -65,7 +65,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-        `http://192.168.178.140:33000/api/users/${scannedUserId}`
+        `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
       );
       const scannedUser = response.data;
 
@@ -96,7 +96,7 @@ const Scan = () => {
     console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
-        "http://192.168.178.140:33000/api/labRequests",
+        "http://13.202.67.81:10000/usermgtapi/api/labRequests",
 
         {
           user: user.id,
@@ -119,7 +119,7 @@ const Scan = () => {
     let response;
     try {
       const response = await axios.post(
-        "http://192.168.178.140:33000/api/labReportShares",
+        "http://13.202.67.81:10000/usermgtapi/api/labReportShares",
 
         {
           doctor: scannedUserId,
@@ -163,7 +163,7 @@ const Scan = () => {
         console.log("selectedFiles", selectedFiles[i]);
 
         const response = await axios.post(
-          "http://192.168.178.140:33000/api/shareFiles",
+          "http://13.202.67.81:10000/usermgtapi/api/shareFiles",
           {
             labReportShare: labReportSharesId,
             fileHash: selectedFiles[i],
@@ -252,19 +252,19 @@ const Scan = () => {
       ) : (
         <View style={styles.mainContainer}>
           <View style={styles.upperContent}>
-          <ImageBackground
-            source={require("../assets/background-QR.png")}
-            style={styles.containerImage}
-          />
+            <ImageBackground
+              source={require("../assets/background-QR.png")}
+              style={styles.containerImage}
+            />
 
-           <View style={styles.textContent}>
-
-          <Text style={styles.title}>Scan QR Code</Text>
-          <Text style={styles.description}>
-            To connect with our registered lab, scan the lab's QR code. {'\n'} {'\n'}To share
-            your reports with a registered user, scan their QR code.
-          </Text>
-          </View>
+            <View style={styles.textContent}>
+              <Text style={styles.title}>Scan QR Code</Text>
+              <Text style={styles.description}>
+                To connect with our registered lab, scan the lab's QR code.{" "}
+                {"\n"} {"\n"}To share your reports with a registered user, scan
+                their QR code.
+              </Text>
+            </View>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -378,18 +378,17 @@ const styles = StyleSheet.create({
     color: "#003366",
     marginBottom: 20,
     marginTop: 0,
-    paddingTop:130,
-    paddingLeft:70,
+    paddingTop: 130,
+    paddingLeft: 70,
     marginLeft: 0,
   },
   description: {
-    fontSize: 18
-    ,
+    fontSize: 18,
     color: "#003366",
     textAlign: "right",
     marginBottom: 0,
-    paddingRight:30,
-    marginRight:150,
+    paddingRight: 30,
+    marginRight: 150,
     marginTop: 0,
   },
 
@@ -539,16 +538,16 @@ const styles = StyleSheet.create({
     flex: 1,
     width: 300,
     height: 300,
-   marginBottom:100,
+    marginBottom: 100,
     marginRight: 300,
-    marginTop:-50,
+    marginTop: -50,
   },
-  textContent:{
-    flexDirection:"colomn",
+  textContent: {
+    flexDirection: "colomn",
   },
-  upperContent:{
-   flexDirection:"row",
-   marginBottom:80,
+  upperContent: {
+    flexDirection: "row",
+    marginBottom: 80,
   },
 });
 

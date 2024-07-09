@@ -39,7 +39,7 @@ const UserProfile = ({ route, navigation }) => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.178.140:33000/api/users/${user.id}`
+          `http://13.202.67.81:10000/usermgtapi/api/users/${user.id}`
         );
         const fetchedUser = response.data;
         setUser(fetchedUser);
@@ -98,10 +98,13 @@ const UserProfile = ({ route, navigation }) => {
         const downloadURL = await getDownloadURL(storageRef);
         setProfilePicUri(downloadURL);
 
-        await axios.put(`http://192.168.178.140:33000/api/users/${user.id}`, {
-          ...user,
-          profilePictureUrl: downloadURL,
-        });
+        await axios.put(
+          `http://13.202.67.81:10000/usermgtapi/api/users/${user.id}`,
+          {
+            ...user,
+            profilePictureUrl: downloadURL,
+          }
+        );
 
         setImageActionModalVisible(false);
       }
@@ -119,10 +122,13 @@ const UserProfile = ({ route, navigation }) => {
 
         setProfilePicUri(null);
 
-        await axios.put(`http://192.168.178.140:33000/api/users/${user.id}`, {
-          ...user,
-          profilePictureUrl: null,
-        });
+        await axios.put(
+          `http://13.202.67.81:10000/usermgtapi/api/users/${user.id}`,
+          {
+            ...user,
+            profilePictureUrl: null,
+          }
+        );
 
         setImageActionModalVisible(false);
       } else {
@@ -150,7 +156,7 @@ const UserProfile = ({ route, navigation }) => {
     };
     try {
       const response = await axios.put(
-        `http://192.168.178.140:33000/api/users/${user.id}`,
+        `http://13.202.67.81:10000/usermgtapi/api/users/${user.id}`,
         updatedUser
       );
       setUser(updatedUser);
