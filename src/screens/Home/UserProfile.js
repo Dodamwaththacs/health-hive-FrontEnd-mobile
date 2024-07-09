@@ -39,7 +39,9 @@ const UserProfile = ({ route, navigation }) => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(
+
           `http://13.202.67.81:10000/usermgtapi/api/users/${user.id}`
+
         );
         const fetchedUser = response.data;
         setUser(fetchedUser);
@@ -98,6 +100,7 @@ const UserProfile = ({ route, navigation }) => {
         const downloadURL = await getDownloadURL(storageRef);
         setProfilePicUri(downloadURL);
 
+
         await axios.put(
           `http://13.202.67.81:10000/usermgtapi/api/users/${user.id}`,
           {
@@ -105,6 +108,7 @@ const UserProfile = ({ route, navigation }) => {
             profilePictureUrl: downloadURL,
           }
         );
+
 
         setImageActionModalVisible(false);
       }
@@ -121,6 +125,7 @@ const UserProfile = ({ route, navigation }) => {
         await deleteObject(storageRef);
 
         setProfilePicUri(null);
+
 
         await axios.put(
           `http://13.202.67.81:10000/usermgtapi/api/users/${user.id}`,
@@ -156,7 +161,9 @@ const UserProfile = ({ route, navigation }) => {
     };
     try {
       const response = await axios.put(
+
         `http://13.202.67.81:10000/usermgtapi/api/users/${user.id}`,
+
         updatedUser
       );
       setUser(updatedUser);
@@ -511,7 +518,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 15,
-    color: "#0056B3",
+    color: "#003366",
   },
   editButton: {
     position: "absolute",

@@ -35,8 +35,10 @@ const DocumentViewer = ({ route }) => {
       setIsLoading(true);
 
       try {
+
         const imageUrl =
           "http://13.202.67.81:10000/usermgtapi/api/ipfs/" + documentUri;
+
 
         const fileUri = `${FileSystem.cacheDirectory} ${documentUri}.jpg`;
         console.log("Image URL:", imageUrl);

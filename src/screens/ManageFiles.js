@@ -32,6 +32,7 @@ function ManageFiles() {
       const db = await SQLite.openDatabaseAsync("HealthHive");
       const folderDataResponse = await db.getAllAsync(
         `SELECT * FROM folderData WHERE folderName NOT IN ('Lab Reports') AND userEmail = "${email}";`
+
       );
       const fileStorageResponse = await db.getAllAsync(
         `SELECT * FROM fileStorage WHERE userEmail = "${email}";`

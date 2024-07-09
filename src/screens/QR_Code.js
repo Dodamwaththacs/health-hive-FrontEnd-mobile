@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
-import QRCode from 'react-native-qrcode-svg';
+import { View, Text, StyleSheet, Image,ImageBackground } from "react-native";
+import QRCode from "react-native-qrcode-svg";
 
 const QR_Code = ({ route }) => {
   const { userId } = route.params;
@@ -8,32 +8,40 @@ const QR_Code = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.guidText}>Give your QR code to someone if they want to share their medical records with you.</Text>
-        <Image
-          source={require('../assets/scanHere.png')}
-          style={styles.image}
-        />
-      </View>
-      <View style={styles.card}>
-
+      <View style={styles.upperContent}>
       
+          <View style={styles.textContent}>
+        <Text style={styles.title}>Scan Me</Text>
+        <Text style={styles.guidText}>
+          Give your QR code {'\n'} to someone {'\n'}if they want to{'\n'} share their medical
+          records{'\n'}with you.
+        </Text>
+        </View>
+        <ImageBackground
+            source={require("../assets/background-QR.png")}
+            style={styles.containerImage}
+          />
+      </View>
+      </View>
+      <View style={styles.container1}>
+      <View style={styles.card}>
         <View style={styles.qrContainer}>
           {userId && (
             <QRCode
               value={userId.toString()}
               size={235}
-              color="#0056B3"
+              color="#003366"
               backgroundColor="white"
             />
           )}
         </View>
-    </View>
+      </View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     justifyContent: "flex-start",
@@ -43,30 +51,52 @@ const styles = StyleSheet.create({
     marginTop: -25,
   },
   headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "90%",
-    height: 110,
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
+    paddingBottom:0,
+    marginBottom:0,
+   
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: "bold",
+    color: "#003366",
     marginBottom: 20,
-    marginTop:70,
-    flexDirection: "row",
-    padding: 10,
-    margin: 10,
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 } ,
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5, // Adjust as needed
+    marginTop: 0,
+    paddingTop: 0,
+    paddingLeft: 30,
+    marginLeft: 0,
   },
-  image: {
-    width: 100, // Adjust size to fit well with the text
-    height: 100,
+  containerImage: {
+    flex: 1,
+    width: 280,
+    height: 280,
+   marginBottom:0,
+    paddingRight:30,
+    marginTop:30,
   },
+  upperContent:{
+    flexDirection:"row",
+    
+   },
+   guidText: {
+    fontSize: 18
+    ,
+    color: "#003366",
+    textAlign: "left",
+    marginBottom: 0,
+    paddingLeft:30,
+    marginRight:0,
+    marginTop: 0,
+  },
+  textContent:{
+    flexDirection:"colomn",
+    paddingTop:180,
+  },
+ 
   card: {
-    marginTop: 90,
+    marginTop: 0,
     width: "73%",
     height: 300,
     alignItems: "center",
@@ -77,24 +107,27 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOffset: {
       width: 0,
-      height: 5
+      height: 5,
     },
     shadowOpacity: 0.7,
     shadowRadius: 15,
     elevation: 20,
   },
-  guidText: {
-    fontSize: 16,
-    color: "gray",
-    textAlign: "left",
-    flex: 1,
-    marginRight: 5, // Add space between text and image
-    marginLeft :10,
-  },
+ 
 
   qrContainer: {
     paddingTop: 25,
-  }
+    paddingHorizontal: 25,
+    
+  },
+  container1: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+    paddingVertical:110, // Adjust as needed for spacing
+  },
+  
 });
 
 export default QR_Code;

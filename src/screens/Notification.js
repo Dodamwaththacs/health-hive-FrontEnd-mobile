@@ -13,6 +13,7 @@ const Notification = ({ route }) => {
     console.log("userId", userId);
     axios
 
+
       .get(
         `http://13.202.67.81:10000/usermgtapi/api/shareFiles/user/${userId}`,
         {
@@ -21,6 +22,7 @@ const Notification = ({ route }) => {
           },
         }
       )
+
       .then((response) => {
         setFiles(response.data);
         console.log("notification", response.data);

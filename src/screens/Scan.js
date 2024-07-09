@@ -42,53 +42,89 @@ const Scan = () => {
     fetchUserData();
   }, []);
 
+  const activateScanner = async (type) => {
+    if (hasPermission === null) {
+      // Permission hasn't been asked yet, so ask for it
+      await getCameraPermission();
+    }
+    
+    if (hasPermission) {
+      setScanType(type);
+      setScanned(false);
+      setIsScannerActive(true);
+    } else {
+      Alert.alert(
+        "Camera Permission Required",
+        "Please grant camera permission to use the scanner.",
+        [
+          { text: "OK", onPress: getCameraPermission }
+        ]
+      );
+    }
+  };
+
   const fetchUserData = async () => {
     const email = await SecureStore.getItemAsync("userEmail");
 
     try {
       const response = await axios.get(
+
         `http://13.202.67.81:10000/usermgtapi/api/users/email/${email}`
+
       );
       setUser(response.data);
     } catch (error) {
       console.error("Error fetching user data: FETCHuSER", error.message);
     }
   };
-
   const handleBarCodeScanned = async ({ type, data }) => {
     console.log(`Scanned: type=${type}, data=${data}`);
     setScanned(true);
-
+  
     const scannedUserId = data;
     setScannedUserId(scannedUserId);
     console.log("scannedUserId:", scannedUserId);
-
+  
     try {
-      const response = await axios.get(
-        `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
-      );
-      const scannedUser = response.data;
 
-      if (!scannedUser) {
+      let response;
+  
+      if (scanType === "labRequest") {
+        response = await axios.get(
+          `http://13.202.67.81:10000/usermgtapi/api/labs/${scannedUserId}`
+        );
+      } else if (scanType === "healthReport") {
+        response = await axios.get(
+          `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
+        );
+      }
+  
+      const scannedData = response.data;
+  
+      if (!scannedData) {
+
         Alert.alert(
           "Invalid QR",
-          "This QR code does not belong to a valid user."
+          `This QR code does not belong to a valid ${
+            scanType === "labRequest" ? "lab" : "user"
+          }.`
         );
         resetScanner();
         return;
       }
-
+  
       setIsModalVisible(true);
     } catch (error) {
-      console.error("Error validating user ID:", error.message);
       Alert.alert(
         "Invalid QR",
-        "This QR code does not belong to a valid user."
+        `This QR code does not belong to a valid ${
+          scanType === "labRequest" ? "lab" : "user"
+        }.`
       );
       resetScanner();
     }
   };
-
+  
   const handleLabRequest = async () => {
     console.log("user:", user.id);
     console.log("lab:", scannedUserId);
@@ -96,7 +132,9 @@ const Scan = () => {
     console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
+
         "http://13.202.67.81:10000/usermgtapi/api/labRequests",
+
 
         {
           user: user.id,
@@ -119,7 +157,9 @@ const Scan = () => {
     let response;
     try {
       const response = await axios.post(
+
         "http://13.202.67.81:10000/usermgtapi/api/labReportShares",
+
 
         {
           doctor: scannedUserId,
@@ -163,7 +203,9 @@ const Scan = () => {
         console.log("selectedFiles", selectedFiles[i]);
 
         const response = await axios.post(
+
           "http://13.202.67.81:10000/usermgtapi/api/shareFiles",
+
           {
             labReportShare: labReportSharesId,
             fileHash: selectedFiles[i],
@@ -216,15 +258,10 @@ const Scan = () => {
     setScannedUserId(null);
   };
 
-  if (!hasPermission) {
+
+  if (hasPermission === false) {
     return (
       <View style={styles.container}>
-        <Text>
-          {hasPermission === null
-            ? "Requesting camera permission..."
-            : "No access to camera"}
-        </Text>
-        <Button title="Allow Camera" onPress={getCameraPermission} />
       </View>
     );
   }
@@ -270,22 +307,14 @@ const Scan = () => {
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => {
-                setScanType("labRequest");
-                setScanned(false);
-                setIsScannerActive(true);
-              }}
+              onPress={() => activateScanner("labRequest")}
             >
               <Ionicons name="flask-outline" size={24} color="#003366" />
               <Text style={styles.buttonText}>Lab Request</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => {
-                setScanType("healthReport");
-                setScanned(false);
-                setIsScannerActive(true);
-              }}
+              onPress={() => activateScanner("healthReport")}
             >
               <Ionicons name="share-outline" size={24} color="#003366" />
               <Text style={styles.buttonText}>
@@ -450,7 +479,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    
   },
 
   buttonText: {

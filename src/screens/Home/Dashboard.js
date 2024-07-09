@@ -51,7 +51,9 @@ const UserProfileCard = ({ user, onPress }) => {
 const fetchDataByEmail = async (email) => {
   try {
     const response = await axios.get(
+
       `http://13.202.67.81:10000/usermgtapi/api/users/email/${email}`
+
     );
     return response.data;
   } catch (error) {

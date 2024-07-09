@@ -40,7 +40,9 @@ const FAQ = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
+
           "http://13.202.67.81:10000/usermgtapi/api/faqs"
+
         );
         console.log("Response data:", response.data);
         setFaqs(response.data);

@@ -13,7 +13,9 @@ const GreetCard = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
+
           "http://13.202.67.81:10000/usermgtapi/api/dailyTips?limit=5"
+
         );
         setTips(response.data);
       } catch (error) {

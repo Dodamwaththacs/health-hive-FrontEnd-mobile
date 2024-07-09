@@ -104,7 +104,9 @@ const FileScreen = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
+
         "http://13.202.67.81:10000/usermgtapi/api/ipfs/upload",
+
 
         formData,
         {

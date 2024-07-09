@@ -39,7 +39,7 @@ const LabFolder = ({ route }) => {
 
         try {
           const response = await axios.get(
-            "http://13.202.67.81:10000/usermgtapi/api/files/user/16"
+            "http://192.168.178.140:33000/api/files/user/2"
           );
           const originData = response.data;
 
@@ -53,8 +53,7 @@ const LabFolder = ({ route }) => {
               );
               try {
                 await axios.delete(
-                  "http://13.202.67.81:10000/usermgtapi/api/files/" +
-                    originData[i].id
+                  "http://192.168.178.140:33000/api/files/" + originData[i].id
                 );
               } catch (error) {
                 console.error("Error data delete : ", error);
@@ -63,7 +62,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
-                  "http://13.202.67.81:10000/usermgtapi/api/labDataUploads/" +
+                  "http://192.168.178.140:33000/api/labDataUploads/" +
                     originData[i].labDataUploadId
                 );
               } catch (error) {
@@ -76,7 +75,7 @@ const LabFolder = ({ route }) => {
 
               try {
                 await axios.delete(
-                  "http://13.202.67.81:10000/usermgtapi/api/labRequests/" +
+                  "http://192.168.178.140:33000/api/labRequests/" +
                     originData[i].labRequestId
                 );
               } catch (error) {
