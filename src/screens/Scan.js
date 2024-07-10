@@ -31,6 +31,10 @@ const Scan = () => {
   const [isFileModalVisible, setIsFileModalVisible] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [labReportSharesId, setLabReportSharesId] = useState([]);
+  const [numberOfRequests, setNumberOfRequests] = useState(0);
+  const [currentRequest, setCurrentRequest] = useState(1);
+  const [checkupsInput, setCheckupsInput] = useState("");
+  const [isCheckupsModalVisible, setIsCheckupsModalVisible] = useState(false); // State for checkups modal
 
   const getCameraPermission = async () => {
     const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -78,42 +82,50 @@ const Scan = () => {
     }
   };
   const handleBarCodeScanned = async ({ type, data }) => {
-    console.log(`Scanned: type=${type}, data=${data}`);
     setScanned(true);
-  
     const scannedUserId = data;
     setScannedUserId(scannedUserId);
-    console.log("scannedUserId:", scannedUserId);
-  
-    try {
 
+    try {
       let response;
-  
       if (scanType === "labRequest") {
         response = await axios.get(
           `http://13.202.67.81:10000/usermgtapi/api/labs/${scannedUserId}`
         );
+        console.log("response of labreq", response.data);
+
+        const scannedData = response.data;
+
+        if (!scannedData) {
+          Alert.alert(
+            "Invalid QR",
+            "This QR code does not belong to a valid lab."
+          );
+          resetScanner();
+          return;
+        }
+
+        setIsCheckupsModalVisible(true);
+
+      
       } else if (scanType === "healthReport") {
         response = await axios.get(
           `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
         );
-      }
-  
-      const scannedData = response.data;
-  
-      if (!scannedData) {
 
-        Alert.alert(
-          "Invalid QR",
-          `This QR code does not belong to a valid ${
-            scanType === "labRequest" ? "lab" : "user"
-          }.`
-        );
-        resetScanner();
-        return;
+        const scannedData = response.data;
+
+        if (!scannedData) {
+          Alert.alert(
+            "Invalid QR",
+            "This QR code does not belong to a valid user."
+          );
+          resetScanner();
+          return;
+        }
+
+        setIsModalVisible(true);
       }
-  
-      setIsModalVisible(true);
     } catch (error) {
       Alert.alert(
         "Invalid QR",
@@ -125,17 +137,12 @@ const Scan = () => {
     }
   };
   
+  
   const handleLabRequest = async () => {
-    console.log("user:", user.id);
-    console.log("lab:", scannedUserId);
-    console.log("description:", description);
-    console.log("customerName:", user.fullName);
+    console.log(`Sending lab request ${currentRequest} of ${numberOfRequests}`);
     try {
-      const response = await axios.post(
-
+      await axios.post(
         "http://13.202.67.81:10000/usermgtapi/api/labRequests",
-
-
         {
           user: user.id,
           lab: scannedUserId,
@@ -143,16 +150,25 @@ const Scan = () => {
           customerName: user.fullName,
         }
       );
-
-      Alert.alert("Lab Request", "Your lab request has been submitted.");
-      resetScanner();
+  
+      console.log(`Completed request ${currentRequest}`);
+  
+      if (currentRequest < numberOfRequests) {
+        setCurrentRequest(prev => prev + 1);
+        setDescription("");
+        setIsModalVisible(true);
+        console.log(`Moving to request ${currentRequest + 1}`);
+      } else {
+        console.log("All requests completed");
+        Alert.alert("Lab Requests", "All lab requests have been submitted.");
+        resetScanner();
+      }
     } catch (error) {
       console.error("Error submitting lab request:", error.message);
       Alert.alert("Error", "Failed to submit lab request.");
       resetScanner();
     }
   };
-
   const handleHealthReport = async () => {
     let response;
     try {
@@ -240,11 +256,21 @@ const Scan = () => {
     if (scanType === "labRequest") {
       handleLabRequest();
     } else if (scanType === "healthReport") {
-      console.log("lab report share");
       handleHealthReport();
     }
   };
-
+  const handleCheckupsSubmit = () => {
+    const num = parseInt(checkupsInput);
+    if (isNaN(num) || num <= 0) {
+      Alert.alert("Invalid Input", "Please enter a valid number.");
+      resetScanner();
+    } else {
+      setNumberOfRequests(num);
+      setCurrentRequest(1);
+      setIsCheckupsModalVisible(false);
+      setIsModalVisible(true);
+    }
+  };
   const handleCancel = () => {
     setIsModalVisible(false);
     resetScanner();
@@ -256,6 +282,9 @@ const Scan = () => {
     setScanType(null);
     setDescription("");
     setScannedUserId(null);
+    setCheckupsInput("");
+    setNumberOfRequests(0);
+    setCurrentRequest(1);
   };
 
 
@@ -387,6 +416,31 @@ const Scan = () => {
             >
               <Text style={styles.modalButtonText}>Done</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        visible={isCheckupsModalVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setIsCheckupsModalVisible(false)}
+            >
+              <Ionicons name="close" size={24} color="gray" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Number of Checkups:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter number of checkups"
+              value={checkupsInput}
+              onChangeText={setCheckupsInput}
+              keyboardType="numeric"
+            />
+            <Button title="Submit" onPress={handleCheckupsSubmit} />
           </View>
         </View>
       </Modal>

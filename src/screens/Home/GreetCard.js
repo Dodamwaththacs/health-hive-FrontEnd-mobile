@@ -127,14 +127,8 @@ const getTypeColor = (type) => {
 const styles = StyleSheet.create({
   container: {
     margin: 10,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    overflow: "hidden",
+    backgroundColor: "#f0f0f0",
+    
   },
   headerContainer: {
     flexDirection: "row",

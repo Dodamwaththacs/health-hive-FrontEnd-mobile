@@ -32,7 +32,7 @@ const Signin = () => {
       });
 
       const response = await axios.post(
-        "https://lemur-1.cloud-iam.com/auth/realms/healthhivelk/protocol/openid-connect/token",
+        "https://lemur-14.cloud-iam.com/auth/realms/teamnovauom/protocol/openid-connect/token",
 
         body.toString(),
         {
@@ -86,7 +86,7 @@ const Signin = () => {
 
   const handleForgotPassword = () => {
     const url =
-      "https://lemur-6.cloud-iam.com/auth/realms/teamnova/login-actions/reset-credentials";
+      "https://lemur-14.cloud-iam.com/auth/realms/teamnova/login-actions/reset-credentials";
     Linking.openURL(url);
   };
 
