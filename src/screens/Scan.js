@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  ScrollView,
 } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import axios from "axios";
@@ -35,6 +36,10 @@ const Scan = () => {
   const [currentRequest, setCurrentRequest] = useState(1);
   const [checkupsInput, setCheckupsInput] = useState("");
   const [isCheckupsModalVisible, setIsCheckupsModalVisible] = useState(false); // State for checkups modal
+  const [isTestModalVisible, setIsTestModalVisible] = useState(false);
+  const [selectedTests, setSelectedTests] = useState([]);
+  const [customTest, setCustomTest] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   const getCameraPermission = async () => {
     const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -51,7 +56,7 @@ const Scan = () => {
       // Permission hasn't been asked yet, so ask for it
       await getCameraPermission();
     }
-    
+
     if (hasPermission) {
       setScanType(type);
       setScanned(false);
@@ -60,9 +65,7 @@ const Scan = () => {
       Alert.alert(
         "Camera Permission Required",
         "Please grant camera permission to use the scanner.",
-        [
-          { text: "OK", onPress: getCameraPermission }
-        ]
+        [{ text: "OK", onPress: getCameraPermission }]
       );
     }
   };
@@ -72,9 +75,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-
         `http://13.202.67.81:10000/usermgtapi/api/users/email/${email}`
-
       );
       setUser(response.data);
     } catch (error) {
@@ -105,9 +106,7 @@ const Scan = () => {
           return;
         }
 
-        setIsCheckupsModalVisible(true);
-
-      
+        setIsTestModalVisible(true);
       } else if (scanType === "healthReport") {
         response = await axios.get(
           `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
@@ -136,46 +135,49 @@ const Scan = () => {
       resetScanner();
     }
   };
-  
-  
+
   const handleLabRequest = async () => {
-    console.log(`Sending lab request ${currentRequest} of ${numberOfRequests}`);
-    try {
-      await axios.post(
-        "http://13.202.67.81:10000/usermgtapi/api/labRequests",
-        {
-          user: user.id,
-          lab: scannedUserId,
-          description: description,
-          customerName: user.fullName,
-        }
-      );
-  
-      console.log(`Completed request ${currentRequest}`);
-  
-      if (currentRequest < numberOfRequests) {
-        setCurrentRequest(prev => prev + 1);
-        setDescription("");
-        setIsModalVisible(true);
-        console.log(`Moving to request ${currentRequest + 1}`);
-      } else {
-        console.log("All requests completed");
-        Alert.alert("Lab Requests", "All lab requests have been submitted.");
-        resetScanner();
-      }
-    } catch (error) {
-      console.error("Error submitting lab request:", error.message);
-      Alert.alert("Error", "Failed to submit lab request.");
-      resetScanner();
+    if (selectedTests.length === 0) {
+      Alert.alert("No Tests Selected", "Please select at least one test.");
+      return;
     }
+
+    for (let i = 0; i < selectedTests.length; i++) {
+      console.log(`Sending lab request ${i + 1} of ${selectedTests.length}`);
+      try {
+        await axios.post(
+          "http://13.202.67.81:10000/usermgtapi/api/labRequests",
+          {
+            user: user.id,
+            lab: scannedUserId,
+            description: selectedTests[i],
+            customerName: user.fullName,
+          }
+        );
+
+        console.log(`Completed request ${i + 1}`);
+      } catch (error) {
+        console.error(
+          `Error submitting lab request for ${selectedTests[i]}:`,
+          error.message
+        );
+        Alert.alert(
+          "Error",
+          `Failed to submit lab request for ${selectedTests[i]}.`
+        );
+      }
+    }
+
+    console.log("All requests completed");
+    Alert.alert("Lab Requests", "All lab requests have been submitted.");
+    resetScanner();
   };
+
   const handleHealthReport = async () => {
     let response;
     try {
       const response = await axios.post(
-
         "http://13.202.67.81:10000/usermgtapi/api/labReportShares",
-
 
         {
           doctor: scannedUserId,
@@ -219,13 +221,13 @@ const Scan = () => {
         console.log("selectedFiles", selectedFiles[i]);
 
         const response = await axios.post(
-
           "http://13.202.67.81:10000/usermgtapi/api/shareFiles",
 
           {
             labReportShare: labReportSharesId,
             fileHash: selectedFiles[i],
             doctorId: scannedUserId,
+            patientName: user.fullName,
           }
         );
       }
@@ -275,6 +277,43 @@ const Scan = () => {
     setIsModalVisible(false);
     resetScanner();
   };
+  const labTests = [
+    "Complete Blood Count (CBC)",
+    "Basic Metabolic Panel (BMP)",
+    "Comprehensive Metabolic Panel (CMP)",
+    "Lipid Panel",
+    "Liver Function Tests (LFTs)",
+    "Thyroid Function Tests",
+    "Hemoglobin A1c (HbA1c)",
+    "Urinalysis",
+    "Electrolyte Panel",
+    "Coagulation Panel",
+    "C-reactive Protein (CRP)",
+    "Erythrocyte Sedimentation Rate (ESR)",
+    "Vitamin D Test",
+    "Iron Studies",
+    "Cardiac Enzyme Tests",
+    "Blood Gases",
+    "Microbial Cultures",
+    "Hormone Panels",
+    "Allergy Testing",
+    "Tumor Markers",
+  ];
+
+  const toggleTestSelection = (test) => {
+    setSelectedTests((prevSelectedTests) =>
+      prevSelectedTests.includes(test)
+        ? prevSelectedTests.filter((t) => t !== test)
+        : [...prevSelectedTests, test]
+    );
+  };
+
+  const handleCustomTestSubmit = () => {
+    if (customTest.trim()) {
+      toggleTestSelection(customTest);
+      setCustomTest("");
+    }
+  };
 
   const resetScanner = () => {
     setScanned(false);
@@ -287,12 +326,8 @@ const Scan = () => {
     setCurrentRequest(1);
   };
 
-
   if (hasPermission === false) {
-    return (
-      <View style={styles.container}>
-      </View>
-    );
+    return <View style={styles.container}></View>;
   }
 
   return (
@@ -309,7 +344,7 @@ const Scan = () => {
           <View style={styles.cancelButtonContainer}>
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={resetScanner}
+              onPress={handleCancel}
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
@@ -353,38 +388,7 @@ const Scan = () => {
           </View>
         </View>
       )}
-      <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="slide"
-        statusBarTranslucent={true} // Ensure modal covers the status bar
-        onRequestClose={handleCancel} // Handle the back button on Android
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Enter description:</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={setDescription}
-              value={description}
-            />
-            <View style={styles.horizontalButtons}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.modalButtonText}>Submit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleCancel}
-              >
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+
       <Modal
         visible={isFileModalVisible}
         transparent={true}
@@ -419,31 +423,107 @@ const Scan = () => {
           </View>
         </View>
       </Modal>
+
       <Modal
-        visible={isCheckupsModalVisible}
+        visible={isModalVisible}
         transparent={true}
         animationType="slide"
+        statusBarTranslucent={true} // Ensure modal covers the status bar
+        onRequestClose={handleCancel} // Handle the back button on Android
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setIsCheckupsModalVisible(false)}
-            >
-              <Ionicons name="close" size={24} color="gray" />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Number of Checkups:</Text>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Enter description:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter number of checkups"
-              value={checkupsInput}
-              onChangeText={setCheckupsInput}
-              keyboardType="numeric"
+              onChangeText={setDescription}
+              value={description}
             />
-            <Button title="Submit" onPress={handleCheckupsSubmit} />
+            <View style={styles.horizontalButtons}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleSubmit}
+              >
+                <Text style={styles.modalButtonText}>Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleCancel}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
+      <Modal
+      visible={isTestModalVisible}
+      transparent={true}
+      animationType="slide"
+    >
+      <View style={styles.modalContainerTest}>
+        <View style={styles.modalViewTest}>
+          <Text style={styles.modalTextTest}>Select your test here</Text>
+          <ScrollView style={styles.scrollViewTest}>
+            {labTests.map((test, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => toggleTestSelection(test)}
+                style={styles.testContainer}
+              >
+                <Text style={styles.testText}>{test}</Text>
+                <View style={[
+                  styles.checkbox,
+                  selectedTests.includes(test) && styles.checkboxSelected
+                ]} />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <TouchableOpacity
+            style={styles.addCustomButton}
+            onPress={() => setShowCustomInput(!showCustomInput)}
+          >
+            <Ionicons name={showCustomInput ? "remove" : "add"} size={24} color="white" />
+          </TouchableOpacity>
+          {showCustomInput && (
+            <>
+              <TextInput
+                style={styles.inputTest}
+                placeholder="Enter your test name here"
+                value={customTest}
+                onChangeText={setCustomTest}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  handleCustomTestSubmit(customTest);
+                  setCustomTest('');
+                }}
+                style={styles.modalButtonTest}
+              >
+                <Text style={styles.modalButtonTextTest}>Add Test</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          <View style={styles.horizontalButtonsTest}>
+            <TouchableOpacity
+              style={styles.modalButtonTestCancel}
+              onPress={() => {
+                setIsTestModalVisible(false);
+                resetScanner();
+              }}
+            >
+              <Text style={styles.modalButtonText}>Close</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButtonTest}
+              onPress={handleLabRequest}
+            >
+              <Text style={styles.modalButtonTextTest}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
     </View>
   );
 };
@@ -533,7 +613,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    
   },
 
   buttonText: {
@@ -631,6 +710,96 @@ const styles = StyleSheet.create({
   upperContent: {
     flexDirection: "row",
     marginBottom: 80,
+  },
+  modalContainerTest: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalViewTest: {
+    width: '90%',
+    maxHeight: '100%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'stretch',
+  },
+  modalTextTest: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  scrollViewTest: {
+    maxHeight: 300,
+  },
+  testContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  testText: {
+    fontSize: 16,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    borderRadius: 4,
+  },
+  checkboxSelected: {
+    backgroundColor: '#007AFF',
+  },
+  addCustomButton: {
+    alignSelf: 'flex-start',
+    marginTop: 15,
+    marginBottom: 10,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addCustomButtonText: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  inputTest: {
+    borderWidth: 1,
+    borderColor: '#007AFF',
+    borderRadius: 5,
+    padding: 8,
+    marginBottom: 10,
+  },
+  modalButtonTest: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  modalButtonTextTest: {
+    color: 'white',
+    fontSize: 16,
+  },
+  horizontalButtonsTest: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 20,
+  },
+  modalButtonTestCancel: {
+    padding: 10,
+    marginRight: 10,
+  },
+  modalButtonText: {
+    color: '#007AFF',
+    fontSize: 16,
   },
 });
 
