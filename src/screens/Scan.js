@@ -47,7 +47,7 @@ const Scan = () => {
       // Permission hasn't been asked yet, so ask for it
       await getCameraPermission();
     }
-    
+
     if (hasPermission) {
       setScanType(type);
       setScanned(false);
@@ -56,9 +56,7 @@ const Scan = () => {
       Alert.alert(
         "Camera Permission Required",
         "Please grant camera permission to use the scanner.",
-        [
-          { text: "OK", onPress: getCameraPermission }
-        ]
+        [{ text: "OK", onPress: getCameraPermission }]
       );
     }
   };
@@ -68,9 +66,7 @@ const Scan = () => {
 
     try {
       const response = await axios.get(
-
         `http://13.202.67.81:10000/usermgtapi/api/users/email/${email}`
-
       );
       setUser(response.data);
     } catch (error) {
@@ -80,15 +76,14 @@ const Scan = () => {
   const handleBarCodeScanned = async ({ type, data }) => {
     console.log(`Scanned: type=${type}, data=${data}`);
     setScanned(true);
-  
+
     const scannedUserId = data;
     setScannedUserId(scannedUserId);
     console.log("scannedUserId:", scannedUserId);
-  
-    try {
 
+    try {
       let response;
-  
+
       if (scanType === "labRequest") {
         response = await axios.get(
           `http://13.202.67.81:10000/usermgtapi/api/labs/${scannedUserId}`
@@ -98,11 +93,10 @@ const Scan = () => {
           `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
         );
       }
-  
-      const scannedData = response.data;
-  
-      if (!scannedData) {
 
+      const scannedData = response.data;
+
+      if (!scannedData) {
         Alert.alert(
           "Invalid QR",
           `This QR code does not belong to a valid ${
@@ -112,7 +106,7 @@ const Scan = () => {
         resetScanner();
         return;
       }
-  
+
       setIsModalVisible(true);
     } catch (error) {
       Alert.alert(
@@ -124,17 +118,11 @@ const Scan = () => {
       resetScanner();
     }
   };
-  
+
   const handleLabRequest = async () => {
-    console.log("user:", user.id);
-    console.log("lab:", scannedUserId);
-    console.log("description:", description);
-    console.log("customerName:", user.fullName);
     try {
       const response = await axios.post(
-
         "http://13.202.67.81:10000/usermgtapi/api/labRequests",
-
 
         {
           user: user.id,
@@ -155,11 +143,10 @@ const Scan = () => {
 
   const handleHealthReport = async () => {
     let response;
+    console.log("patientName", user.fullName);
     try {
       const response = await axios.post(
-
         "http://13.202.67.81:10000/usermgtapi/api/labReportShares",
-
 
         {
           doctor: scannedUserId,
@@ -168,12 +155,9 @@ const Scan = () => {
           patientName: user.fullName,
         }
       );
-      console.log("response", response.data);
       setLabReportSharesId(response.data);
       fileSelect();
     } catch (error) {
-      console.error("Error sharing health report:", error.message);
-      console.error("Error response:", error.response.data);
       Alert.alert("Error", "Failed to share health records.");
       resetScanner();
     }
@@ -181,14 +165,12 @@ const Scan = () => {
 
   const fileSelect = async () => {
     try {
-      console.log("labReportShares", labReportSharesId);
       const db = await SQLite.openDatabaseAsync("HealthHive");
       const response = await db.getAllAsync(
         `SELECT * FROM fileStorage WHERE userEmail = "${user.email}"`
       );
       await db.closeAsync();
 
-      console.log("response", response);
       setFiles(response);
       setIsFileModalVisible(true);
     } catch (error) {
@@ -201,15 +183,15 @@ const Scan = () => {
     try {
       for (let i = 0; i < selectedFiles.length; i++) {
         console.log("selectedFiles", selectedFiles[i]);
-
+        console.log("user name :", user.fullName);
         const response = await axios.post(
-
           "http://13.202.67.81:10000/usermgtapi/api/shareFiles",
 
           {
             labReportShare: labReportSharesId,
             fileHash: selectedFiles[i],
             doctorId: scannedUserId,
+            patientName: user.fullName,
           }
         );
       }
@@ -258,12 +240,8 @@ const Scan = () => {
     setScannedUserId(null);
   };
 
-
   if (hasPermission === false) {
-    return (
-      <View style={styles.container}>
-      </View>
-    );
+    return <View style={styles.container}></View>;
   }
 
   return (
@@ -479,7 +457,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    
   },
 
   buttonText: {

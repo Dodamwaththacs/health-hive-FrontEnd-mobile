@@ -25,7 +25,7 @@ const Notes = ({ route }) => {
   const fetchNotes = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.178.140:33000/api/notess/userId/${userId}`
+        `http://13.202.67.81:10000/usermgtapi/api/notess/userId/${userId}`
       );
       console.log("API response:", response.data);
       const validNotes = response.data.filter((note) => note && note.id);
@@ -54,7 +54,7 @@ const Notes = ({ route }) => {
     };
     try {
       const response = await axios.post(
-        "http://192.168.178.140:33000/api/notess",
+        "http://13.202.67.81:10000/usermgtapi/api/notess",
         newNote
       );
       const createdNote =
@@ -79,7 +79,7 @@ const Notes = ({ route }) => {
     };
     try {
       await axios.put(
-        `http://192.168.178.140:33000/api/notess/${editingNoteId}`,
+        `http://13.202.67.81:10000/usermgtapi/api/notess/${editingNoteId}`,
         updatedNote
       );
       setNotes((prevNotes) =>
@@ -98,7 +98,9 @@ const Notes = ({ route }) => {
 
   const deleteNote = async (noteId) => {
     try {
-      await axios.delete(`http://192.168.178.140:33000/api/notess/${noteId}`);
+      await axios.delete(
+        `http://13.202.67.81:10000/usermgtapi/api/notess/${noteId}`
+      );
       const updatedNotes = notes.filter((note) => note.id !== noteId);
       setNotes(updatedNotes);
       Alert.alert("Note Deleted", "Your note has been deleted successfully.");
