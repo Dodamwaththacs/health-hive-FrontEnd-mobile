@@ -91,11 +91,10 @@ function DrawerNavigator() {
       try {
         const email = await SecureStore.getItemAsync("userEmail");
         const response = await axios.get(
-
           `http://13.202.67.81:10000/usermgtapi/api/users/email/${email}`
-
         );
         setUser(response.data);
+        await SecureStore.setItemAsync("userId", response.data.id.toString());
       } catch (error) {
         console.error("Error fetching user data drawer :", error);
         signOut();

@@ -36,10 +36,10 @@ const LabFolder = ({ route }) => {
       const fetchDataFromOrigin = async () => {
         const email = await SecureStore.getItemAsync("userEmail");
         setEmail(email);
-
+        const userId = await SecureStore.getItemAsync("userId");
         try {
           const response = await axios.get(
-            "http://192.168.178.140:33000/api/files/user/2"
+            `http://13.202.67.81:10000/usermgtapi/api/files/user/${userId}`
           );
           const originData = response.data;
 
@@ -53,37 +53,35 @@ const LabFolder = ({ route }) => {
               );
               try {
                 await axios.delete(
-                  "http://192.168.178.140:33000/api/files/" + originData[i].id
+                  "http://13.202.67.81:10000/usermgtapi/api/files/" +
+                    originData[i].id
                 );
               } catch (error) {
-                console.error("Error data delete : ", error);
-                console.error("files :", originData[i].id);
+                console.log("Error data delete : ", error);
+                console.log("files :", originData[i].id);
               }
 
               try {
                 await axios.delete(
-                  "http://192.168.178.140:33000/api/labDataUploads/" +
+                  "http://13.202.67.81:10000/usermgtapi/api/labDataUploads/" +
                     originData[i].labDataUploadId
                 );
               } catch (error) {
-                console.error("Error data delete : ", error);
-                console.error(
-                  "labDataUploads :",
-                  originData[i].labDataUploadId
-                );
+                console.log("Error data delete : ", error);
+                console.log("labDataUploads :", originData[i].labDataUploadId);
               }
 
               try {
                 await axios.delete(
-                  "http://192.168.178.140:33000/api/labRequests/" +
+                  "http://13.202.67.81:10000/usermgtapi/api/labRequests/" +
                     originData[i].labRequestId
                 );
               } catch (error) {
-                console.error("Error data delete : ", error);
-                console.error("labRequests :", originData[i].labRequestId);
+                console.log("Error data delete : ", error);
+                console.log("labRequests :", originData[i].labRequestId);
               }
             } catch (error) {
-              console.error("Error data insert : ", error);
+              console.log("Error data insert : ", error);
             }
           }
 

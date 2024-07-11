@@ -84,6 +84,7 @@ const Scan = () => {
   };
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
+
     const scannedUserId = data;
     setScannedUserId(scannedUserId);
 
@@ -112,6 +113,7 @@ const Scan = () => {
           `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
         );
 
+
         const scannedData = response.data;
 
         if (!scannedData) {
@@ -135,6 +137,7 @@ const Scan = () => {
       resetScanner();
     }
   };
+
 
   const handleLabRequest = async () => {
     if (selectedTests.length === 0) {
@@ -175,6 +178,7 @@ const Scan = () => {
 
   const handleHealthReport = async () => {
     let response;
+    console.log("patientName", user.fullName);
     try {
       const response = await axios.post(
         "http://13.202.67.81:10000/usermgtapi/api/labReportShares",
@@ -186,12 +190,9 @@ const Scan = () => {
           patientName: user.fullName,
         }
       );
-      console.log("response", response.data);
       setLabReportSharesId(response.data);
       fileSelect();
     } catch (error) {
-      console.error("Error sharing health report:", error.message);
-      console.error("Error response:", error.response.data);
       Alert.alert("Error", "Failed to share health records.");
       resetScanner();
     }
@@ -199,14 +200,12 @@ const Scan = () => {
 
   const fileSelect = async () => {
     try {
-      console.log("labReportShares", labReportSharesId);
       const db = await SQLite.openDatabaseAsync("HealthHive");
       const response = await db.getAllAsync(
         `SELECT * FROM fileStorage WHERE userEmail = "${user.email}"`
       );
       await db.closeAsync();
 
-      console.log("response", response);
       setFiles(response);
       setIsFileModalVisible(true);
     } catch (error) {
@@ -219,7 +218,7 @@ const Scan = () => {
     try {
       for (let i = 0; i < selectedFiles.length; i++) {
         console.log("selectedFiles", selectedFiles[i]);
-
+        console.log("user name :", user.fullName);
         const response = await axios.post(
           "http://13.202.67.81:10000/usermgtapi/api/shareFiles",
 
