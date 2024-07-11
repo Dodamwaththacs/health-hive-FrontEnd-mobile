@@ -46,6 +46,7 @@ function CustomDrawerContent(props) {
           text: "YES",
           onPress: () => {
             // Perform logout actions here
+            
             props.navigation.navigate("SignOut");
           },
         },

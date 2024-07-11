@@ -398,6 +398,7 @@ const Scan = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Files:</Text>
+            
             {files.map((file, index) => (
               <TouchableOpacity
                 key={index}
@@ -433,24 +434,25 @@ const Scan = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Enter description:</Text>
+            <Text style={styles.modalText}>Enter your description</Text>
             <TextInput
               style={styles.input}
               onChangeText={setDescription}
               value={description}
             />
             <View style={styles.horizontalButtons}>
+              
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleCancel}
+              >
+                <Text style={styles.modalButtonText}>Close</Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalButton}
                 onPress={handleSubmit}
               >
                 <Text style={styles.modalButtonText}>Submit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleCancel}
-              >
-                <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -506,7 +508,7 @@ const Scan = () => {
           )}
           <View style={styles.horizontalButtonsTest}>
             <TouchableOpacity
-              style={styles.modalButtonTestCancel}
+              style={styles.modalButton}
               onPress={() => {
                 setIsTestModalVisible(false);
                 resetScanner();
@@ -515,10 +517,10 @@ const Scan = () => {
               <Text style={styles.modalButtonText}>Close</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.modalButtonTest}
+              style={styles.modalButton}
               onPress={handleLabRequest}
             >
-              <Text style={styles.modalButtonTextTest}>OK</Text>
+              <Text style={styles.modalButtonText}>OK</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -574,9 +576,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     position: "relative",
   },
-  scanner: {
-    flex: 1,
-  },
+
   overlay: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 10,
@@ -629,7 +629,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
   modalView: {
-    width: "80%",
+    width: "83%",
     padding: 20,
     backgroundColor: "#fff",
     borderRadius: 10,
@@ -638,7 +638,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     marginBottom: 10,
-    color: "gray",
+    color: "#003366",
   },
   input: {
     width: "100%",
@@ -655,18 +655,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   modalButton: {
-    backgroundColor: "#ADD8E6",
+    backgroundColor: 'transparent',
     padding: 10,
-    borderRadius: 10,
-    alignItems: "center",
-    marginHorizontal: 5,
-    width: "45%", // Adjust width to maintain horizontal alignment
-    height: 40, // Adjust the height to fit the button size
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10, // Adjust the height to fit the button size
   },
-  modalButtonText: {
-    color: "gray",
-    fontSize: 16,
-  },
+
   cancelButton: {
     backgroundColor: "#1921E4",
     padding: 10,
@@ -748,11 +743,11 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: '#003366',
     borderRadius: 4,
   },
   checkboxSelected: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#003366',
   },
   addCustomButton: {
     alignSelf: 'flex-start',
@@ -761,7 +756,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#003366',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -772,33 +767,31 @@ const styles = StyleSheet.create({
   },
   inputTest: {
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: '#003366',
     borderRadius: 5,
     padding: 8,
     marginBottom: 10,
   },
   modalButtonTest: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#003366',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
   },
   modalButtonTextTest: {
+
     color: 'white',
     fontSize: 16,
   },
   horizontalButtonsTest: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     marginTop: 20,
-  },
-  modalButtonTestCancel: {
-    padding: 10,
-    marginRight: 10,
+    
   },
   modalButtonText: {
-    color: '#007AFF',
+    color: '#003366',
     fontSize: 16,
   },
 });
