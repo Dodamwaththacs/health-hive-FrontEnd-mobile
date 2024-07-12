@@ -4,98 +4,166 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
-  ScrollView,
+  FlatList,
   SafeAreaView,
+  Alert,
+  TextInput,
 } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const SelectFiles = ({ route }) => {
   const navigation = useNavigation();
+  const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const { user, scannedUserId, labReportSharesId, description } = route.params;
+  const [currentFolder, setCurrentFolder] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const { user, scannedUserId, labReportSharesId } = route.params;
 
   useEffect(() => {
-    fileSelect();
+    fetchFolders();
   }, []);
 
-  const fileSelect = async () => {
+  const fetchFolders = async () => {
     try {
       const db = await SQLite.openDatabaseAsync('HealthHive');
       const response = await db.getAllAsync(
-        `SELECT * FROM fileStorage WHERE userEmail = "${user.email}"`
+        `SELECT DISTINCT folderName FROM fileStorage WHERE userEmail = "${user.email}"`
       );
       await db.closeAsync();
+      setFolders(response.map(item => item.folderName));
+    } catch (error) {
+      console.error('Error fetching folders:', error.message);
+    }
+  };
 
+  const handleFolderPress = async (folderName) => {
+    try {
+      const db = await SQLite.openDatabaseAsync('HealthHive');
+      const response = await db.getAllAsync(
+        `SELECT * FROM fileStorage WHERE userEmail = "${user.email}" AND folderName = "${folderName}"`
+      );
+      await db.closeAsync();
       setFiles(response);
+      setCurrentFolder(folderName);
+      setSearchQuery('');
     } catch (error) {
       console.error('Error fetching files:', error.message);
     }
   };
 
-  const handleFileSelect = (fileName) => {
-    setSelectedFiles((prevSelectedFiles) => {
-      if (prevSelectedFiles.includes(fileName)) {
-        return prevSelectedFiles.filter((file) => file !== fileName);
+  const handleFileSelect = (file) => {
+    setSelectedFiles(prevSelected => {
+      if (prevSelected.some(f => f.id === file.id)) {
+        return prevSelected.filter(f => f.id !== file.id);
       } else {
-        return [...prevSelectedFiles, fileName];
+        return [...prevSelected, file];
       }
     });
   };
 
-  const fileUpload = async () => {
+  const handleShareFiles = async () => {
     try {
-      for (let i = 0; i < selectedFiles.length; i++) {
+      for (let file of selectedFiles) {
         await axios.post(
           'http://13.202.67.81:10000/usermgtapi/api/shareFiles',
           {
             labReportShare: labReportSharesId,
-            fileHash: selectedFiles[i],
+            fileHash: file.hash,
             doctorId: scannedUserId,
             patientName: user.fullName,
           }
         );
       }
-      Alert.alert('Success', 'Health report shared successfully.');
+      Alert.alert('Success', 'Health reports shared successfully.');
       navigation.navigate('Scan');
     } catch (error) {
       Alert.alert('Error', 'Failed to share health records.');
-      console.error('Error sharing health report:', error.message);
+      console.error('Error sharing health reports:', error.message);
     }
   };
 
-  const handleCancel = () => {
-    navigation.navigate('Scan');
+  const renderItem = ({ item }) => {
+    if (currentFolder === null) {
+      // Render folder
+      return (
+        <TouchableOpacity
+          style={styles.folderContainer}
+          onPress={() => handleFolderPress(item)}
+        >
+          <Icon name="folder" size={40} color="#003366" />
+          <Text style={styles.folderName}>{item}</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      // Render file
+      const isSelected = selectedFiles.some(f => f.id === item.id);
+      return (
+        <TouchableOpacity
+          style={[styles.fileContainer, isSelected && styles.selectedFileContainer]}
+          onPress={() => handleFileSelect(item)}
+        >
+          <Icon name="file" size={30} color="#003366" />
+          <Text style={styles.fileName}>{item.fileName}</Text>
+        </TouchableOpacity>
+      );
+    }
   };
+
+  const filteredData = currentFolder
+    ? files.filter(file => file.fileName.toLowerCase().includes(searchQuery.toLowerCase()))
+    : folders.filter(folder => folder.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Select Files to Share</Text>
-      <ScrollView style={styles.scrollView}>
-        {files.map((file, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => handleFileSelect(file.hash)}
-            style={[
-              styles.fileContainer,
-              selectedFiles.includes(file.hash) && styles.selectedFileContainer,
-            ]}
-          >
-            <Text style={styles.fileName}>File Name: {file.fileName}</Text>
-            <Text style={styles.fileText}>Description: {file.description}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <Text style={styles.title}>
+        {currentFolder ? `Files in ${currentFolder}` : 'Select Folder'}
+      </Text>
+      <View style={styles.searchContainer}>
+        <Icon name="search" size={20} color="#003366" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder={currentFolder ? "Search files..." : "Search folders..."}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+      <FlatList
+        data={filteredData}
+        keyExtractor={(item) => item.id ? item.id.toString() : item}
+        renderItem={renderItem}
+        style={styles.list}
+      />
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleCancel}>
-          <Text style={styles.buttonText}>Cancel</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            if (currentFolder) {
+              setCurrentFolder(null);
+              setSearchQuery('');
+            } else {
+              navigation.goBack();
+            }
+          }}
+        >
+          <Text style={styles.buttonText}>
+            {currentFolder ? 'Back to Folders' : 'Cancel'}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={fileUpload}>
-          <Text style={styles.buttonText}>Share Selected Files</Text>
-        </TouchableOpacity>
+        {currentFolder && (
+          <TouchableOpacity
+            style={[styles.button, selectedFiles.length === 0 && styles.disabledButton]}
+            onPress={handleShareFiles}
+            disabled={selectedFiles.length === 0}
+          >
+            <Text style={styles.buttonText}>
+              Share Selected Files ({selectedFiles.length})
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -104,52 +172,100 @@ const SelectFiles = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollView: {
-    flex: 1,
+    backgroundColor: '#f9f9f9',
     padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    margin: 20,
+    marginBottom: 20,
     color: '#003366',
   },
-  fileContainer: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  selectedFileContainer: {
-    backgroundColor: '#ADD8E6',
+  searchIcon: {
+    marginRight: 10,
   },
-  fileName: {
+  searchInput: {
+    flex: 1,
+    height: 40,
     fontSize: 16,
-    fontWeight: 'bold',
+  },
+  list: {
+    flex: 1,
+  },
+  folderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  folderName: {
+    marginLeft: 15,
+    fontSize: 18,
     color: '#333',
   },
-  fileText: {
+  fileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  selectedFileContainer: {
+    backgroundColor: '#e6f2ff',
+    borderColor: '#003366',
+    borderWidth: 1,
+  },
+  fileName: {
+    marginLeft: 15,
+    fontSize: 16,
     color: '#333',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 20,
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
   button: {
     backgroundColor: '#003366',
     padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
+    borderRadius: 10,
     flex: 1,
     marginHorizontal: 5,
+    alignItems: 'center',
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  disabledButton: {
+    backgroundColor: '#cccccc',
   },
 });
 
