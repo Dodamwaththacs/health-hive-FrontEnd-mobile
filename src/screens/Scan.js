@@ -18,8 +18,10 @@ import { useEmail } from "../EmailContext";
 import * as SecureStore from "expo-secure-store";
 import * as SQLite from "expo-sqlite";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
 const Scan = () => {
+  const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [isScannerActive, setIsScannerActive] = useState(false);
@@ -191,67 +193,24 @@ const Scan = () => {
         }
       );
       setLabReportSharesId(response.data);
-      fileSelect();
+
+      navigation.navigate('SelectFiles', {
+        user,
+        scannedUserId,
+        labReportSharesId,
+        description,
+      });
+      resetScanner();
+
     } catch (error) {
       Alert.alert("Error", "Failed to share health records.");
       resetScanner();
     }
   };
 
-  const fileSelect = async () => {
-    try {
-      const db = await SQLite.openDatabaseAsync("HealthHive");
-      const response = await db.getAllAsync(
-        `SELECT * FROM fileStorage WHERE userEmail = "${user.email}"`
-      );
-      await db.closeAsync();
+ 
 
-      setFiles(response);
-      setIsFileModalVisible(true);
-    } catch (error) {
-      console.error("Error fetching files:", error.message);
-    }
-  };
-
-  const fileUpload = async () => {
-    console.log("doctoe id", scannedUserId);
-    try {
-      for (let i = 0; i < selectedFiles.length; i++) {
-        console.log("selectedFiles", selectedFiles[i]);
-        console.log("user name :", user.fullName);
-        const response = await axios.post(
-          "http://13.202.67.81:10000/usermgtapi/api/shareFiles",
-
-          {
-            labReportShare: labReportSharesId,
-            fileHash: selectedFiles[i],
-            doctorId: scannedUserId,
-            patientName: user.fullName,
-          }
-        );
-      }
-      setIsFileModalVisible(false);
-      Alert.alert("Health report shared successfully.");
-      resetScanner();
-    } catch (error) {
-      Alert.alert("Error", "Failed to share health records.");
-      console.error("Error sharing health report:", error.message);
-    }
-  };
-
-  const handleFileSelect = (fileName) => {
-    setSelectedFiles((prevSelectedFiles) => {
-      if (prevSelectedFiles.includes(fileName)) {
-        console.log("prevSelectedFiles", prevSelectedFiles);
-
-        return prevSelectedFiles.filter((file) => file !== fileName);
-      } else {
-        console.log("prevSelectedFiles", prevSelectedFiles);
-        return [...prevSelectedFiles, fileName];
-      }
-    });
-  };
-
+  
   const handleSubmit = () => {
     setIsModalVisible(false);
     if (scanType === "labRequest") {
@@ -260,18 +219,7 @@ const Scan = () => {
       handleHealthReport();
     }
   };
-  const handleCheckupsSubmit = () => {
-    const num = parseInt(checkupsInput);
-    if (isNaN(num) || num <= 0) {
-      Alert.alert("Invalid Input", "Please enter a valid number.");
-      resetScanner();
-    } else {
-      setNumberOfRequests(num);
-      setCurrentRequest(1);
-      setIsCheckupsModalVisible(false);
-      setIsModalVisible(true);
-    }
-  };
+
   const handleCancel = () => {
     setIsModalVisible(false);
     resetScanner();
@@ -388,41 +336,7 @@ const Scan = () => {
         </View>
       )}
 
-      <Modal
-        visible={isFileModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsFileModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Files:</Text>
-            
-            {files.map((file, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleFileSelect(file.hash)}
-                style={[
-                  styles.fileContainer,
-                  selectedFiles.includes(file.hash) &&
-                    styles.selectedFileContainer,
-                ]}
-              >
-                <Text style={styles.fileName}>File Name: {file.fileName}</Text>
-                <Text style={styles.fileText}>
-                  Description: {file.description}
-                </Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => fileUpload()}
-            >
-              <Text style={styles.modalButtonText}>Done</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      
 
       <Modal
         visible={isModalVisible}

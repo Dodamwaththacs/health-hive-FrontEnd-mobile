@@ -19,6 +19,7 @@ import HowItWorks from "../screens/HowItWorks";
 import FAQ from "../screens/FAQ";
 import ContactUs from "../screens/ContactUs";
 import ManageFiles from "../screens/ManageFiles";
+import SelectFiles from "../screens/SelectFiles";
 const Stack = createNativeStackNavigator();
 
 function StackNavigation({ userToken }) {
@@ -156,6 +157,16 @@ function StackNavigation({ userToken }) {
               component={ManageFiles}
               options={{
                 title: "Manage Files",
+                headerStyle: { backgroundColor: "#0056B3" },
+                headerTintColor: "#fff",
+                headerTitleStyle: { fontWeight: "bold" },
+              }}
+            />
+            <Stack.Screen
+              name="SelectFiles"
+              component={SelectFiles}
+              options={{
+                title: "Select Files",
                 headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },

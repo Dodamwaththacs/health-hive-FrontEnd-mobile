@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Home from "./HomeBottomNavigator";
 import Scan from "../screens/Scan";
 import QR_Code from "../screens/QR_Code";
-import Notification from "../screens/Notification";
+import ReceivedFiles from "../screens/ReceivedFiles";
 import Setting from "../screens/Setting";
 import Notes from "../screens/Notes";
 import SignOut from "../screens/SignOut";
@@ -28,6 +28,7 @@ import { AuthContext } from "../../App";
 import Logo from "../assets/logo.png";
 
 import { useNavigation } from "@react-navigation/native";
+
 
 const Drawer = createDrawerNavigator();
 
@@ -193,8 +194,8 @@ function DrawerNavigator() {
         }}
       />
       <Drawer.Screen
-        name="Shared Files"
-        component={Notification}
+        name="Received Files"
+        component={ReceivedFiles}
         initialParams={{ userId: user.id }}
         options={{
           drawerIcon: ({ color, size }) => (

@@ -11,7 +11,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-const Notification = ({ route }) => {
+const ReceivedFiles = ({ route }) => {
   const { userId } = route.params;
   const [files, setFiles] = useState([]);
   // const files = [
@@ -113,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Notification;
+export default ReceivedFiles;
