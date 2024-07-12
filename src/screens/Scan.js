@@ -109,7 +109,16 @@ const Scan = () => {
           return;
         }
 
-        setIsTestModalVisible(true);
+        navigation.navigate("SelectTests", { scannedUserId: scannedUserId ,
+          user: user,
+          labReportSharesId: labReportSharesId,
+          description: description,
+          selectedTests: selectedTests,
+          customTest: customTest,
+          showCustomInput: showCustomInput
+        });
+        resetScanner();
+
       } else if (scanType === "healthReport") {
         response = await axios.get(
           `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
@@ -140,43 +149,6 @@ const Scan = () => {
     }
   };
 
-
-  const handleLabRequest = async () => {
-    if (selectedTests.length === 0) {
-      Alert.alert("No Tests Selected", "Please select at least one test.");
-      return;
-    }
-
-    for (let i = 0; i < selectedTests.length; i++) {
-      console.log(`Sending lab request ${i + 1} of ${selectedTests.length}`);
-      try {
-        await axios.post(
-          "http://13.202.67.81:10000/usermgtapi/api/labRequests",
-          {
-            user: user.id,
-            lab: scannedUserId,
-            description: selectedTests[i],
-            customerName: user.fullName,
-          }
-        );
-
-        console.log(`Completed request ${i + 1}`);
-      } catch (error) {
-        console.error(
-          `Error submitting lab request for ${selectedTests[i]}:`,
-          error.message
-        );
-        Alert.alert(
-          "Error",
-          `Failed to submit lab request for ${selectedTests[i]}.`
-        );
-      }
-    }
-
-    console.log("All requests completed");
-    Alert.alert("Lab Requests", "All lab requests have been submitted.");
-    resetScanner();
-  };
 
   const handleHealthReport = async () => {
     let response;
@@ -224,43 +196,10 @@ const Scan = () => {
     setIsModalVisible(false);
     resetScanner();
   };
-  const labTests = [
-    "Complete Blood Count (CBC)",
-    "Basic Metabolic Panel (BMP)",
-    "Comprehensive Metabolic Panel (CMP)",
-    "Lipid Panel",
-    "Liver Function Tests (LFTs)",
-    "Thyroid Function Tests",
-    "Hemoglobin A1c (HbA1c)",
-    "Urinalysis",
-    "Electrolyte Panel",
-    "Coagulation Panel",
-    "C-reactive Protein (CRP)",
-    "Erythrocyte Sedimentation Rate (ESR)",
-    "Vitamin D Test",
-    "Iron Studies",
-    "Cardiac Enzyme Tests",
-    "Blood Gases",
-    "Microbial Cultures",
-    "Hormone Panels",
-    "Allergy Testing",
-    "Tumor Markers",
-  ];
+  
 
-  const toggleTestSelection = (test) => {
-    setSelectedTests((prevSelectedTests) =>
-      prevSelectedTests.includes(test)
-        ? prevSelectedTests.filter((t) => t !== test)
-        : [...prevSelectedTests, test]
-    );
-  };
 
-  const handleCustomTestSubmit = () => {
-    if (customTest.trim()) {
-      toggleTestSelection(customTest);
-      setCustomTest("");
-    }
-  };
+
 
   const resetScanner = () => {
     setScanned(false);
@@ -371,74 +310,7 @@ const Scan = () => {
           </View>
         </View>
       </Modal>
-      <Modal
-      visible={isTestModalVisible}
-      transparent={true}
-      animationType="slide"
-    >
-      <View style={styles.modalContainerTest}>
-        <View style={styles.modalViewTest}>
-          <Text style={styles.modalTextTest}>Select your test here</Text>
-          <ScrollView style={styles.scrollViewTest}>
-            {labTests.map((test, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => toggleTestSelection(test)}
-                style={styles.testContainer}
-              >
-                <Text style={styles.testText}>{test}</Text>
-                <View style={[
-                  styles.checkbox,
-                  selectedTests.includes(test) && styles.checkboxSelected
-                ]} />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <TouchableOpacity
-            style={styles.addCustomButton}
-            onPress={() => setShowCustomInput(!showCustomInput)}
-          >
-            <Ionicons name={showCustomInput ? "remove" : "add"} size={24} color="white" />
-          </TouchableOpacity>
-          {showCustomInput && (
-            <>
-              <TextInput
-                style={styles.inputTest}
-                placeholder="Enter your test name here"
-                value={customTest}
-                onChangeText={setCustomTest}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  handleCustomTestSubmit(customTest);
-                  setCustomTest('');
-                }}
-                style={styles.modalButtonTest}
-              >
-                <Text style={styles.modalButtonTextTest}>Add Test</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          <View style={styles.horizontalButtonsTest}>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => {
-                setIsTestModalVisible(false);
-                resetScanner();
-              }}
-            >
-              <Text style={styles.modalButtonText}>Close</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={handleLabRequest}
-            >
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
+      
     </View>
   );
 };
@@ -587,23 +459,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
   },
-  fileContainer: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 5,
-  },
-  fileName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  fileText: {
-    color: "#333",
-  },
-  selectedFileContainer: {
-    backgroundColor: "#00FFFF", // Highlight color for selected files
-  },
   containerImage: {
     flex: 1,
     width: 300,
@@ -619,94 +474,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 80,
   },
-  modalContainerTest: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalViewTest: {
-    width: '90%',
-    maxHeight: '100%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'stretch',
-  },
-  modalTextTest: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  scrollViewTest: {
-    maxHeight: 300,
-  },
-  testContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  testText: {
-    fontSize: 16,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: '#003366',
-    borderRadius: 4,
-  },
-  checkboxSelected: {
-    backgroundColor: '#003366',
-  },
-  addCustomButton: {
-    alignSelf: 'flex-start',
-    marginTop: 15,
-    marginBottom: 10,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#003366',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addCustomButtonText: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  inputTest: {
-    borderWidth: 1,
-    borderColor: '#003366',
-    borderRadius: 5,
-    padding: 8,
-    marginBottom: 10,
-  },
-  modalButtonTest: {
-    backgroundColor: '#003366',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  modalButtonTextTest: {
-
-    color: 'white',
-    fontSize: 16,
-  },
-  horizontalButtonsTest: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    
-  },
-  modalButtonText: {
-    color: '#003366',
-    fontSize: 16,
-  },
+ 
 });
 
 export default Scan;

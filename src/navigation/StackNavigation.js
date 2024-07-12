@@ -20,6 +20,7 @@ import FAQ from "../screens/FAQ";
 import ContactUs from "../screens/ContactUs";
 import ManageFiles from "../screens/ManageFiles";
 import SelectFiles from "../screens/SelectFiles";
+import SelectTests from "../screens/SelectTests";
 const Stack = createNativeStackNavigator();
 
 function StackNavigation({ userToken }) {
@@ -167,6 +168,16 @@ function StackNavigation({ userToken }) {
               component={SelectFiles}
               options={{
                 title: "Select Files",
+                headerStyle: { backgroundColor: "#0056B3" },
+                headerTintColor: "#fff",
+                headerTitleStyle: { fontWeight: "bold" },
+              }}
+            />
+             <Stack.Screen
+              name="SelectTests"
+              component={SelectTests}
+              options={{
+                title: "Select Tests",
                 headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
