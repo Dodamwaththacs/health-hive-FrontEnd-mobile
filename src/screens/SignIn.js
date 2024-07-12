@@ -43,7 +43,6 @@ const Signin = () => {
       );
 
       const data = response.data;
-      signIn(data.access_token, email);
 
       if (response.status === 200) {
         const db = await SQlite.openDatabaseAsync("HealthHive");
@@ -62,6 +61,7 @@ const Signin = () => {
         const token = data.access_token;
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        signIn(data.access_token, email);
       } else {
         Alert.alert(
           "Login failed1",
@@ -75,7 +75,6 @@ const Signin = () => {
           "Please check your credentials and try again.";
         Alert.alert("Login failed..", errorMessage);
       } else {
-        // Server is unreachable or backend issue
         Alert.alert(
           "Server Error",
           "Unable to connect to the server. Please try again later."
@@ -86,7 +85,7 @@ const Signin = () => {
 
   const handleForgotPassword = () => {
     const url =
-      "https://lemur-6.cloud-iam.com/auth/realms/teamnova/login-actions/reset-credentials";
+      "https://lemur-14.cloud-iam.com/auth/realms/teamnovauom/login-actions/reset-credentials";
     Linking.openURL(url);
   };
 
