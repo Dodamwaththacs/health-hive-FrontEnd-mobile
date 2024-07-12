@@ -260,20 +260,17 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#ADD8E6',
     padding: 10,
-    width: '50%',
-    height:60,
     borderRadius: 10,
     flex: 1,
     marginHorizontal: 10,
     alignItems: 'center',
-    flexDirection:'row',
-    justifyContent:'space-between',
+   
   },
   buttonText: {
     color: '#003366',
     fontSize: 16,
     fontWeight: 'bold',
-    marginLeft:15,
+   
   },
   disabledButton: {
     backgroundColor: '#cccccc',
