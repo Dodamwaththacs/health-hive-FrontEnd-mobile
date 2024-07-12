@@ -259,14 +259,14 @@ const Scan = () => {
               style={styles.button}
               onPress={() => activateScanner("labRequest")}
             >
-              <Ionicons name="flask-outline" size={24} color="#003366" />
+              <Ionicons name="flask-outline" size={24} color="#1E3A8A" />
               <Text style={styles.buttonText}>Lab Request</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
               onPress={() => activateScanner("healthReport")}
             >
-              <Ionicons name="share-outline" size={24} color="#003366" />
+              <Ionicons name="share-outline" size={24} color="#1E3A8A" />
               <Text style={styles.buttonText}>
                 Share your{"\n"}Health Reports
               </Text>
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     fontWeight: "bold",
-    color: "#003366",
+    color: "#1E3A8A",
     marginBottom: 20,
     marginTop: 0,
     paddingTop: 130,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 18,
-    color: "#003366",
+    color: "#1E3A8A",
     textAlign: "right",
     marginBottom: 0,
     paddingRight: 30,
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "#003366",
+    color: "#1E3A8A",
     fontWeight: "bold",
     fontSize: 16,
     marginLeft: 10,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     marginBottom: 10,
-    color: "#003366",
+    color: "#1E3A8A",
   },
   input: {
     width: "100%",
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
   },
 
   cancelButton: {
-    backgroundColor: "#1921E4",
+    backgroundColor: "#1E3A8A",
     padding: 10,
     borderRadius: 10,
     alignItems: "center",

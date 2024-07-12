@@ -229,11 +229,11 @@ const ChartsCard = ({ userId }) => {
   );
 
   const GaugeChart = ({ value, Category }) => {
-    const gaugeSize = 280;
+    const gaugeSize = 260;
     const radius = gaugeSize / 2;
-    const strokeWidth = 60;
-    const normalizedValue = Math.min(Math.max(value, 0), 40); // Clamp the value between 0 and 40
-
+    const strokeWidth = 30; // Reduced stroke width
+    const normalizedValue = Math.min(Math.max(value, 0), 40);
+  
     const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
       const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180.0;
       return {
@@ -241,18 +241,18 @@ const ChartsCard = ({ userId }) => {
         y: centerY + radius * Math.sin(angleInRadians),
       };
     };
-
+  
     const arrowAngle = (normalizedValue / 40) * 180;
-    const arrowLength = radius - strokeWidth / 10 - 30;
+    const arrowLength = radius - strokeWidth / 2 - 10;
     const arrowEnd = polarToCartesian(radius, radius, arrowLength, arrowAngle);
-
+  
     const sections = [
-      { color: "#00BFFF", from: 0, to: 18.5, label: "Underweight" },
-      { color: "#32CD32", from: 18.5, to: 25, label: "Normal" },
-      { color: "#FFA500", from: 25, to: 30, label: "Overweight" },
-      { color: "#FF4500", from: 30, to: 40, label: "Obesity" },
+      { color: "#ADD8E6", from: 0, to: 18.5, label: "Underweight" },
+      { color: "#90EE90", from: 18.5, to: 25, label: "Normal" },
+      { color: "#FFD580", from: 25, to: 30, label: "Overweight" },
+      { color: "#FFB3BA", from: 30, to: 40, label: "Obesity" },
     ];
-
+  
     const describeArc = (x, y, radius, startAngle, endAngle) => {
       const start = polarToCartesian(x, y, radius, endAngle);
       const end = polarToCartesian(x, y, radius, startAngle);
@@ -272,7 +272,7 @@ const ChartsCard = ({ userId }) => {
       ].join(" ");
       return d;
     };
-
+  
     const getSectionLabel = (value) => {
       for (let section of sections) {
         if (value >= section.from && value < section.to) {
@@ -281,7 +281,7 @@ const ChartsCard = ({ userId }) => {
       }
       return sections[sections.length - 1].label;
     };
-
+  
     return (
       <View style={styles.GaugeChart}>
         <Svg width={gaugeSize} height={gaugeSize / 2 + 30}>
@@ -300,35 +300,51 @@ const ChartsCard = ({ userId }) => {
               fill="none"
             />
           ))}
-
-          <Line
-            x1={radius}
-            y1={radius}
-            x2={arrowEnd.x}
-            y2={arrowEnd.y}
-            stroke="black"
-            strokeWidth={5}
+  
+          {/* Tick marks */}
+          {[...Array(41)].map((_, i) => {
+            const angle = (i / 40) * 180;
+            const tickStart = polarToCartesian(radius, radius, radius - strokeWidth / 2, angle);
+            const tickEnd = polarToCartesian(radius, radius, radius - strokeWidth / 2 - (i % 5 === 0 ? 15 : 10), angle);
+            return (
+              <Line
+                key={i}
+                x1={tickStart.x}
+                y1={tickStart.y}
+                x2={tickEnd.x}
+                y2={tickEnd.y}
+                stroke="#1E3A8A"
+                strokeWidth={i % 5 === 0 ? 2 : 1}
+              />
+            );
+          })}
+  
+          {/* Arrow */}
+          <Path
+            d={`M${radius},${radius} L${arrowEnd.x},${arrowEnd.y} L${radius + 5},${radius - 10} L${radius - 5},${radius - 10} Z`}
+            fill="#1E3A8A"
           />
-          <Circle cx={radius} cy={radius} r={5} fill="black" />
+          <Circle cx={radius} cy={radius} r={12} fill="#1E3A8A" />
+          
+          {/* Value text */}
           <SvgText
             x={radius}
-            y={radius - 30}
+            y={radius + 40}
             fill="black"
-            fontSize="20"
+            fontSize="24"
             fontWeight="bold"
             textAnchor="middle"
-            dy=".3em"
           >
             {value}
           </SvgText>
+          
+          {/* Category text */}
           <SvgText
             x={radius}
-            y={radius + 20}
+            y={radius + 70}
             fill="black"
-            fontSize="16"
-            fontWeight="bold"
+            fontSize="18"
             textAnchor="middle"
-            dy=".3em"
           >
             {getSectionLabel(value)}
           </SvgText>
@@ -517,7 +533,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 300,
     right: 20,
-    backgroundColor: "#0056B3",
+    backgroundColor: "#1E3A8A",
     borderRadius: 50,
     padding: 10,
     elevation: 5,
@@ -566,11 +582,22 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: 310,
   },
-  GaugeChart: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 5,
-    padding: 10,
+  gaugeChartContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  categoryText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 10,
   },
 
   buttonContainer: {
@@ -591,7 +618,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   activeDot: {
-    backgroundColor: "#0056B3",
+    backgroundColor: "#1E3A8A",
   },
   chartBackground: {
     position: "relative",
