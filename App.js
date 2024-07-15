@@ -43,29 +43,31 @@ export default function App() {
       let userToken;
       try {
         userToken = await SecureStore.getItemAsync("userToken");
-        console.log("userToken..", userToken);
         email = await SecureStore.getItemAsync("userEmail");
-        console.log("email..", email);
 
-        axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
-
-        const responce = await axios.get(
-
-          "http://13.202.67.81:10000/usermgtapi/api/hello"
- 
-        );
-        if (responce.status === 200) {
-          dispatch({ type: "RESTORE_TOKEN", token: userToken });
+        if (userToken) {
+          axios.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${userToken}`;
+          const response = await axios.get(
+            "http://13.202.67.81:10000/usermgtapi/api/hello"
+          );
+          if (response.status === 200) {
+            dispatch({ type: "RESTORE_TOKEN", token: userToken });
+          } else {
+            await SecureStore.deleteItemAsync("userToken");
+            await SecureStore.deleteItemAsync("userEmail");
+            dispatch({ type: "SIGN_OUT" });
+          }
         } else {
           dispatch({ type: "SIGN_OUT" });
         }
       } catch (e) {
+        console.log("error..", e);
+        await SecureStore.deleteItemAsync("userToken");
+        await SecureStore.deleteItemAsync("userEmail");
         dispatch({ type: "SIGN_OUT" });
       }
-      // After restoring token, we may need to validate it in production apps
-
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
     };
 
     const databaseHandling = async () => {
@@ -111,12 +113,6 @@ export default function App() {
         const userEmail = email;
         console.log("email..", userEmail);
         console.log("token..", token);
-        // console.log("App.js data..", data);
-
-        // In a production app, we need to send some data (usually username, password) to server and get a token
-        // We will also need to handle errors if sign in failed
-        // After getting token, we need to persist the token using `SecureStore`
-        // In the example, we'll use a dummy token
         await SecureStore.setItemAsync("userToken", token);
         await SecureStore.setItemAsync("userEmail", userEmail);
 
@@ -124,15 +120,13 @@ export default function App() {
 
         dispatch({ type: "SIGN_IN", token: data });
       },
-      signOut: () => {
+      signOut: async () => {
+        console.log("signOut");
+        await SecureStore.deleteItemAsync("userToken");
+        await SecureStore.deleteItemAsync("userEmail");
         dispatch({ type: "SIGN_OUT" });
       },
       signUp: async (data) => {
-        // In a production app, we need to send user data to server and get a token
-        // We will also need to handle errors if sign up failed
-        // After getting token, we need to persist the token using `SecureStore`
-        // In the example, we'll use a dummy token
-
         dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
       },
     }),
