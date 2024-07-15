@@ -26,7 +26,7 @@ const Setting = () => {
           text: "Yes",
           onPress: () => {
             const url =
-              "https://lemur-6.cloud-iam.com/auth/realms/teamnova/account/#/account-security/signing-in";
+              "https://lemur-14.cloud-iam.com/auth/realms/teamnovauom/account/#/account-security/signing-in";
             Linking.openURL(url);
           },
         },
