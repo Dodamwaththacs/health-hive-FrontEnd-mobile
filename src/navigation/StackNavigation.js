@@ -73,7 +73,7 @@ function StackNavigation({ userToken }) {
               component={UserProfile}
               options={{
                 title: "Your Profile",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}
@@ -108,7 +108,7 @@ function StackNavigation({ userToken }) {
               component={About}
               options={{
                 title: "About Us",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}
@@ -118,7 +118,7 @@ function StackNavigation({ userToken }) {
               component={Help}
               options={{
                 title: "Help & Support",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}
@@ -128,7 +128,7 @@ function StackNavigation({ userToken }) {
               component={HowItWorks}
               options={{
                 title: "How It Works",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}
@@ -138,7 +138,7 @@ function StackNavigation({ userToken }) {
               component={FAQ}
               options={{
                 title: "FAQ",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}
@@ -148,7 +148,7 @@ function StackNavigation({ userToken }) {
               component={ContactUs}
               options={{
                 title: "Contact Us",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}
@@ -158,7 +158,7 @@ function StackNavigation({ userToken }) {
               component={ManageFiles}
               options={{
                 title: "Manage Files",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}
@@ -168,7 +168,7 @@ function StackNavigation({ userToken }) {
               component={SelectFiles}
               options={{
                 title: "Select Files",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}
@@ -178,7 +178,7 @@ function StackNavigation({ userToken }) {
               component={SelectTests}
               options={{
                 title: "Select Tests",
-                headerStyle: { backgroundColor: "#1E3A8A" },
+                headerStyle: { backgroundColor: "#0056B3" },
                 headerTintColor: "#fff",
                 headerTitleStyle: { fontWeight: "bold" },
               }}

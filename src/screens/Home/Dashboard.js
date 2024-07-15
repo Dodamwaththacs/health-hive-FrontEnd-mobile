@@ -90,7 +90,7 @@ const ListCard = ({ documents, user, navigation }) => {
       style={styles.item}
       onPress={() => openDocument(item, navigation)}
     >
-      <Icon name="document-outline" size={50} color="#000" marginLeft={10} />
+      <Icon name="document-outline" size={50} color="#003366" marginLeft={10} />
       <View style={styles.itemContainer}>
         <Text style={styles.title}>{item.fileName}</Text>
         <Text style={styles.titledescription}>{item.description}</Text>
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   photo: {
     width: 50,
     height: 50,
-    borderRadius: 25,
+    borderRadius: 50,
   },
   details: {
     marginLeft: 10,
@@ -218,10 +218,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#003366",
   },
   greeting: {
     fontSize: 14,
-    color: "#888",
+    color: "#003366",
   },
 
   textHeader: {
@@ -229,6 +230,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 10,
     marginLeft: 10,
+    color: "#003366",
   },
   text: {
     fontSize: 18,
@@ -239,7 +241,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#ADD8E6",
+    backgroundColor: "#fff",
     flexDirection: "row",
     padding: 10,
     margin: 10,
@@ -256,17 +258,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "black",
+    color: "#003366",
     marginLeft: 0,
   },
   titledescription: {
     fontSize: 16,
-    color: "black",
+    color: "#003366",
     marginLeft: 0,
   },
   uploadDate: {
     fontSize: 14,
-    color: "black",
+    color: "#003366",
     marginLeft: 0,
   },
   listContainer: {

@@ -247,10 +247,10 @@ const ChartsCard = ({ userId }) => {
     const arrowEnd = polarToCartesian(radius, radius, arrowLength, arrowAngle);
   
     const sections = [
-      { color: "#ADD8E6", from: 0, to: 18.5, label: "Underweight" },
-      { color: "#90EE90", from: 18.5, to: 25, label: "Normal" },
-      { color: "#FFD580", from: 25, to: 30, label: "Overweight" },
-      { color: "#FFB3BA", from: 30, to: 40, label: "Obesity" },
+      { color: "#007FFF", from: 0, to: 18.5, label: "Underweight" },
+      { color: "#4CAF50", from: 18.5, to: 25, label: "Normal" },
+      { color: "#FFC107", from: 25, to: 30, label: "Overweight" },
+      { color: "#FF4136", from: 30, to: 40, label: "Obesity" },
     ];
   
     const describeArc = (x, y, radius, startAngle, endAngle) => {
@@ -284,7 +284,7 @@ const ChartsCard = ({ userId }) => {
   
     return (
       <View style={styles.GaugeChart}>
-        <Svg width={gaugeSize} height={gaugeSize / 2 + 30}>
+        <Svg width={gaugeSize} height={gaugeSize / 2 + 80}>
           {sections.map((section, index) => (
             <Path
               key={index}
@@ -313,7 +313,7 @@ const ChartsCard = ({ userId }) => {
                 y1={tickStart.y}
                 x2={tickEnd.x}
                 y2={tickEnd.y}
-                stroke="#1E3A8A"
+                stroke="white"
                 strokeWidth={i % 5 === 0 ? 2 : 1}
               />
             );
@@ -322,15 +322,15 @@ const ChartsCard = ({ userId }) => {
           {/* Arrow */}
           <Path
             d={`M${radius},${radius} L${arrowEnd.x},${arrowEnd.y} L${radius + 5},${radius - 10} L${radius - 5},${radius - 10} Z`}
-            fill="#1E3A8A"
+            fill="#003366"
           />
-          <Circle cx={radius} cy={radius} r={12} fill="#1E3A8A" />
+          <Circle cx={radius} cy={radius} r={12} fill="#003366" />
           
           {/* Value text */}
           <SvgText
             x={radius}
             y={radius + 40}
-            fill="black"
+            fill="#4A90E2"
             fontSize="24"
             fontWeight="bold"
             textAnchor="middle"
@@ -342,8 +342,9 @@ const ChartsCard = ({ userId }) => {
           <SvgText
             x={radius}
             y={radius + 70}
-            fill="black"
+            fill="#4A90E2"
             fontSize="18"
+            fontWeight="bold"
             textAnchor="middle"
           >
             {getSectionLabel(value)}
@@ -396,67 +397,68 @@ const ChartsCard = ({ userId }) => {
               horizontal
               contentContainerStyle={styles.scrollViewContent}
             >
-              <LineChart
-                data={defaultData}
-                width={Dimensions.get("window").width * 1.5 - 40} // Adjusted width
-                height={220} // Adjusted height
-                chartConfig={{
-                  backgroundColor: "#e26a00",
-                  backgroundGradientFrom: "#fb8c00",
-                  backgroundGradientTo: "#ffa726",
-                  decimalPlaces: 2,
-                  padding: 12,
-
-                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                  labelColor: (opacity = 1) =>
-                    `rgba(255, 255, 255, ${opacity})`,
-                  style: {
-                    borderRadius: 16,
-                    padding: 10,
-                  },
-                  propsForDots: {
-                    r: "6",
-                    strokeWidth: "3", // Reduced stroke width
-                    stroke: "#ffa726",
-                  },
-                  yAxisLabel: "",
-                  yAxisSuffix: "kg",
-                  yAxisInterval: 10, // Changed from 20 to create more steps
-                  paddingTop: 30,
-                }}
-                bezier
-                style={{
-                  marginVertical: 0,
-                  borderRadius: 16,
-                  marginBottom: 10,
-                }}
-                withVerticalLabels={true}
-                withHorizontalLabels={true}
-                segments={4}
-                renderDotContent={({ x, y, index, indexData }) => (
-                  <View
-                    key={index}
-                    style={{
-                      position: "absolute",
-                      top: y - 10,
-                      left: x - 16,
-                      backgroundColor: "white",
-                      borderRadius: 10, // Reduced border radius
-                      padding: 2,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#ffa726",
-                        fontWeight: "bold",
-                        fontSize: 10,
-                      }}
-                    >
-                      {indexData}kg
-                    </Text>
-                  </View>
-                )}
-              />
+            <LineChart
+  data={defaultData}
+  width={Dimensions.get("window").width * 1.5 - 40}
+  height={220}
+  chartConfig={{
+    backgroundColor: "#ffffff",
+    backgroundGradientFrom: "#ffffff",
+    backgroundGradientTo: "#ffffff",
+    decimalPlaces: 2,
+    padding: 12,
+    color: (opacity = 1) => `rgba(1, 159, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 86, 179, ${opacity})`,
+    style: {
+      borderRadius: 16,
+      padding: 10,
+    },
+    propsForDots: {
+      r: "6",
+      strokeWidth: "3",
+      stroke: "#003366", // Primary color for dot outline
+    },
+    yAxisLabel: "",
+    yAxisSuffix: "kg",
+    yAxisInterval: 10,
+    paddingTop: 30,
+    fillShadowGradient: "#007FFF", // Bright blue fill gradient
+    fillShadowGradientOpacity: 1,
+  }}
+  bezier
+  style={{
+    marginVertical: 0,
+    borderRadius: 16,
+    marginBottom: 10,
+  }}
+  withVerticalLabels={true}
+  withHorizontalLabels={true}
+  segments={4}
+  renderDotContent={({ x, y, index, indexData }) => (
+    <View
+      key={index}
+      style={{
+        position: "absolute",
+        top: y - 10,
+        left: x - 16,
+        backgroundColor: "white",
+        borderRadius: 10,
+        padding: 2,
+      }}
+    >
+      <Text
+        style={{
+          color: "#0056B3", // Primary color for text
+          fontWeight: "bold",
+          fontSize: 10,
+        }}
+      >
+        {indexData}kg
+      </Text>
+    </View>
+  )}
+  fillColor="rgba(1, 149, 255, 0.2)" // Primary color with low opacity for area fill
+/>
             </ScrollView>
           </View>
         </View>
@@ -477,30 +479,50 @@ const ChartsCard = ({ userId }) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Add Health Data</Text>
+          <Text style={styles.modalText}>Enter your height and weight to calculate BMI</Text>
           <TextInput
-            style={styles.input}
-            placeholder="Weight (kg)"
-            keyboardType="numeric"
-            value={weight}
-            onChangeText={setWeight}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Height (cm)"
-            keyboardType="numeric"
-            value={height}
-            onChangeText={setHeight}
-          />
+    style={styles.input}
+    placeholder="Weight (kg)"
+    keyboardType="numeric"
+    value={weight}
+    onChangeText={(text) => {
+      // Allow only numbers and one decimal point
+      const regex = /^\d*\.?\d*$/;
+      if (regex.test(text) || text === '') {
+        setWeight(text);
+      }
+    }}
+  />
+  <TextInput
+    style={styles.input}
+    placeholder="Height (cm)"
+    keyboardType="numeric"
+    value={height}
+    onChangeText={(text) => {
+      // Allow only numbers and one decimal point
+      const regex = /^\d*\.?\d*$/;
+      if (regex.test(text) || text === '') {
+        setHeight(text);
+      }
+    }}
+  />
 
           <View style={styles.buttonContainer}>
-            <Button title="Submit" onPress={handleSubmit} />
-            <Button title="Cancel" onPress={handleCancel} color="#FF6347" />
+          <TouchableOpacity
+                style={styles.modalButton1}
+                onPress={handleCancel} >
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                style={styles.modalButton2} 
+            onPress={handleSubmit} >
+              <Text style={styles.modalButtonText}>Submit</Text>
+              </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -519,21 +541,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 10,
+    color: "#003366",
   },
   infoText: {
     marginTop: 5,
+    color:'#003366',
   },
 
   bmiText: {
     fontSize: 16,
     textAlign: "center",
     marginVertical: 5,
+    color:'#003366',
   },
   addButton: {
     position: "absolute",
     bottom: 300,
     right: 20,
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#003366",
     borderRadius: 50,
     padding: 10,
     elevation: 5,
@@ -554,18 +579,24 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   input: {
+    width: "100%",
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 20,
     paddingHorizontal: 10,
-    width: 200,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
   modalText: {
     marginBottom: 15,
     textAlign: "center",
     fontSize: 18,
     fontWeight: "bold",
+    color:"#003366",
   },
   containerGaugeChart: {
     flex: 1,
@@ -582,28 +613,34 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: 310,
   },
-  gaugeChartContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
+
   categoryText: {
     fontSize: 16,
     textAlign: 'center',
     marginTop: 10,
+    color:'#003366',
   },
 
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+  },
+  modalButton1: {
+    backgroundColor: '#FF4136',
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '45%', // Adjust the height to fit the button size
+  },
+  modalButton2: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '45%',// Adjust the height to fit the button size
   },
   dotContainer: {
     flexDirection: "row",
@@ -618,13 +655,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   activeDot: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#003366",
   },
   chartBackground: {
     position: "relative",
     width: "100%",
     height: 220,
-    backgroundColor: "#e26a00",
+    backgroundColor: "#FFF",
     borderRadius: 20,
     overflow: "hidden",
     marginBottom: -40,
@@ -651,19 +688,18 @@ const styles = StyleSheet.create({
 
   decoratorContainer: {
     position: "absolute",
-    top: 40,
-    left: 10,
+    top: 20,
+    left: 40,
     right: 10,
-    flexDirection: "row",
+    flexDirection: "coloumn",
     justifyContent: "space-between",
   },
   decoratorText: {
-    color: "#e26a00",
-    fontSize: 12,
+    color: "#0056b3",
+    fontSize: 14,
     fontWeight: "bold",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    
+    
   },
 });
 

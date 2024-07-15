@@ -30,7 +30,7 @@ const QR_Code = ({ route }) => {
             <QRCode
               value={userId.toString()}
               size={235}
-              color="#003366"
+              color="#0056B3"
               backgroundColor="white"
             />
           )}
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    backgroundColor: "#eeeeee",
+    backgroundColor: "#FFF",
     paddingTop: 20, // Adjust as needed for spacing
     marginTop: -25,
   },

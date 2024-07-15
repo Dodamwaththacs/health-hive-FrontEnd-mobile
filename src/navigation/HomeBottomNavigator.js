@@ -43,7 +43,7 @@ function HomeBottomNavigator() {
           marginBottom: 13,
         },
         tabBarStyle: {
-          backgroundColor: "#1E3A8A",
+          backgroundColor: "#0056B3",
           height: 70,
           borderTopStartRadius: 20,
           borderTopEndRadius: 20,

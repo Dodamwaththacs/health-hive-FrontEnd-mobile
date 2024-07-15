@@ -259,14 +259,14 @@ const Scan = () => {
               style={styles.button}
               onPress={() => activateScanner("labRequest")}
             >
-              <Ionicons name="flask-outline" size={24} color="#1E3A8A" />
+              <Ionicons name="flask-outline" size={24} color="white" />
               <Text style={styles.buttonText}>Lab Request</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
               onPress={() => activateScanner("healthReport")}
             >
-              <Ionicons name="share-outline" size={24} color="#1E3A8A" />
+              <Ionicons name="share-outline" size={24} color="white" />
               <Text style={styles.buttonText}>
                 Share your{"\n"}Health Reports
               </Text>
@@ -295,13 +295,13 @@ const Scan = () => {
             <View style={styles.horizontalButtons}>
               
               <TouchableOpacity
-                style={styles.modalButton}
+                style={styles.modalButton1}
                 onPress={handleCancel}
               >
                 <Text style={styles.modalButtonText}>Close</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.modalButton}
+                style={styles.modalButton2}
                 onPress={handleSubmit}
               >
                 <Text style={styles.modalButtonText}>Submit</Text>
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     fontWeight: "bold",
-    color: "#1E3A8A",
+    color: "#003366",
     marginBottom: 20,
     marginTop: 0,
     paddingTop: 130,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 18,
-    color: "#1E3A8A",
+    color: "#003366",
     textAlign: "right",
     marginBottom: 0,
     paddingRight: 30,
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     width: 350,
     marginLeft: 0,
     marginBottom: 30,
-    backgroundColor: "#ADD8E6",
+    backgroundColor: "#4A90E2",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "#1E3A8A",
+    color: "white",
     fontWeight: "bold",
     fontSize: 16,
     marginLeft: 10,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     marginBottom: 10,
-    color: "#1E3A8A",
+    color: "#003366",
   },
   input: {
     width: "100%",
@@ -439,16 +439,29 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
   },
-  modalButton: {
-    backgroundColor: 'transparent',
+  modalButton1: {
+    backgroundColor: '#FF4136',
     padding: 10,
+    marginVertical: 10,
     borderRadius: 5,
     alignItems: 'center',
-    marginTop: 10, // Adjust the height to fit the button size
+    width: '45%', // Adjust the height to fit the button size
+  },
+  modalButton2: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '45%',// Adjust the height to fit the button size
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 
   cancelButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#0056B3",
     padding: 10,
     borderRadius: 10,
     alignItems: "center",

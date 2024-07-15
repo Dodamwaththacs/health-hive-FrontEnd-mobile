@@ -64,7 +64,7 @@ const Signin = () => {
         signIn(data.access_token, email);
       } else {
         Alert.alert(
-          "Login failed1",
+          "Login failed",
           response.data.message || "Something went wrong. Please try again."
         );
       }
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 0,
-    color: "#003366",
+    color: "#0056B3",
   },
   sign_bg: {
     width: 350,

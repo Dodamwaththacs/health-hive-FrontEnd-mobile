@@ -144,13 +144,13 @@ const SelectTests = () => {
       )}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.button}
+          style={styles.button1}
           onPress={() => navigation.goBack()}
         >
           <Text style={styles.buttonText}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.button}
+          style={styles.button2}
           onPress={handleLabRequest}
         >
           <Text style={styles.buttonText}>Submit</Text>
@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
   },
   testText: {
     fontSize: 16,
+    color: '#003366',
   },
   checkbox: {
     width: 20,
@@ -215,22 +216,30 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   addButton: {
-    backgroundColor: '#ADD8E6',
+    backgroundColor: '#4A90E2',
     padding: 20,
     borderRadius: 5,
     alignItems: 'center',
     marginBottom: 20,
   },
   addButtonText: {
-    color: '#003366',
+    color: 'white',
     fontSize: 16,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  button: {
-    backgroundColor: '#ADD8E6',
+  button1: {
+    backgroundColor: '#FF4136',
+    padding: 10,
+    marginVertical: 30,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '45%',
+  },
+  button2: {
+    backgroundColor: '#4CAF50',
     padding: 10,
     marginVertical: 30,
     borderRadius: 5,
@@ -238,7 +247,7 @@ const styles = StyleSheet.create({
     width: '45%',
   },
   buttonText: {
-    color: '#003366',
+    color: 'white',
     fontSize: 16,
   },
 });

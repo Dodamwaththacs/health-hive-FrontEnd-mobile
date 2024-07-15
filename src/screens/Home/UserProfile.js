@@ -211,25 +211,25 @@ const UserProfile = ({ route, navigation }) => {
               style={styles.button}
               onPress={() => handleChoosePhoto(true)}
             >
-              <Ionicons name="camera" size={24} color="#1E3A8A" />
+              <Ionicons name="camera" size={24} color="#0056B3" />
               <Text style={styles.textStyle}>Take a Photo</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
               onPress={() => handleChoosePhoto(false)}
             >
-              <Ionicons name="images" size={24} color="#1E3A8A" />
+              <Ionicons name="images" size={24} color="#0056B3" />
               <Text style={styles.textStyle}>Choose from Gallery</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={handleDeletePhoto}>
-              <Ionicons name="trash-bin" size={24} color="#1E3A8A" />
+              <Ionicons name="trash-bin" size={24} color="#0056B3" />
               <Text style={styles.textStyle}>Remove Photo</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, { marginTop: 10 }]}
               onPress={() => setImageActionModalVisible(false)}
             >
-              <Ionicons name="close" size={24} color="#1E3A8A" />
+              <Ionicons name="close" size={24} color="#0056B3" />
               <Text style={styles.textStyle}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -256,7 +256,7 @@ const UserProfile = ({ route, navigation }) => {
               style={styles.closeButton2}
               onPress={closePhotoModal}
             >
-              <Ionicons name="close-circle" size={30} color="#1E3A8A" />
+              <Ionicons name="close-circle" size={30} color="#0056B3" />
             </TouchableOpacity>
           </View>
         </View>
@@ -278,7 +278,7 @@ const UserProfile = ({ route, navigation }) => {
           onPress={openImageActions}
           style={styles.editIconContainer}
         >
-          <Ionicons name="pencil" size={20} color="#1E3A8A" />
+          <Ionicons name="pencil" size={20} color="#0056B3" />
         </TouchableOpacity>
         <Text style={styles.nameText}>{user.fullName}</Text>
       </View>
@@ -288,7 +288,7 @@ const UserProfile = ({ route, navigation }) => {
           <Ionicons
             name="mail"
             size={24}
-            color="#1E3A8A"
+            color="#0056B3"
             style={styles.infoIcon}
           />
           <Text style={styles.detailsText}>{user.email}</Text>
@@ -297,7 +297,7 @@ const UserProfile = ({ route, navigation }) => {
           <Ionicons
             name="calendar"
             size={24}
-            color="#1E3A8A"
+            color="#0056B3"
             style={styles.infoIcon}
           />
           <Text style={styles.detailsText}>{user.dateOfBirth}</Text>
@@ -306,7 +306,7 @@ const UserProfile = ({ route, navigation }) => {
           <Ionicons
             name="card"
             size={24}
-            color="#1E3A8A"
+            color="#0056B3"
             style={styles.infoIcon}
           />
           <Text style={styles.detailsText}>{user.nic}</Text>
@@ -315,7 +315,7 @@ const UserProfile = ({ route, navigation }) => {
           <Ionicons
             name="person"
             size={24}
-            color="#1E3A8A"
+            color="#0056B3"
             style={styles.infoIcon}
           />
           <Text style={styles.detailsText}>{user.gender}</Text>
@@ -412,7 +412,7 @@ const UserProfile = ({ route, navigation }) => {
               <Ionicons
                 name="call"
                 size={24}
-                color="#1E3A8A"
+                color="#0056B3"
                 style={styles.infoIcon}
               />
               <Text style={styles.detailsText}>
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#0056B3",
     paddingTop: 50,
     paddingBottom: 30,
     borderBottomLeftRadius: 30,
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 15,
-    color: "#1E3A8A",
+    color: "#003366",
   },
   editButton: {
     position: "absolute",
@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   saveButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#003366",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   editProfileButton: {
-    backgroundColor: "#1E3A8A",
+    backgroundColor: "#003366",
     padding: 15,
     borderRadius: 25,
     alignItems: "center",

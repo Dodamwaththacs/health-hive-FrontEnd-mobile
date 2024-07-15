@@ -71,7 +71,7 @@ function CustomDrawerContent(props) {
         <DrawerItem
           label="Log Out"
           icon={({ size }) => (
-            <Ionicons name="log-out-outline" color={"#1E3A8A"} size={size} />
+            <Ionicons name="log-out-outline" color={"#0056B3"} size={size} />
           )}
           onPress={handleLogout}
           labelStyle={styles.drawerItemLabel}
@@ -115,7 +115,7 @@ function DrawerNavigator() {
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#1E3A8A",
+          backgroundColor: "#0056B3",
           borderBottomEndRadius: 20,
           borderBottomStartRadius: 20,
           elevation: 20,
@@ -155,7 +155,7 @@ function DrawerNavigator() {
           fontSize: 16,
           marginLeft: -16,
         },
-        drawerActiveBackgroundColor: "#1E3A8A", //  blue background for active item
+        drawerActiveBackgroundColor: "#0056B3", //  blue background for active item
         drawerActiveTintColor: "#fff", // white text color for active item
         drawerInactiveTintColor: "grey",
 
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#1E3A8A",
+    color: "#0056B3",
   },
   drawerItemsContainer: {
     flex: 1,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     marginLeft: -16,
-    color: "#1E3A8A",
+    color: "#0056B3",
   },
   drawerItem: {
     borderRadius: 8,

@@ -139,7 +139,7 @@ const SelectFiles = ({ route }) => {
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.button}
+          style={styles.button1}
           onPress={() => {
             if (currentFolder) {
               setCurrentFolder(null);
@@ -155,7 +155,7 @@ const SelectFiles = ({ route }) => {
         </TouchableOpacity>
         {currentFolder && (
           <TouchableOpacity
-            style={[styles.button, selectedFiles.length === 0 && styles.disabledButton]}
+            style={[styles.button2, selectedFiles.length === 0 && styles.disabledButton]}
             onPress={handleShareFiles}
             disabled={selectedFiles.length === 0}
           >
@@ -250,15 +250,24 @@ const styles = StyleSheet.create({
   fileName: {
     marginLeft: 15,
     fontSize: 16,
-    color: '#333',
+    color: '#003366',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 20,
   },
-  button: {
-    backgroundColor: '#ADD8E6',
+  button1: {
+    backgroundColor: '#FF4136',
+    padding: 10,
+    borderRadius: 10,
+    flex: 1,
+    marginHorizontal: 10,
+    alignItems: 'center',
+   
+  },
+  button2: {
+    backgroundColor: '#4CAF50',
     padding: 10,
     borderRadius: 10,
     flex: 1,
@@ -267,7 +276,7 @@ const styles = StyleSheet.create({
    
   },
   buttonText: {
-    color: '#003366',
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
    

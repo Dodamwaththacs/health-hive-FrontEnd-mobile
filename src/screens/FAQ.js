@@ -23,7 +23,7 @@ const FAQItem = ({ question, answer }) => {
         <Ionicons
           name={isExpanded ? "chevron-up" : "chevron-down"}
           size={24}
-          color="#003366"
+          color="#0056B3"
         />
       </TouchableOpacity>
       {isExpanded && <Text style={styles.answer}>{answer}</Text>}
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#003366",
+    color: "#0056B3",
     flex: 1,
   },
   answer: {

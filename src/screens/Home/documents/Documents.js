@@ -240,7 +240,7 @@ const FolderCreator = () => {
         renderItem={({ item: dir, index }) => (
           <View style={styles.directoryItem}>
             <TouchableOpacity onPress={() => handleNavigation(dir)}>
-              <Icon name="folder" size={40} color="#000" />
+              <Icon name="folder" size={40} color="#003366" />
             </TouchableOpacity>
             <Text style={styles.folderText}>{dir}</Text>
             <Text></Text>
@@ -256,7 +256,7 @@ const FolderCreator = () => {
                   />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleRenamePress(dir)}>
-                  <FontAwesome5 name="edit" size={20} color="blue" />
+                  <FontAwesome5 name="edit" size={20} color="#4A90E2" />
                 </TouchableOpacity>
               </View>
             )}
@@ -269,7 +269,7 @@ const FolderCreator = () => {
         onPress={() => setModalVisible(true)}
         style={styles.plusButton}
       >
-        <MaterialIcons name="create-new-folder" color={"black"} size={60} />
+        <MaterialIcons name="create-new-folder" color={"#4A90E2"} size={60} />
       </TouchableOpacity>
 
       <Modal
@@ -284,7 +284,7 @@ const FolderCreator = () => {
               style={styles.closeBtn}
               onPress={() => setModalVisible(false)}
             >
-              <Ionicons name="close-circle" size={30} color="black" />
+              <Ionicons name="close-circle" size={30} color="#003366" />
             </TouchableOpacity>
             <TextInput
               style={styles.input}
@@ -310,17 +310,21 @@ const FolderCreator = () => {
               value={newFolderName}
               onChangeText={setNewFolderName}
             />
-            <View style={styles.modalButtons}>
-              <Button
-                title="Cancel"
+            <View style={styles.horizontalButtons}>
+              <TouchableOpacity
+                style={styles.modalButtons1}
                 onPress={() => setRenameModalVisible(false)}
-              />
-              <Button
-                title="Rename"
+              >
+                 <Text style={styles.modalButtonText}>Close</Text>
+                 </TouchableOpacity>
+            
+              <TouchableOpacity
+                style={styles.modalButtons2}
                 onPress={() =>
-                  renameDirectory(currentFolderToRename, newFolderName)
-                }
-              />
+                  renameDirectory(currentFolderToRename, newFolderName)}
+              >
+                 <Text style={styles.modalButtonText}>Rename</Text>
+                 </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -381,11 +385,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   input: {
+    width: "100%",
     height: 40,
-    margin: 12,
+    borderColor: "gray",
     borderWidth: 1,
-    padding: 10,
-    width: "80%",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 5,
   },
   directoryItem: {
     flexDirection: "row",
@@ -402,18 +408,38 @@ const styles = StyleSheet.create({
     flex: 1, // Take up all available space
     marginLeft: 20, // Space between the icon and the text
     fontSize: 18,
+    color:'#003366',
   },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginTop: 20,
+  modalButtons1: {
+    backgroundColor: '#FF4136',
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '45%', // Adjust the height to fit the button size
+  },
+  modalButtons2: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: '45%',// Adjust the height to fit the button size
   },
   closeBtn: {
     position: "absolute",
     top: 0,
     right: 0,
     padding: 10, // Add padding for easier pressing
+  },
+  horizontalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 

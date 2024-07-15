@@ -10,6 +10,7 @@ import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { text } from "@fortawesome/fontawesome-svg-core";
 
 const ReceivedFiles = ({ route }) => {
   const { userId } = route.params;
@@ -92,8 +93,8 @@ const ReceivedFiles = ({ route }) => {
   );
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text>Here you can find document someone shares to you</Text>
+    <View style={{ flex: 1, padding: 20 , backgroundColor:"#FFF" }}>
+      <Text style={styles.text}>Here you can find document someone shares to you</Text>
       <FlatList
         data={files}
         keyExtractor={(item) => item.id.toString()}
@@ -110,6 +111,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+  },
+  text:{
+fontSize:18,
+color:"#003366",
+justifyContent:"center",
   },
 });
 

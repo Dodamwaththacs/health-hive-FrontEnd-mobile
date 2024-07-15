@@ -282,7 +282,7 @@ const LabFolder = ({ route }) => {
                 style={styles.closeButton}
                 onPress={handleClose}
               >
-                <Ionicons name="close-circle" size={30} color="black" />
+                <Ionicons name="close-circle" size={30} color="#003366" />
               </TouchableOpacity>
 
               <Image
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   fileName: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#333333",
+    color: "#003366",
   },
 
   head: {

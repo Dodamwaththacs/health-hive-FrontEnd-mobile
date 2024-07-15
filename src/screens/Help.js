@@ -20,7 +20,7 @@ const Help = () => {
           style={styles.button} 
           onPress={() => navigation.navigate('HowItWorks')}
         >
-          <Ionicons name="information-circle-outline" size={40} color="#003366" />
+          <Ionicons name="information-circle-outline" size={40} color="#0056B3" />
           <Text style={styles.buttonText}>How it Works</Text>
         </TouchableOpacity>
         
@@ -28,7 +28,7 @@ const Help = () => {
           style={styles.button} 
           onPress={() => navigation.navigate('FAQ')}
         >
-          <Ionicons name="help-circle-outline" size={40} color="#003366" />
+          <Ionicons name="help-circle-outline" size={40} color="#0056B3" />
           <Text style={styles.buttonText}>FAQ</Text>
         </TouchableOpacity>
         
@@ -36,7 +36,7 @@ const Help = () => {
           style={styles.button} 
           onPress={() => navigation.navigate('ContactUs')}
         >
-          <Ionicons name="call-outline" size={40} color="#003366" />
+          <Ionicons name="call-outline" size={40} color="#0056B3" />
           <Text style={styles.buttonText}>Contact Us</Text>
         </TouchableOpacity>
       </View>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       padding: 20,
-      backgroundColor: '#f0f8ff',
+      backgroundColor: '#fff',
     },
     title: {
       fontSize: 25,
@@ -67,14 +67,16 @@ const styles = StyleSheet.create({
     button: {
       width: '40%',
         height: 100,
-      backgroundColor: '#ADD8E6',
+      backgroundColor: 'transparent',
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 10,
+      borderWidth:3,
+      borderColor:"#0056B3",
       marginBottom: 30,
     },
     buttonText: {
-      color: '#003366',
+      color: '#0056B3',
       fontSize: 16,
       fontWeight: 'bold',
     },
