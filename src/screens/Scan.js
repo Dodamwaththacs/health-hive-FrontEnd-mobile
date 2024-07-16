@@ -18,7 +18,7 @@ import { useEmail } from "../EmailContext";
 import * as SecureStore from "expo-secure-store";
 import * as SQLite from "expo-sqlite";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 const Scan = () => {
   const navigation = useNavigation();
@@ -109,21 +109,20 @@ const Scan = () => {
           return;
         }
 
-        navigation.navigate("SelectTests", { scannedUserId: scannedUserId ,
+        navigation.navigate("SelectTests", {
+          scannedUserId: scannedUserId,
           user: user,
           labReportSharesId: labReportSharesId,
           description: description,
           selectedTests: selectedTests,
           customTest: customTest,
-          showCustomInput: showCustomInput
+          showCustomInput: showCustomInput,
         });
         resetScanner();
-
       } else if (scanType === "healthReport") {
         response = await axios.get(
           `http://13.202.67.81:10000/usermgtapi/api/users/${scannedUserId}`
         );
-
 
         const scannedData = response.data;
 
@@ -149,7 +148,6 @@ const Scan = () => {
     }
   };
 
-
   const handleHealthReport = async () => {
     let response;
     console.log("patientName", user.fullName);
@@ -164,25 +162,21 @@ const Scan = () => {
           patientName: user.fullName,
         }
       );
-      setLabReportSharesId(response.data);
+      const labReportSharesId = response.data;
 
-      navigation.navigate('SelectFiles', {
+      navigation.navigate("SelectFiles", {
         user,
         scannedUserId,
         labReportSharesId,
         description,
       });
       resetScanner();
-
     } catch (error) {
       Alert.alert("Error", "Failed to share health records.");
       resetScanner();
     }
   };
 
- 
-
-  
   const handleSubmit = () => {
     setIsModalVisible(false);
     if (scanType === "labRequest") {
@@ -196,10 +190,6 @@ const Scan = () => {
     setIsModalVisible(false);
     resetScanner();
   };
-  
-
-
-
 
   const resetScanner = () => {
     setScanned(false);
@@ -275,8 +265,6 @@ const Scan = () => {
         </View>
       )}
 
-      
-
       <Modal
         visible={isModalVisible}
         transparent={true}
@@ -293,7 +281,6 @@ const Scan = () => {
               value={description}
             />
             <View style={styles.horizontalButtons}>
-              
               <TouchableOpacity
                 style={styles.modalButton1}
                 onPress={handleCancel}
@@ -310,7 +297,6 @@ const Scan = () => {
           </View>
         </View>
       </Modal>
-      
     </View>
   );
 };
@@ -440,23 +426,23 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   modalButton1: {
-    backgroundColor: '#FF4136',
+    backgroundColor: "#FF4136",
     padding: 10,
     marginVertical: 10,
     borderRadius: 5,
-    alignItems: 'center',
-    width: '45%', // Adjust the height to fit the button size
+    alignItems: "center",
+    width: "45%", // Adjust the height to fit the button size
   },
   modalButton2: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     padding: 10,
     marginVertical: 10,
     borderRadius: 5,
-    alignItems: 'center',
-    width: '45%',// Adjust the height to fit the button size
+    alignItems: "center",
+    width: "45%", // Adjust the height to fit the button size
   },
   modalButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
 
@@ -487,7 +473,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 80,
   },
- 
 });
 
 export default Scan;
