@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
 import {
@@ -28,14 +28,12 @@ const LabFolder = ({ route }) => {
   const [fileDownloadUri, setFileDownloadUri] = useState(null);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [email, setEmail] = useState("");
   const [dropDown, setDropDown] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       const fetchDataFromOrigin = async () => {
         const email = await SecureStore.getItemAsync("userEmail");
-        setEmail(email);
         const userId = await SecureStore.getItemAsync("userId");
         try {
           const response = await axios.get(
@@ -84,24 +82,17 @@ const LabFolder = ({ route }) => {
               console.log("Error data insert : ", error);
             }
           }
-
-          const responseFinal = await db.getAllAsync(
-            `SELECT * FROM fileStorage WHERE folderName = "${folderName}"  ;`
-          );
-          console.log("inserted data response :", responseFinal);
-
-          console.log("Origin data fetched :", response.data);
         } catch (error) {
-          console.log(" no data fetched from origin : ");
         } finally {
           fetchDataFromLocal();
         }
       };
 
       const fetchDataFromLocal = async () => {
+        const email = await SecureStore.getItemAsync("userEmail");
         const db = await SQLite.openDatabaseAsync("HealthHive");
         const response = await db.getAllAsync(
-          `SELECT * FROM fileStorage WHERE folderName = "${folderName}"  ;`
+          `SELECT * FROM fileStorage WHERE folderName = "${folderName}" AND userEmail = "${email}";`
         );
         setData(response);
         await db.closeAsync();
