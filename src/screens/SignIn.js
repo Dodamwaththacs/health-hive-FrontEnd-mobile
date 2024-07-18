@@ -60,7 +60,7 @@ const Signin = () => {
       setEmailError("Please enter a valid email address.");
       return;
     }
-    if (password.length < 9) {
+    if (password.length < 8) {
       setPasswordError("Password must be at least 8 characters.");
       return;
     }
