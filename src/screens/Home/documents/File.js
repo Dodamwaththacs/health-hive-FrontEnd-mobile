@@ -58,6 +58,7 @@ const LabFolder = ({ route }) => {
 
   const handleMove = async () => {
     const email = await SecureStore.getItemAsync("userEmail");
+    console.log("email :", email);
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response = await db.getAllAsync(
       `SELECT folderName
@@ -129,9 +130,7 @@ const LabFolder = ({ route }) => {
       });
       const currentDate = new Date();
       const response = await axios.post(
-
         "http://13.202.67.81:10000/usermgtapi/api/ipfs/upload",
-
 
         formData,
         {

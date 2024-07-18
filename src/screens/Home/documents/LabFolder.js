@@ -47,7 +47,7 @@ const LabFolder = ({ route }) => {
             console.log(originData[i]);
             try {
               await db.execAsync(
-                `INSERT INTO fileStorage (userEmail, fileName, folderName, description, hash) VALUES ('${email}','${originData[i].name}', '${folderName}', '${originData[i].filePath}', '${originData[i].fileHash}');`
+                `INSERT INTO fileStorage (userEmail, fileName, folderName, description, hash) VALUES ('${email}','${originData[i].name}', '${folderName}', ' ', '${originData[i].fileHash}');`
               );
               try {
                 await axios.delete(
@@ -105,6 +105,8 @@ const LabFolder = ({ route }) => {
   );
 
   const handleMove = async () => {
+    const email = await SecureStore.getItemAsync("userEmail");
+
     const db = await SQLite.openDatabaseAsync("HealthHive");
     const response = await db.getAllAsync(`SELECT folderName
         FROM folderData
