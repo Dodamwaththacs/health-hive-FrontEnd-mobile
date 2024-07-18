@@ -71,6 +71,56 @@ const UserProfile = ({ route, navigation }) => {
     })();
   }, []);
 
+  const validateInput = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "telephoneNumber":
+        if (!/^\d{10}$/.test(value)) {
+          error = "Phone number must be 10 digits";
+        }
+        break;
+      case "emergencyContactName":
+        if (!/^[a-zA-Z\s]*$/.test(value)) {
+          error = "Only alphabets and spaces are allowed";
+        }
+        break;
+      case "emergencyContactNumber":
+        if (!/^\d{10}$/.test(value)) {
+          error = "Emergency contact number must be 10 digits";
+        }
+        break;
+    }
+    return error;
+  };
+
+  const handleInputChange = (name, value) => {
+    let newValue = value;
+    let error = "";
+
+    switch (name) {
+      case "telephoneNumber":
+      case "emergencyContactNumber":
+        newValue = value;
+        break;
+      case "emergencyContactName":
+        newValue = value;
+        break;
+    }
+
+    error = validateInput(name, newValue);
+
+    setEditData((prev) => ({ ...prev, [name]: newValue }));
+    setErrors((prev) => ({ ...prev, [name]: error }));
+  };
+
+  const isFormValid = () => {
+    return (
+      Object.values(errors).every((error) => error === "") &&
+      Object.values(editData).every((value) => value.trim() !== "")
+    );
+  };
+
+
   const handleChoosePhoto = async (fromCamera) => {
     let result;
     try {
@@ -328,7 +378,7 @@ const UserProfile = ({ route, navigation }) => {
           onPress={toggleEditMode}
           style={styles.editButton}
         ></TouchableOpacity>
-        {editMode ? (
+       {editMode ? (
           <>
             <TextInput
               style={[
@@ -336,13 +386,7 @@ const UserProfile = ({ route, navigation }) => {
                 errors.telephoneNumber && styles.errorInput,
               ]}
               value={editData.telephoneNumber}
-              onChangeText={(text) => {
-                const numericText = text.replace(/[^0-9]/g, "");
-                setEditData({
-                  ...editData,
-                  telephoneNumber: numericText.slice(0, 10),
-                });
-              }}
+              onChangeText={(text) => handleInputChange("telephoneNumber", text)}
               placeholder="Your Contact Number"
               keyboardType="numeric"
               maxLength={10}
@@ -357,13 +401,7 @@ const UserProfile = ({ route, navigation }) => {
                 errors.emergencyContactName && styles.errorInput,
               ]}
               value={editData.emergencyContactName}
-              onChangeText={(text) => {
-                const alphabeticText = text.replace(/[^a-zA-Z\s]/g, "");
-                setEditData({
-                  ...editData,
-                  emergencyContactName: alphabeticText,
-                });
-              }}
+              onChangeText={(text) => handleInputChange("emergencyContactName", text)}
               placeholder="Emergency Contact Name"
             />
             {errors.emergencyContactName && (
@@ -378,13 +416,7 @@ const UserProfile = ({ route, navigation }) => {
                 errors.emergencyContactNumber && styles.errorInput,
               ]}
               value={editData.emergencyContactNumber}
-              onChangeText={(text) => {
-                const numericText = text.replace(/[^0-9]/g, "");
-                setEditData({
-                  ...editData,
-                  emergencyContactNumber: numericText.slice(0, 10),
-                });
-              }}
+              onChangeText={(text) => handleInputChange("emergencyContactNumber", text)}
               placeholder="Emergency Contact Number"
               keyboardType="numeric"
               maxLength={10}
@@ -394,14 +426,13 @@ const UserProfile = ({ route, navigation }) => {
                 {errors.emergencyContactNumber}
               </Text>
             )}
-            {errors.emergencyContactNumber && (
-              <Text style={styles.errorText}>
-                {errors.emergencyContactNumber}
-              </Text>
-            )}
             <TouchableOpacity
-              style={styles.saveButton}
+              style={[
+                styles.saveButton,
+                !isFormValid() && styles.disabledButton,
+              ]}
               onPress={handleSaveChanges}
+              disabled={!isFormValid()}
             >
               <Text style={styles.saveButtonText}>Save Changes</Text>
             </TouchableOpacity>
@@ -533,6 +564,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     backgroundColor: "#fff",
+  },
+  errorText: {
+    color: "red",
+    top: -10,
+    left: 5,
+    marginBottom: 10,
   },
   saveButton: {
     backgroundColor: "#003366",
