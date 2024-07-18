@@ -19,10 +19,51 @@ const Signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const { setEmail: setEmailContext } = useEmail();
   const { signIn } = React.useContext(AuthContext);
 
+
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    console.log("Email:", text); // Debugging
+    if (!validateEmail(text)) {
+      setEmailError("Please enter a valid email address.");
+      console.log("Email Error:", emailError); // Debugging
+    } else {
+      setEmailError("");
+      console.log("Email Error cleared"); // Debugging
+    }
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    console.log("Password:", text); // Debugging
+    if (text.length < 8) {
+      setPasswordError("Password must be at least 8 characters.");
+      console.log("Password Error:", passwordError); // Debugging
+    } else {
+      setPasswordError("");
+      console.log("Password Error cleared"); // Debugging
+    }
+  };
+
   const handleSignIn = async () => {
+    if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+    if (password.length < 9) {
+      setPasswordError("Password must be at least 8 characters.");
+      return;
+    }
     try {
       const body = new URLSearchParams({
         grant_type: "password",
@@ -93,18 +134,29 @@ const Signin = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to HealthHive</Text>
       <Image source={require("../assets/sign-bg.png")} style={styles.sign_bg} />
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          onChangeText={setEmail}
+      <View style={styles.inputContainer1}>
+      <TextInput
+          style={[styles.input, emailError ? styles.inputError : null]}
+          onChangeText={handleEmailChange}
           value={email}
           placeholder="Email"
           keyboardType="email-address"
         />
-        <View style={styles.input}>
+        
+
+        {emailError ? (
+          <View style={styles.errorBox1}>
+            <Text style={styles.errorText}>{emailError}</Text>
+          </View>
+        ) : null}
+
+        </View>
+      <View style={styles.inputContainer2}>
+
+        <View style={[styles.input, passwordError ? styles.inputError : null]}>
           <TextInput
             style={{ flex: 1, height: 48 }}
-            onChangeText={setPassword}
+            onChangeText={handlePasswordChange}
             value={password}
             placeholder="Password"
             secureTextEntry={!isPasswordVisible}
@@ -119,6 +171,11 @@ const Signin = () => {
             />
           </TouchableOpacity>
         </View>
+        {passwordError ? (
+            <View style={styles.errorBox2}>
+              <Text style={styles.errorText}>{passwordError}</Text>
+           </View>
+          ) : null}
       </View>
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
@@ -149,9 +206,17 @@ const styles = StyleSheet.create({
     height: 350,
     resizeMode: "cover",
   },
-  inputContainer: {
+  inputContainer1: {
     width: "100%",
-    marginBottom: 24,
+    marginBottom: 0,
+    paddingVertical: 16,
+    justifyContent: "space-between",
+  },
+  inputContainer2: {
+    width: "100%",
+    marginBottom: 0,
+    paddingVertical: 16,
+    justifyContent: "space-between",
   },
   input: {
     flexDirection: "row",
@@ -177,6 +242,31 @@ const styles = StyleSheet.create({
   forgotPassword: {
     color: "#0056B3",
     marginTop: 15,
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  errorBox1: {
+    position: "absolute",
+    top: 60,
+    left: 8,
+    right: 0,
+    backgroundColor: "transparent",
+    padding: 5,
+    borderRadius: 10,
+  },
+  errorBox2: {
+    position: "absolute",
+    top: 60,
+    left: 8,
+    right: 0,
+    backgroundColor: "transparent",
+    padding: 5,
+    borderRadius: 10,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
   },
 });
 

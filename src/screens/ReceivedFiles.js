@@ -15,26 +15,6 @@ import { text } from "@fortawesome/fontawesome-svg-core";
 const ReceivedFiles = ({ route }) => {
   const { userId } = route.params;
   const [files, setFiles] = useState([]);
-  // const files = [
-  //   {
-  //     id: 1,
-  //     doctorId: "D123",
-  //     fileHash: "hash1",
-  //     labReportShare: "Yes",
-  //   },
-  //   {
-  //     id: 2,
-  //     doctorId: "D456",
-  //     fileHash: "hash2",
-  //     labReportShare: "No",
-  //   },
-  //   {r
-  //     id: 3,
-  //     doctorId: "D789",
-  //     fileHash: "hash3",
-  //     labReportShare: "Yes",
-  //   },
-  // ];
 
   const navigation = useNavigation();
 
